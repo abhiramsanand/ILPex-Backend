@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class TraineeProgress {
+public class TraineeProgress extends BaseEntity {
 
     @Column(name = "day_number", nullable = false)
     private int dayNumber;
