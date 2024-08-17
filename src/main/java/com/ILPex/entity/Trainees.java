@@ -8,14 +8,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "roles")
-public class Roles extends BaseEntity{
+@Table(name = "trainees")
+public class Trainees {
 
-    @Column(name="role_name")
-    private String roleName;
+    @Column(name="percipio_email")
+    private String percipioEmail;
+
+    @Column(name="user_uuid")
+    private UUID userUuid;
+
+    @Column(name="isActive")
+    private Boolean isActive;
+
 }
