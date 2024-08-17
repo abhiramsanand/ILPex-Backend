@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class PercipioAssessment {
+public class PercipioAssessment extends BaseEntity {
     @Column(name="day_number",nullable= false)
     private int dayNumber;
     @Column(name="score",nullable= false)
