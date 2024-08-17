@@ -16,7 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "trainees")
-public class Trainees {
+public class Trainees  extends BaseEntity{
 
     @Column(name="percipio_email")
     private String percipioEmail;

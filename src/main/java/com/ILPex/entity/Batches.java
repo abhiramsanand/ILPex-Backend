@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Table(name = "batches")
-public class Batches {
+public class Batches extends BaseEntity{
 
     @Column(name="batch_code")
     private String batchCode;
