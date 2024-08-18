@@ -24,5 +24,4 @@ public class Enquiries extends BaseEntity{
     @Column(name = "send_date", nullable = false)
     private LocalDateTime sendDate;
 
-
 }

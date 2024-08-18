@@ -1,5 +1,6 @@
 package com.ILPex.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,6 @@ public class DailyReports extends BaseEntity {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-
     @Column(name = "time_taken", nullable = false)
     private LocalDateTime timeTaken;
 
@@ -37,4 +37,14 @@ public class DailyReports extends BaseEntity {
         SUBMITTED,
         PENDING
     }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("daily_reports")
+    @JoinColumn(name = "trainee_id", referencedColumnName = "id", nullable = false)
+    Trainees trainees;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("daily_reports")
+    @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
+    Courses courses;
 }

@@ -1,14 +1,15 @@
 package com.ILPex.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name="assessment_batch_allocation")
@@ -17,15 +18,26 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 public class AssessmentBatchAllocation extends BaseEntity{
+
     @Column(name="start_date",nullable= false)
     private Timestamp startDate;
+
     @Column(name="end_date",nullable= false)
     private Timestamp endDate;
+
     @Column(name="assessment_status",nullable= false)
     private Boolean assessmentStatus;
 
+    @OneToMany(mappedBy = "assessment_batch_allocation", cascade = CascadeType.ALL,targetEntity = Results.class)
+    private Set<Results> results = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("assessment_batch_allocation")
+    @JoinColumn(name = "batch_id", referencedColumnName = "id", nullable = false)
+    Batches batches;
 
-
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("assessment_batch_allocation")
+    @JoinColumn(name = "assessment_id", referencedColumnName = "id", nullable = false)
+    Assessments assessments;
 }

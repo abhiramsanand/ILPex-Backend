@@ -1,8 +1,7 @@
 package com.ILPex.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,4 +24,14 @@ public class TraineeProgress extends BaseEntity {
 
     @Column(name = "estimated_duration", nullable = false)
     private int estimatedDuration;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("trainee_progress")
+    @JoinColumn(name = "trainee_id", referencedColumnName = "id", nullable = false)
+    Trainees trainees;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("trainee_progress")
+    @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
+    Courses courses;
 }
