@@ -12,23 +12,23 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name="assessment_batch_allocation")
+@Table(name = "assessment_batch_allocation")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class AssessmentBatchAllocation extends BaseEntity{
+public class AssessmentBatchAllocation extends BaseEntity {
 
-    @Column(name="start_date",nullable= false)
+    @Column(name = "start_date", nullable = false)
     private Timestamp startDate;
 
-    @Column(name="end_date",nullable= false)
+    @Column(name = "end_date", nullable = false)
     private Timestamp endDate;
 
-    @Column(name="assessment_status",nullable= false)
+    @Column(name = "assessment_status", nullable = false)
     private Boolean assessmentStatus;
 
-    @OneToMany(mappedBy = "assessment_batch_allocation", cascade = CascadeType.ALL,targetEntity = Results.class)
+    @OneToMany(mappedBy = "assessmentBatchAllocation", cascade = CascadeType.ALL, targetEntity = Results.class)
     private Set<Results> results = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,3 +41,4 @@ public class AssessmentBatchAllocation extends BaseEntity{
     @JoinColumn(name = "assessment_id", referencedColumnName = "id", nullable = false)
     Assessments assessments;
 }
+

@@ -13,11 +13,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Results extends BaseEntity{
-    @Column(name = "assessment_batches_allocation_id", nullable = false)
+public class Results extends BaseEntity {
+
+    @Column(name = "assessment_batches_allocation_id", nullable = false, insertable = false, updatable = false)
     private int assessmentBatchesAllocationId;
 
-    @Column(name = "trainee_id", nullable = false)
+    @Column(name = "trainee_id", nullable = false, insertable = false, updatable = false)
     private int traineeId;
 
     @Column(name = "score", nullable = false)
@@ -29,10 +30,10 @@ public class Results extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("results")
     @JoinColumn(name = "trainee_id", referencedColumnName = "id", nullable = false)
-    Trainees trainees;
+    private Trainees trainees;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("results")
     @JoinColumn(name = "assessment_batches_allocation_id", referencedColumnName = "id", nullable = false)
-    AssessmentBatchAllocation assessmentBatchAllocation;
+    private AssessmentBatchAllocation assessmentBatchAllocation;
 }
