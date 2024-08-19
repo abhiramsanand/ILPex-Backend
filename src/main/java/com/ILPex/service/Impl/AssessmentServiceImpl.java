@@ -23,10 +23,11 @@ public class AssessmentServiceImpl implements AssessmentService{
                 .map(result -> new AssessmentReportDTO(
                         (String) result[0], // assessmentName
                         (Boolean) result[1], // assessmentStatus
-                        ((Number) result[2]).longValue(), // numberOfStudentsAttended
-                        (String) result[3], // traineeName
-                        (String) result[4], // traineeStatus
-                        ((Number) result[5]).intValue() // score
+                        (String) result[2], // batchName
+                        ((Number) result[3]).longValue(), // numberOfStudentsAttended
+                        (String) result[4], // traineeName
+                        (String) result[5], // traineeStatus
+                        (Integer) result[6]
                 ))
                 .collect(Collectors.toList());
     }
