@@ -1,7 +1,6 @@
 package com.ILPex.controller;
 
 import com.ILPex.DTO.BatchDTO;
-import com.ILPex.DTO.UserDTO;
 import com.ILPex.service.BatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
