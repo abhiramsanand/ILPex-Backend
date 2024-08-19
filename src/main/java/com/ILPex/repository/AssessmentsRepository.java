@@ -1,4 +1,7 @@
 package com.ILPex.repository;
 
-public interface AssessmentsRepository {
+import com.ILPex.entity.Assessments;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface AssessmentsRepository extends JpaRepository<Assessments, Long> {
 }
