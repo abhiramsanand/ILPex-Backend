@@ -18,9 +18,6 @@ import java.util.Set;
 @Table(name = "batches")
 public class Batches extends BaseEntity{
 
-    @Column(name="batch_code")
-    private String batchCode;
-
     @Column(name="batch_name")
     private String batchName;
 
@@ -30,7 +27,7 @@ public class Batches extends BaseEntity{
     @Column(name="end_date")
     private Timestamp endDate;
 
-    @Column(name="isActive")
+    @Column(name="is_active")
     private Boolean isActive;
 
     @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL,targetEntity = Trainees.class)

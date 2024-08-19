@@ -1,7 +1,8 @@
 package com.ILPex.controller;
 
+import com.ILPex.DTO.BatchDTO;
 import com.ILPex.DTO.UserDTO;
-import com.ILPex.service.UserService;
+import com.ILPex.service.BatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,15 +13,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/api/v1/batches")
 @CrossOrigin(origins = "http://localhost:5173")
-public class UserController {
+public class BatchController {
     @Autowired
-    private UserService userService;
+    private BatchService batchService;
 
     @GetMapping
-    public ResponseEntity<List<UserDTO>> getUsers() {
-        List<UserDTO> userList = userService.getUsers();
-        return ResponseEntity.ok(userList);
+    public ResponseEntity<List<BatchDTO>> getBatches() {
+        List<BatchDTO> batchList = batchService.getBatches();
+        return ResponseEntity.ok(batchList);
     }
 }
