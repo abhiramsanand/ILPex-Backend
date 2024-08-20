@@ -30,6 +30,7 @@ public class Courses extends BaseEntity{
     @Column(name = "course_duration")
     private String courseDuration;
 
+
     @OneToMany(mappedBy = "courses", cascade = CascadeType.ALL,targetEntity = PercipioAssessment.class)
     private Set<PercipioAssessment> percipioAssessments = new HashSet<>();
 

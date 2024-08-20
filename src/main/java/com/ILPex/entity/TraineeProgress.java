@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 public class TraineeProgress extends BaseEntity {
 
-    @Column(name = "day_number", nullable = false)
+    @Column(name = "day_number")
     private int dayNumber;
 
 
