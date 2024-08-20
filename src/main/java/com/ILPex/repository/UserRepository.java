@@ -8,5 +8,6 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<Users, Long> {
     List<Users> findByRoles_Id(@Param("roleId") Long roleId);
+    Users findByUserName(String userName);
 
 }
