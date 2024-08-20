@@ -63,4 +63,16 @@ public class BatchServiceTest {
         assertEquals(1, courseDayBatchDTOs.size());
         assertEquals(courseDayBatchDTO, courseDayBatchDTOs.get(0));
     }
+
+
+    @Test
+    public void testGetBatches_EmptyList() {
+        // Mock the repository to return an empty list
+        when(batchRepository.findAll()).thenReturn(Arrays.asList());
+
+        List<BatchDTO> batchDTOs = batchService.getBatches();
+
+        // Assert that the returned list is empty
+        assertEquals(0, batchDTOs.size());
+    }
 }
