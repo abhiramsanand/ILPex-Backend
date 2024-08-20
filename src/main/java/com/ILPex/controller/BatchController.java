@@ -1,6 +1,7 @@
 package com.ILPex.controller;
 
 import com.ILPex.DTO.BatchDTO;
+import com.ILPex.DTO.CourseDayBatchDTO;
 import com.ILPex.service.BatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,4 +24,12 @@ public class BatchController {
         List<BatchDTO> batchList = batchService.getBatches();
         return ResponseEntity.ok(batchList);
     }
+
+    @GetMapping("/daywise-courses")
+    public ResponseEntity<List<CourseDayBatchDTO>> getDaywiseCoursesForAllBatches() {
+        List<CourseDayBatchDTO> courseDayBatchList = batchService.getDaywiseCoursesForAllBatches();
+        return ResponseEntity.ok(courseDayBatchList);
+    }
+
+
 }

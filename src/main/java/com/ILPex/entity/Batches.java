@@ -36,4 +36,6 @@ public class Batches extends BaseEntity{
     @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL,targetEntity = AssessmentBatchAllocation.class)
     private Set<AssessmentBatchAllocation> assessmentBatchAllocations = new HashSet<>();
 
+
 }
+

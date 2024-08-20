@@ -1,6 +1,7 @@
 package com.ILPex.service.Impl;
 
 import com.ILPex.DTO.BatchDTO;
+import com.ILPex.DTO.CourseDayBatchDTO;
 import com.ILPex.entity.Batches;
 import com.ILPex.repository.BatchRepository;
 import com.ILPex.service.BatchService;
@@ -25,5 +26,10 @@ public class BatchServiceImpl implements BatchService {
         return batchList.stream().map(batch -> {
             return modelMapper.map(batch, BatchDTO.class);
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CourseDayBatchDTO> getDaywiseCoursesForAllBatches() {
+        return batchRepository.findDaywiseCoursesForAllBatches();
     }
 }
