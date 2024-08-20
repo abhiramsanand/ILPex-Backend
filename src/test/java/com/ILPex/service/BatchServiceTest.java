@@ -32,6 +32,7 @@ public class BatchServiceTest {
 
     @BeforeEach
     void setUp() {
+
         MockitoAnnotations.openMocks(this);
     }
 
