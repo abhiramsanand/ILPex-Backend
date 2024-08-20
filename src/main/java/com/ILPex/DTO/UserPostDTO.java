@@ -8,13 +8,11 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Data
-public class UserDTO {
+public class UserPostDTO {
     private Long id;
     private String userName;
     private String email;
     private String password;
-    private Timestamp lastAccess;
-    private String rolesName;
     private String rolesId;
 
 }

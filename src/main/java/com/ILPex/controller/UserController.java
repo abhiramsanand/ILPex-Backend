@@ -1,6 +1,7 @@
 package com.ILPex.controller;
 
 import com.ILPex.DTO.UserDTO;
+import com.ILPex.DTO.UserPostDTO;
 import com.ILPex.response.ResponseHandler;
 import com.ILPex.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,8 @@ public class UserController {
         return ResponseEntity.ok(userList);
     }
     @PostMapping("/save")
-    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO){
-        return new ResponseEntity<>(userService.createUser(userDTO), HttpStatus.CREATED);
+    public ResponseEntity<UserPostDTO> createUser(@Valid @RequestBody UserPostDTO userPostDTO){
+        return new ResponseEntity<>(userService.createUser(userPostDTO), HttpStatus.CREATED);
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable Long id) {

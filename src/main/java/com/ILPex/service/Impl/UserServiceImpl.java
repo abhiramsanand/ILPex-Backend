@@ -1,6 +1,7 @@
 package com.ILPex.service.Impl;
 
 import com.ILPex.DTO.UserDTO;
+import com.ILPex.DTO.UserPostDTO;
 import com.ILPex.entity.Users;
 import com.ILPex.repository.RoleRepository;
 import com.ILPex.repository.UserRepository;
@@ -33,10 +34,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO createUser(UserDTO userDTO) {
-        Users users = modelMapper.map(userDTO,Users.class);
+    public UserPostDTO createUser(UserPostDTO userPostDTO) {
+        Users users = modelMapper.map(userPostDTO,Users.class);
         Users newUser = userRepository.save(users);
-        UserDTO newUserDto =modelMapper.map(newUser,UserDTO.class);
+        UserPostDTO newUserDto =modelMapper.map(newUser,UserPostDTO.class);
         return newUserDto;
     }
 
