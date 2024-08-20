@@ -12,8 +12,8 @@ import lombok.Setter;
 public class AssessmentReportDTO {
     private String assessmentName;
     private Boolean assessmentStatus;
-    private String batchName; // Added batchName field
-    private Long numberOfStudentsAttended; // Changed to Long to match COUNT return type
+    private String batchName;
+    private Long numberOfStudentsAttended;
     private String traineeName;
     private String traineeStatus;
     private Integer score;
