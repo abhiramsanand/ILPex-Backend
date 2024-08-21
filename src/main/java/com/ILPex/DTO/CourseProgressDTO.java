@@ -13,4 +13,5 @@ public class CourseProgressDTO {
     private int dayNumber;
     private String courseDuration;
     private int traineeDuration;
+    private double completionPercentage;
 }
