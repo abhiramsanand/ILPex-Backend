@@ -34,11 +34,11 @@ public class AssessmentBatchAllocation extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("assessment_batch_allocation")
     @JoinColumn(name = "batch_id", referencedColumnName = "id", nullable = false)
-    Batches batches;
+    private Batches batches;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("assessment_batch_allocation")
     @JoinColumn(name = "assessment_id", referencedColumnName = "id", nullable = false)
-    Assessments assessments;
+    private Assessments assessments;
 }
 
