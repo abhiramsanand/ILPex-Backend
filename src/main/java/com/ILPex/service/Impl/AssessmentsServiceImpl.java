@@ -26,4 +26,10 @@ public class AssessmentsServiceImpl implements AssessmentsService {
     public List<AssessmentDetailsDTO> getAssessmentDetails() {
         return assessmentsRepository.fetchAssessmentDetails();
     }
+
+
+    @Override
+    public List<AssessmentDetailsDTO> getAssessmentDetailsByBatchId(Long batchId) {
+        return assessmentsRepository.fetchAssessmentDetailsByBatchId(batchId);
+    }
 }

@@ -24,6 +24,18 @@ public interface AssessmentsRepository extends JpaRepository<Assessments, Long> 
             "GROUP BY a.assessmentName, aba.batches.id, aba.assessmentStatus")
     List<AssessmentDetailsDTO> fetchAssessmentDetails();
 
+    @Query("SELECT new com.ILPex.DTO.AssessmentDetailsDTO(" +
+            "a.assessmentName, " +
+            "aba.batches.id, " +  // Fetch batchId
+            "CASE WHEN aba.assessmentStatus = true THEN 'Completed' ELSE 'Active' END, " +
+            "COUNT(r.traineeId)) " +
+            "FROM Assessments a " +
+            "JOIN a.assessmentBatchAllocations aba " +
+            "LEFT JOIN aba.results r " +
+            "WHERE aba.batches.id = :batchId " +
+            "GROUP BY a.assessmentName, aba.batches.id, aba.assessmentStatus")
+    List<AssessmentDetailsDTO> fetchAssessmentDetailsByBatchId(Long batchId);
+
 
 
 

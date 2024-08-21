@@ -7,4 +7,5 @@ import java.util.List;
 public interface AssessmentsService {
 
     List<AssessmentDetailsDTO> getAssessmentDetails();
+    List<AssessmentDetailsDTO> getAssessmentDetailsByBatchId(Long batchId);
 }

@@ -5,4 +5,6 @@ public class Message {
     public static final String USER_CREATED_SUCCESSFULLY = "User created successfully.";
     public static final String USER_UPDATED_SUCCESSFULLY = "User updated successfully.";
     public static final String USER_DELETED_SUCCESSFULLY = "User deleted successfully.";
+    public static final String ASSESSMENT_DETAILS_RETRIEVED = "Assessment details retrieved successfully.";
+
 }
