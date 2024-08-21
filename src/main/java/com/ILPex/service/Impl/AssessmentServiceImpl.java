@@ -45,10 +45,6 @@ public class AssessmentServiceImpl implements AssessmentService{
     @Autowired
     private ResultsRepository resultsRepository;
 
-    public List<TraineeAssessmentDTO> getAssessmentsByTraineeId(int traineeId) {
-        return new ArrayList<>();
-
-    }//        return resultsRepository.findAssessmentsByTraineeId(traineeId);
 
 
     @Override
@@ -62,44 +58,16 @@ public class AssessmentServiceImpl implements AssessmentService{
 
         return new TraineeAssessmentDisplayDTO(assessments.getAssessmentName(), questionDTOList);
     }
+
+
     @Override
-    public boolean submitAssessment(TraineeAssessmentSubmissionDTO submissionDTO) {
-        Optional<Assessments> assessmentOpt = assessmentRepository.findById(submissionDTO.getAssessmentId());
+   public List<TraineeCompletedAssessmentDTO> getCompletedAssessmentsByTraineeId(int traineeId) {
+        return resultsRepository.findCompletedAssessmentsByTraineeId(traineeId);
+    }
 
-        if (!assessmentOpt.isPresent()) {
-            return false;
-        }
-
-        Assessments assessment = assessmentOpt.get();
-        int score = 0;
-
-        List<String> submittedResponses = submissionDTO.getResponses();
-        List<Questions> questions = new ArrayList<>(assessment.getQuestions());
-
-        if (submittedResponses == null || submittedResponses.size() != questions.size()) {
-            return false; // Handle invalid response size
-        }
-
-        for (int i = 0; i < questions.size(); i++) {
-            Questions question = questions.get(i);
-            if (question.getCorrectAnswer().equalsIgnoreCase(submittedResponses.get(i))) {
-                score++;
-            }
-        }
-
-        // Fetch existing result if it exists, otherwise create a new one
-        Results result = resultsRepository.findByAssessmentBatchesAllocationIdAndTraineeId(
-                submissionDTO.getAssessmentBatchAllocationId(), submissionDTO.getTraineeId()
-        ).orElse(new Results());
-
-        result.setAssessmentBatchesAllocationId(submissionDTO.getAssessmentBatchAllocationId());
-        result.setTraineeId(submissionDTO.getTraineeId());
-        result.setScore(score);
-        result.setAssessmentAttempts(result.getAssessmentAttempts() + 1);
-
-        resultsRepository.save(result);
-
-        return true;
+    @Override
+    public List<TraineePendingAssessmentDTO> getPendingAssessmentsByTraineeId(int traineeId) {
+        return assessmentRepository.findPendingAssessmentsByTraineeId(traineeId);
     }
 
 

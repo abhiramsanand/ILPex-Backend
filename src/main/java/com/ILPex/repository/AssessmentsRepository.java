@@ -1,11 +1,13 @@
 package com.ILPex.repository;
 
 import com.ILPex.DTO.AssessmentReportDTO;
+import com.ILPex.DTO.TraineePendingAssessmentDTO;
 import com.ILPex.entity.Assessments;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -49,6 +51,13 @@ public interface AssessmentsRepository extends JpaRepository<Assessments, Long> 
     Page<Object[]> getAssessmentDetailsByBatchIdAndStatus(Long batchId, String status, Pageable pageable);
 
 
-
-
+    @Query("SELECT new com.ILPex.DTO.TraineePendingAssessmentDTO(a.assessmentName, a.dueDate, t.id) " +
+            "FROM Assessments a " +
+            "JOIN a.assessmentBatchAllocations aba " +
+            "JOIN aba.batches b " +
+            "JOIN b.trainees t " +
+            "LEFT JOIN Results r ON aba.id = r.assessmentBatchAllocation.id AND r.traineeId = t.id " +
+            "WHERE r.id IS NULL AND t.id = :traineeId")
+    List<TraineePendingAssessmentDTO> findPendingAssessmentsByTraineeId(@Param("traineeId") int traineeId);
 }
+

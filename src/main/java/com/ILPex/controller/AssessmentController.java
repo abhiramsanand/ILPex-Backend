@@ -1,10 +1,7 @@
 package com.ILPex.controller;
 
 
-import com.ILPex.DTO.AssessmentReportDTO;
-import com.ILPex.DTO.TraineeAssessmentDTO;
-import com.ILPex.DTO.TraineeAssessmentDisplayDTO;
-import com.ILPex.DTO.TraineeAssessmentSubmissionDTO;
+import com.ILPex.DTO.*;
 import com.ILPex.service.AssessmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,11 +30,11 @@ public class AssessmentController {
 
 
 
-    @GetMapping("/trainee/{traineeId}")
-    public ResponseEntity<List<TraineeAssessmentDTO>> getAssessmentsByTrainee(@PathVariable int traineeId) {
-        List<TraineeAssessmentDTO> assessments = assessmentService.getAssessmentsByTraineeId(traineeId);
-        return new ResponseEntity<>(assessments, HttpStatus.OK);
-    }
+//    @GetMapping("/trainee/{traineeId}")
+//    public ResponseEntity<List<TraineeAssessmentDTO>> getAssessmentsByTrainee(@PathVariable int traineeId) {
+//        List<TraineeAssessmentDTO> assessments = assessmentService.getAssessmentsByTraineeId(traineeId);
+//        return new ResponseEntity<>(assessments, HttpStatus.OK);
+//    }
 
     @GetMapping("/{id}")
     public ResponseEntity<TraineeAssessmentDisplayDTO> getAssessment(@PathVariable("id") Long assessmentId) {
@@ -45,15 +42,29 @@ public class AssessmentController {
         return ResponseEntity.ok(assessmentDTO);
     }
 
-    @PostMapping("/submit")
-    public ResponseEntity<String> submitAssessment(
-            @RequestBody TraineeAssessmentSubmissionDTO submissionDTO) {
-        boolean isSubmitted = assessmentService.submitAssessment(submissionDTO);
-        if (isSubmitted) {
-            return new ResponseEntity<>("Assessment submitted successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Assessment submission failed", HttpStatus.BAD_REQUEST);
-        }
+//    @PostMapping("/submit")
+//    public ResponseEntity<String> submitAssessment(
+//            @RequestBody TraineeAssessmentSubmissionDTO submissionDTO) {
+//        boolean isSubmitted = assessmentService.submitAssessment(submissionDTO);
+//        if (isSubmitted) {
+//            return new ResponseEntity<>("Assessment submitted successfully", HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>("Assessment submission failed", HttpStatus.BAD_REQUEST);
+//        }
+//    }
+
+
+    @GetMapping("/completed/{traineeId}")
+    public ResponseEntity<List<TraineeCompletedAssessmentDTO>> getCompletedAssessmentsByTraineeId(@PathVariable int traineeId) {
+        List<TraineeCompletedAssessmentDTO> completedAssessments = assessmentService.getCompletedAssessmentsByTraineeId(traineeId);
+        return ResponseEntity.ok(completedAssessments);
+    }
+
+    @GetMapping("/pending/{traineeId}")
+    public ResponseEntity<List<TraineePendingAssessmentDTO>> getPendingAssessments(
+            @PathVariable int traineeId) {
+        List<TraineePendingAssessmentDTO> pendingAssessments = assessmentService.getPendingAssessmentsByTraineeId(traineeId);
+        return ResponseEntity.ok(pendingAssessments);
     }
 
 }
