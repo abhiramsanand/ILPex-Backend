@@ -1,8 +1,12 @@
 package com.ILPex.controller;
 
 import com.ILPex.DTO.CourseProgressDTO;
+import com.ILPex.constants.Message;
+import com.ILPex.response.ResponseHandler;
 import com.ILPex.service.TraineeProgressService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +23,8 @@ public class TraineeProgressController {
     private TraineeProgressService traineeProgressService;
 
     @GetMapping("/courseprogress/{traineeId}")
-    public List<CourseProgressDTO> getCourseProgressByTraineeId(@PathVariable Long traineeId) {
-        return traineeProgressService.getCourseProgressByTraineeId(traineeId);
+    public ResponseEntity<Object> getCourseProgressByTraineeId(@PathVariable Long traineeId) {
+        List<CourseProgressDTO> courseProgress = traineeProgressService.getCourseProgressByTraineeId(traineeId);
+        return ResponseHandler.responseBuilder(Message.REQUESTED_COURSE_PROGRESS_DETAILS, HttpStatus.OK, courseProgress);
     }
 }
