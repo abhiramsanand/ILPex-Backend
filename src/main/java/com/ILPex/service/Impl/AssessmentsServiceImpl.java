@@ -15,7 +15,6 @@ import java.util.List;
 
 @Service
 public class AssessmentsServiceImpl implements AssessmentsService {
-
     private final AssessmentsRepository assessmentsRepository;
 
     @Autowired
