@@ -50,7 +50,7 @@ public class Trainees  extends BaseEntity{
     private Set<TraineeProgress> traineeProgresses = new HashSet<>();
 
     @OneToMany(mappedBy = "trainees", cascade = CascadeType.ALL,targetEntity = DailyReports.class)
-    private Set<DailyReports>dailyReports = new HashSet<>();
+    private Set<DailyReports> dailyReports = new HashSet<>();
 
 
 
