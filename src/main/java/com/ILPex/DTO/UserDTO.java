@@ -3,6 +3,7 @@ package com.ILPex.DTO;
 import lombok.*;
 
 import java.sql.Timestamp;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -16,6 +17,5 @@ public class UserDTO {
     private Timestamp lastAccess;
     private String rolesName;
     private String rolesId;
-
+    private Long traineeId; // Add this field
 }
-

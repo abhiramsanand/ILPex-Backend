@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users")
-//@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -42,7 +42,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserDTO userDTO) {
-        String roleId = userAuthService.authenticateAndGetRoleId(userDTO);
-        return ResponseEntity.ok(roleId);
+        String result = userAuthService.authenticateAndGetRoleId(userDTO);
+        return ResponseEntity.ok(result);
     }
 }
