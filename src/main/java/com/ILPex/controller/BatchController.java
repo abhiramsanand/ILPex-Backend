@@ -16,16 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/ilpex/batches")
+@RequestMapping("/api/v1/batches")
 @CrossOrigin(origins = "http://localhost:5173")
 public class BatchController {
     @Autowired
     private BatchService batchService;
 
     @GetMapping
-    public ResponseEntity<Object> getBatches() {
+    public ResponseEntity<List<BatchDTO>> getBatches() {
         List<BatchDTO> batchList = batchService.getBatches();
-        return ResponseHandler.responseBuilder(Message.REQUESTED_BATCH_DETAILS, HttpStatus.OK, batchList);
+        return ResponseEntity.ok(batchList);
     }
 
     @GetMapping("/daywise-courses")
