@@ -15,7 +15,6 @@ import java.util.List;
 
 @Service
 public class AssessmentsServiceImpl implements AssessmentsService {
-
     private final AssessmentsRepository assessmentsRepository;
 
     @Autowired
@@ -26,5 +25,11 @@ public class AssessmentsServiceImpl implements AssessmentsService {
     @Override
     public List<AssessmentDetailsDTO> getAssessmentDetails() {
         return assessmentsRepository.fetchAssessmentDetails();
+    }
+
+
+    @Override
+    public List<AssessmentDetailsDTO> getAssessmentDetailsByBatchId(Long batchId) {
+        return assessmentsRepository.fetchAssessmentDetailsByBatchId(batchId);
     }
 }

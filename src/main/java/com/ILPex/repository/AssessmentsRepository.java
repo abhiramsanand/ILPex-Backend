@@ -13,15 +13,32 @@ import java.util.List;
 @Repository
 public interface AssessmentsRepository extends JpaRepository<Assessments, Long> {
 
-
-    @Query("SELECT new com.ILPex.DTO.AssessmentDetailsDTO(a.assessmentName, " +
-            "CASE WHEN aba.assessmentStatus = true THEN 'Completed' ELSE 'Pending' END, " +
+    @Query("SELECT new com.ILPex.DTO.AssessmentDetailsDTO(" +
+            "a.assessmentName, " +
+            "aba.batches.id, " +  // Fetch batchId
+            "CASE WHEN aba.assessmentStatus = true THEN 'Completed' ELSE 'Active' END, " +
             "COUNT(r.traineeId)) " +
             "FROM Assessments a " +
             "JOIN a.assessmentBatchAllocations aba " +
             "LEFT JOIN aba.results r " +
-            "GROUP BY a.assessmentName, aba.assessmentStatus")
+            "GROUP BY a.assessmentName, aba.batches.id, aba.assessmentStatus")
     List<AssessmentDetailsDTO> fetchAssessmentDetails();
+
+    @Query("SELECT new com.ILPex.DTO.AssessmentDetailsDTO(" +
+            "a.assessmentName, " +
+            "aba.batches.id, " +  // Fetch batchId
+            "CASE WHEN aba.assessmentStatus = true THEN 'Completed' ELSE 'Active' END, " +
+            "COUNT(r.traineeId)) " +
+            "FROM Assessments a " +
+            "JOIN a.assessmentBatchAllocations aba " +
+            "LEFT JOIN aba.results r " +
+            "WHERE aba.batches.id = :batchId " +
+            "GROUP BY a.assessmentName, aba.batches.id, aba.assessmentStatus")
+    List<AssessmentDetailsDTO> fetchAssessmentDetailsByBatchId(Long batchId);
+
+
+
+
 
 
 
