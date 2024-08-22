@@ -8,12 +8,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "traineeProgress")
+@Table(name = "trainee_Progress")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class TraineeProgress extends BaseEntity {
+
+    @Column(name = "day_number", nullable = false)
+    private int dayNumber;
+
 
     @Column(name = "duration", nullable = false)
     private int duration;
