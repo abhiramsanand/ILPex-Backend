@@ -1,35 +1,47 @@
 package com.ILPex.controller;
 
 
-import com.ILPex.DTO.TraineeAssessmentDTO;
-import com.ILPex.constants.Message;
-import com.ILPex.response.ResponseHandler;
-import com.ILPex.service.TraineeAssessmentService;
+import com.ILPex.DTO.*;
+import com.ILPex.service.AssessmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
-@RequestMapping("/api/v1/ilpex/trainee-assessments")
+@RequestMapping("/api/v1/assessments")
+@CrossOrigin(origins = "http://localhost:5173")
 public class TraineeAssessmentController {
 
-    private final TraineeAssessmentService traineeAssessmentService;
-
     @Autowired
-    public TraineeAssessmentController(TraineeAssessmentService traineeAssessmentService) {
-        this.traineeAssessmentService = traineeAssessmentService;
+    private AssessmentService assessmentService;
+
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TraineeAssessmentDisplayDTO> getAssessment(@PathVariable("id") Long assessmentId) {
+        TraineeAssessmentDisplayDTO assessmentDTO = assessmentService.getAssessmentById(assessmentId);
+        return ResponseEntity.ok(assessmentDTO);
     }
 
-    @GetMapping
-    public ResponseEntity<Object> getTraineeAssessmentDetails() {
-        List<TraineeAssessmentDTO> traineeAssessmentDetails = traineeAssessmentService.getTraineeAssessmentDetails();
-        return ResponseHandler.responseBuilder(
-                Message.ASSESSMENT_DETAILS_RETRIEVED,
-                HttpStatus.OK,
-                traineeAssessmentDetails
-        );
+
+
+
+    @GetMapping("/completed/{traineeId}")
+    public ResponseEntity<List<TraineeCompletedAssessmentDTO>> getCompletedAssessmentsByTraineeId(@PathVariable int traineeId) {
+        List<TraineeCompletedAssessmentDTO> completedAssessments = assessmentService.getCompletedAssessmentsByTraineeId(traineeId);
+        return ResponseEntity.ok(completedAssessments);
     }
+
+    @GetMapping("/pending/{traineeId}")
+    public ResponseEntity<List<TraineePendingAssessmentDTO>> getPendingAssessments(
+            @PathVariable int traineeId) {
+        List<TraineePendingAssessmentDTO> pendingAssessments = assessmentService.getPendingAssessmentsByTraineeId(traineeId);
+        return ResponseEntity.ok(pendingAssessments);
+    }
+
 }
