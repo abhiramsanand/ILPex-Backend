@@ -26,22 +26,6 @@ public class AssessmentServiceImpl implements AssessmentService{
     private AssessmentsRepository assessmentRepository;
 
 
-    @Override
-    public Page<AssessmentReportDTO> getAssessmentDetailsByBatchIdAndStatus(Long batchId, String status, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("assessmentName").ascending());
-        Page<Object[]> resultPage = assessmentRepository.getAssessmentDetailsByBatchIdAndStatus(batchId, status, pageable);
-
-        return resultPage.map(result -> new AssessmentReportDTO(
-                (String) result[0], // assessmentName
-                (Boolean) result[1], // assessmentStatus
-                (String) result[2], // batchName
-                (Long) result[3], // numberOfStudentsAttended
-                (String) result[4], // traineeName
-                (String) result[5], // traineeStatus
-                (Integer) result[6] // score
-        ));
-    }
-
     @Autowired
     private ResultsRepository resultsRepository;
 

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface AssessmentService {
 
-    Page<AssessmentReportDTO> getAssessmentDetailsByBatchIdAndStatus(Long batchId, String status, int page, int size);
+
 
     TraineeAssessmentDisplayDTO getAssessmentById(Long assessmentId);
 
