@@ -20,12 +20,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/view")
+    @GetMapping("/view")        //api to view all Admins
     public ResponseEntity<List<UserDTO>> getUsers() {
         List<UserDTO> userList = userService.getUsers();
         return ResponseEntity.ok(userList);
     }
-    @PostMapping("/save")
+    @PostMapping("/save")       //api to create Admins
     public ResponseEntity<UserPostDTO> createUser(@Valid @RequestBody UserPostDTO userPostDTO){
         return new ResponseEntity<>(userService.createUser(userPostDTO), HttpStatus.CREATED);
     }

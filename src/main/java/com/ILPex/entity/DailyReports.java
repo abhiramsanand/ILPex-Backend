@@ -1,5 +1,6 @@
 package com.ILPex.entity;
 
+import com.ILPex.DTO.DailyReportAddDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,8 @@ public class DailyReports extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private ReportStatus status;
+
+
     public enum ReportStatus {
         SUBMITTED,
         PENDING
