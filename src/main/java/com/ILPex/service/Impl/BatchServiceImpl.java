@@ -7,6 +7,7 @@ import com.ILPex.DTO.TraineeDTO;
 import com.ILPex.entity.Batches;
 import com.ILPex.entity.Trainees;
 import com.ILPex.entity.Users;
+import com.ILPex.exceptions.ResourceNotFoundException;
 import com.ILPex.repository.BatchRepository;
 import com.ILPex.repository.TraineesRepository;
 import com.ILPex.repository.UserRepository;
@@ -55,5 +56,10 @@ public class BatchServiceImpl implements BatchService {
         batch.setTrainees(batchCreationDTO.getTrainees());
 
         return batchRepository.save(batch);
+    }
+
+    public Batches getBatchById(Long batchId) {
+        return batchRepository.findById(batchId)
+                .orElseThrow(() -> new ResourceNotFoundException("Batch not found with ID " + batchId));
     }
 }

@@ -2,11 +2,13 @@ package com.ILPex.repository;
 
 import com.ILPex.DTO.CourseDayBatchDTO;
 import com.ILPex.entity.Batches;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BatchRepository extends JpaRepository<Batches, Long> {
@@ -19,4 +21,7 @@ public interface BatchRepository extends JpaRepository<Batches, Long> {
             "JOIN tp.courses c " +
             "ORDER BY b.id, c.dayNumber")
     List<CourseDayBatchDTO> findDaywiseCoursesForAllBatches();
+
+    @EntityGraph(attributePaths = {"trainees"})
+    Optional<Batches> findById(Long id);
 }

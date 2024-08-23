@@ -68,47 +68,53 @@ public class BatchController {
 
     @PostMapping("/create")
     public ResponseEntity<Batches> createBatch(
-            @RequestParam("batchData") String batchData, // JSON string of BatchCreationDTO
+            @RequestParam("batchData") String batchData,
             @RequestParam("file") MultipartFile file) {
+
+        logger.info("Received batch creation request with batchData: {}", batchData);
 
         ObjectMapper objectMapper = new ObjectMapper();
         BatchCreationDTO batchCreationDTO;
 
         try {
             batchCreationDTO = objectMapper.readValue(batchData, BatchCreationDTO.class);
+            logger.info("Parsed batchCreationDTO: {}", batchCreationDTO);
         } catch (JsonProcessingException e) {
+            logger.error("Error parsing batch data", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        // Parse the Excel file to extract users and trainees
+        // Create the batch first and save it to get the generated batch ID
+        Batches batch = batchService.createBatch(batchCreationDTO);
+        logger.info("Created batch with ID: {}", batch.getId());
+
+        // Parse the Excel file and set the batch ID for each trainee
         List<Users> usersList;
         try {
-            usersList = parseExcelFile(file);
+            usersList = parseExcelFile(file, batch);
+            logger.info("Parsed usersList from file: {}", usersList);
         } catch (IOException e) {
+            logger.error("Error parsing Excel file", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
 
-        // Save users and trainees
+        // Save each user and trainee with the associated batch ID
         for (Users user : usersList) {
-            userService.saveUser(user); // Save each user, which will cascade to save the trainee
+            userService.saveUser(user);
+            logger.info("Saved user: {}", user);
         }
 
-        // Set the trainees to the batch and create the batch
-        Set<Trainees> traineesSet = usersList.stream()
-                .map(user -> user.getTrainees().iterator().next())
-                .collect(Collectors.toSet());
+        Batches updatedBatch = batchService.getBatchById(batch.getId());
 
-        batchCreationDTO.setTrainees(traineesSet);
+        return ResponseEntity.ok(updatedBatch);
 
-        Batches batch = batchService.createBatch(batchCreationDTO);
-        return ResponseEntity.ok(batch);
+
     }
-
 
     @Autowired
     private RolesService rolesService;
 
-    private List<Users> parseExcelFile(MultipartFile file) throws IOException {
+    private List<Users> parseExcelFile(MultipartFile file, Batches batch) throws IOException {
         List<Users> usersList = new ArrayList<>();
         Roles traineeRole = rolesService.getRoleByName("Trainee");
 
@@ -119,12 +125,11 @@ public class BatchController {
         try (InputStream inputStream = file.getInputStream(); Workbook workbook = new XSSFWorkbook(inputStream)) {
             Sheet sheet = workbook.getSheetAt(0); // Assuming data is in the first sheet
 
-            // Iterate over rows, starting from the second row (skip header)
             for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
                 Row row = sheet.getRow(i);
 
-                if (row == null) {
-                    continue;
+                if (row == null || isRowEmpty(row)) {
+                    break;
                 }
 
                 Users user = new Users();
@@ -133,14 +138,13 @@ public class BatchController {
                 user.setPassword(getCellValueAsString(row.getCell(4))); // Password
                 user.setRoles(traineeRole); // Set the role
 
-                // Set up a corresponding Trainees object
                 Trainees trainee = new Trainees();
                 trainee.setPercipioEmail(getCellValueAsString(row.getCell(3))); // Percipio_Email
-                trainee.setIsActive(true); // Assuming all new trainees are active
+                trainee.setIsActive(true);
                 trainee.setUsers(user);
-                trainee.setUserUuid(UUID.randomUUID()); // Generate a unique identifier for each trainee
+                trainee.setBatches(batch); // Set the batch for the trainee
+//                trainee.setUserUuid(UUID.randomUUID());
 
-                // Link trainee to user
                 Set<Trainees> traineesSet = new HashSet<>();
                 traineesSet.add(trainee);
                 user.setTrainees(traineesSet);
@@ -151,6 +155,19 @@ public class BatchController {
 
         return usersList;
     }
+
+
+    private boolean isRowEmpty(Row row) {
+        for (int i = 0; i < row.getLastCellNum(); i++) {
+            Cell cell = row.getCell(i);
+            if (cell != null && cell.getCellType() != CellType.BLANK && !getCellValueAsString(cell).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     private String getCellValueAsString(Cell cell) {
         if (cell == null) {
             return "";
