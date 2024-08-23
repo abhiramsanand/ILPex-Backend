@@ -64,7 +64,7 @@ public class PercipioApiService {
     }
 
     public String fetchData(String requestId) {
-        String url = apiUrl2 + organizationUuid + requestId;
+        String url = apiUrl2;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -80,10 +80,10 @@ public class PercipioApiService {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(responseBody);
-            return root.path("id").asText(); // Extract the 'id' field from the response
+            return root.path("id").asText();
         } catch (Exception e) {
             e.printStackTrace();
-            return null; // or throw a custom exception
+            return null;
         }
     }
 }
