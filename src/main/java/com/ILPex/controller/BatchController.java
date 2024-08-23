@@ -104,11 +104,14 @@ public class BatchController {
             logger.info("Saved user: {}", user);
         }
 
-        Batches updatedBatch = batchService.getBatchById(batch.getId());
-
-        return ResponseEntity.ok(updatedBatch);
 
 
+        Set<Trainees> traineesSet = usersList.stream()
+                .map(user -> user.getTrainees().iterator().next())
+                .collect(Collectors.toSet());
+
+        batchCreationDTO.setTrainees(traineesSet);
+        return ResponseEntity.ok(batch);
     }
 
     @Autowired

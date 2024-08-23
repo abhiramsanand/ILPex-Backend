@@ -30,7 +30,9 @@ public class Batches extends BaseEntity{
     @Column(name="is_active")
     private Boolean isActive;
 
-    @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL,targetEntity = Trainees.class)
+
+
+    @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL,targetEntity = Trainees.class, fetch = FetchType.EAGER)
     private Set<Trainees> trainees = new HashSet<>();
 
     @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL,targetEntity = AssessmentBatchAllocation.class)

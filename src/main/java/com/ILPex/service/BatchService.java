@@ -3,6 +3,7 @@ package com.ILPex.service;
 import com.ILPex.DTO.BatchCreationDTO;
 import com.ILPex.DTO.BatchDTO;
 import com.ILPex.DTO.CourseDayBatchDTO;
+import com.ILPex.DTO.TraineeDTO;
 import com.ILPex.entity.Batches;
 
 import java.io.InputStream;
@@ -13,5 +14,7 @@ public interface BatchService {
 
     List<CourseDayBatchDTO> getDaywiseCoursesForAllBatches();
    Batches createBatch(BatchCreationDTO batchCreationDTO);
-     Batches getBatchById(Long batchId);
+
+
+
 }

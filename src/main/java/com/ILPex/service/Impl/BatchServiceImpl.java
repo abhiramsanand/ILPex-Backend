@@ -16,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,13 +54,19 @@ public class BatchServiceImpl implements BatchService {
         batch.setStartDate(batchCreationDTO.getStartDate());
         batch.setEndDate(batchCreationDTO.getEndDate());
         batch.setIsActive(batchCreationDTO.getIsActive());
-        batch.setTrainees(batchCreationDTO.getTrainees());
+        batch.setTrainees(new HashSet<>()); // Initialize an empty HashSet for trainees
 
         return batchRepository.save(batch);
     }
 
-    public Batches getBatchById(Long batchId) {
-        return batchRepository.findById(batchId)
-                .orElseThrow(() -> new ResourceNotFoundException("Batch not found with ID " + batchId));
-    }
+//    public Batches getBatchById(Long batchId) {
+//        return batchRepository.findBatchWithTrainees(batchId)
+//                .orElseThrow(() -> new ResourceNotFoundException("Batch not found with ID " + batchId));
+//    }
+
+
+
+
+
+
 }
