@@ -23,4 +23,11 @@ public class PercipioController {
     public String fetchData(@PathVariable String requestId) {
         return percipioApiService.fetchData(requestId);
     }
+
+    @GetMapping("/save")
+    public String saveData(){
+        percipioApiService.processDataAndSaveToDatabase();
+        return "succesful";
+
+    }
 }
