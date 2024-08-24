@@ -18,6 +18,11 @@ public class TraineeProgress extends BaseEntity {
     @Column(name = "day_number", nullable = false)
     private int dayNumber;
 
+    @Column(name = "completion_status", nullable = false)
+    private String completionStatus;
+
+    @Column(name="course_name")
+    private String courseName;
 
     @Column(name = "duration", nullable = false)
     private int duration;

@@ -12,4 +12,5 @@ public class BatchDTO {
     private Timestamp startDate;
     private Timestamp endDate;
     private Boolean isActive;
+    private Long dayNumber;
 }

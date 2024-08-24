@@ -2,6 +2,7 @@ package com.ILPex.repository;
 
 import com.ILPex.DTO.CourseProgressDTO;
 import com.ILPex.entity.TraineeProgress;
+import com.ILPex.entity.Trainees;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +20,6 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
             "JOIN tp.courses c " +
             "WHERE tp.trainees.id = :traineeId")
     List<CourseProgressDTO> findCourseProgressByTraineeId(@Param("traineeId") Long traineeId);
-
+    boolean existsByTraineesAndCourseNameAndCompletionStatus(Trainees trainees, String courseName, String completionStatus);
 
 }

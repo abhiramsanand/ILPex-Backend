@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface TraineesRepository extends JpaRepository<Trainees, Long> {
     List<Trainees> findByBatchesId(Long batchId);
+    Trainees findByPercipioEmail(String percipioEmail);
 }

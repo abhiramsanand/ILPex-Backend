@@ -1,7 +1,11 @@
 package com.ILPex.service;
 
 import com.ILPex.DTO.UserContentAccessDTO;
+import com.ILPex.entity.TraineeProgress;
+import com.ILPex.entity.Trainees;
 import com.ILPex.entity.UserContentAccess;
+import com.ILPex.repository.TraineeProgressRepository;
+import com.ILPex.repository.TraineesRepository;
 import com.ILPex.repository.UserContentAccessRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -10,17 +14,8 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
-
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -34,19 +29,25 @@ public class PercipioApiService {
     private final String organizationUuid;
     private final String jwtToken;
     private final UserContentAccessRepository userContentAccessRepository;
+    private final TraineesRepository traineesRepository;
+    private final TraineeProgressRepository traineeProgressRepository;
 
     public PercipioApiService(RestTemplate restTemplate,
                               @Value("${percipio.api.url}") String apiUrl,
                               @Value("${percipio.api.url2}") String apiUrl2,
                               @Value("${percipio.organization.uuid}") String organizationUuid,
                               @Value("${percipio.api.jwt}") String jwtToken,
-                              UserContentAccessRepository userContentAccessRepository) {
+                              UserContentAccessRepository userContentAccessRepository,
+                              TraineesRepository traineesRepository,
+                              TraineeProgressRepository traineeProgressRepository) {
         this.restTemplate = restTemplate;
         this.apiUrl = apiUrl;
         this.apiUrl2 = apiUrl2;
         this.organizationUuid = organizationUuid;
         this.jwtToken = jwtToken;
         this.userContentAccessRepository = userContentAccessRepository;
+        this.traineesRepository = traineesRepository;
+        this.traineeProgressRepository = traineeProgressRepository;
     }
 
     public String generateRequestId() {
@@ -93,7 +94,7 @@ public class PercipioApiService {
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        parseJsonToDTO(response.toString());
+        parseJsonToDTO(response.getBody());
         return response.getBody();
     }
 
@@ -111,19 +112,11 @@ public class PercipioApiService {
     private List<UserContentAccessDTO> parseJsonToDTO(String jsonData) {
         List<UserContentAccessDTO> list = new ArrayList<>();
         try {
-            // Check if the response is not JSON
-            jsonData = jsonData.substring(jsonData.indexOf(",") + 1, jsonData.lastIndexOf(">"));
-            if (jsonData.trim().startsWith("<200 ")) {
-                System.err.println("Received HTML response instead of JSON: " + jsonData);
-                return list; // Return empty list or handle the error as needed
-            }
-            System.err.println("Received HTML response instead of JSON: " + jsonData);
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode rootNode = objectMapper.readTree(jsonData);
 
             // Iterate over the JSON array
             for (JsonNode node : rootNode) {
-
                 UserContentAccessDTO dto = new UserContentAccessDTO(
                         null, // id will be auto-generated
                         node.path("userId").asText(),
@@ -149,20 +142,35 @@ public class PercipioApiService {
                         node.path("userUuid").asText(),
                         node.path("userStatus").asText()
                 );
-                System.out.println("User Name"+dto.getFirstName());
                 list.add(dto);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("Length"+list.size());
         saveUserContentAccessData(list);
         return list;
     }
 
+    private void saveUserContentAccessData(List<UserContentAccessDTO> dtoList) {
+        for (UserContentAccessDTO dto : dtoList) {
+            // Map DTO to UserContentAccess entity
+            UserContentAccess userContentAccess = mapDTOToUserContentAccess(dto);
+            userContentAccessRepository.save(userContentAccess);
 
+            // Handle Trainees separately
+            Trainees trainees = mapDTOToTrainees(dto);
 
-    private UserContentAccess mapDTOToEntity(UserContentAccessDTO dto) {
+            // Map DTO to TraineeProgress entity separately and save
+            if (trainees != null) {
+                TraineeProgress traineeProgress = mapDTOToTraineeProgress(dto, trainees);
+                if (traineeProgress != null) {
+                    traineeProgressRepository.save(traineeProgress);
+                }
+            }
+        }
+    }
+
+    private UserContentAccess mapDTOToUserContentAccess(UserContentAccessDTO dto) {
         UserContentAccess entity = new UserContentAccess();
         entity.setUserId(dto.getUserId());
         entity.setFirstName(dto.getFirstName());
@@ -190,33 +198,60 @@ public class PercipioApiService {
         return entity;
     }
 
-    public void saveUserContentAccessData(List<UserContentAccessDTO> dtoList) {
-        System.out.println("Length"+dtoList.size());
-        for (UserContentAccessDTO dto : dtoList) {
-            UserContentAccess entity = mapDTOToEntity(dto);
-            System.out.println("UserId"+entity.getFirstName());
-            userContentAccessRepository.save(entity);
+    private Trainees mapDTOToTrainees(UserContentAccessDTO dto) {
+        // Find the existing Trainees entity by percipio_email (which corresponds to userId)
+        Trainees existingTrainee = traineesRepository.findByPercipioEmail(dto.getUserId());
+
+        if (existingTrainee != null) {
+            // Populate the userUuid based on the DTO
+            existingTrainee.setUserUuid(UUID.fromString(dto.getUserUuid()));
+        } else {
+            // If no match is found, you can either handle this scenario (e.g., throw an exception)
+            // or simply return null, depending on your needs.
+            // For now, let's return null:
+            return null;
         }
+
+        return existingTrainee;
     }
+
+
+    private TraineeProgress mapDTOToTraineeProgress(UserContentAccessDTO dto, Trainees trainees) {
+        // Check if the completion status for this course is already complete for the given trainee
+        boolean exists = traineeProgressRepository.existsByTraineesAndCourseNameAndCompletionStatus(
+                trainees,
+                dto.getContentTitle(),
+                "complete"
+        );
+
+        // If a record with "complete" status already exists, do not map and save again
+        if (exists) {
+            return null; // or throw an exception if you prefer
+        }
+
+        TraineeProgress entity = new TraineeProgress();
+        entity.setTrainees(trainees); // Associate the Trainees entity
+        entity.setDuration(dto.getDuration()); // Map duration to duration column
+        entity.setEstimatedDuration(dto.getEstimatedDuration()); // Map estimated_duration to estimated_duration column
+        entity.setCompletionStatus(dto.getStatus()); // Map status to completion_status column
+        entity.setCourseName(dto.getContentTitle()); // Map contentTitle to course_name column
+        // Other mappings as needed
+        return entity;
+    }
+
 
     public void processDataAndSaveToDatabase() {
         String requestId = generateRequestId();
         String jsonData = fetchData(requestId);
         List<UserContentAccessDTO> dtoList = parseJsonToDTO(jsonData);
-        System.out.println("Length"+dtoList.size());
         saveUserContentAccessData(dtoList);
     }
 
     private Timestamp convertToTimestamp(String isoDate) {
-        System.out.println("Format" + isoDate);
         if (isoDate == null || isoDate.trim().isEmpty()) {
-            System.err.println("Invalid date string: " + isoDate);
-            return null; // or return a default value if needed
+            return null;
         }
-        // Parse the ISO 8601 date string to Instant
         Instant instant = Instant.parse(isoDate);
-        // Convert Instant to Timestamp
-        System.out.println("Formatted time" + Timestamp.from(instant));
         return Timestamp.from(instant);
     }
 }
