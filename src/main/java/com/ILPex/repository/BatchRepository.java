@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BatchRepository extends JpaRepository<Batches, Long> {
@@ -19,4 +20,6 @@ public interface BatchRepository extends JpaRepository<Batches, Long> {
             "JOIN tp.courses c " +
             "ORDER BY b.id, c.dayNumber")
     List<CourseDayBatchDTO> findDaywiseCoursesForAllBatches();
+    @Query("SELECT b FROM Batches b JOIN b.trainees t WHERE t.id = :traineeId")
+    Optional<Batches> findByTrainees_Id(Long traineeId);
 }

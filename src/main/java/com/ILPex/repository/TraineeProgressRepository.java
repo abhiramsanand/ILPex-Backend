@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TraineeProgressRepository extends JpaRepository<TraineeProgress, Long> {
@@ -21,5 +22,8 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
             "WHERE tp.trainees.id = :traineeId")
     List<CourseProgressDTO> findCourseProgressByTraineeId(@Param("traineeId") Long traineeId);
     boolean existsByTraineesAndCourseNameAndCompletionStatus(Trainees trainees, String courseName, String completionStatus);
+    @Query("SELECT DISTINCT tp.trainees.id FROM TraineeProgress tp")
+    List<Long> findDistinctTraineeIds();
 
+    Optional<TraineeProgress> findTopByTrainees_IdOrderByCompletedDateDesc(Long traineeId);
 }

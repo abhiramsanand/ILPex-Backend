@@ -217,6 +217,9 @@ public class PercipioApiService {
 
 
     private TraineeProgress mapDTOToTraineeProgress(UserContentAccessDTO dto, Trainees trainees) {
+        // Define the cutoff date for comparison
+        Timestamp cutoffDate = Timestamp.valueOf("2024-08-05 00:00:00");
+
         // Check if the completion status for this course is already complete for the given trainee
         boolean exists = traineeProgressRepository.existsByTraineesAndCourseNameAndCompletionStatus(
                 trainees,
@@ -229,16 +232,23 @@ public class PercipioApiService {
             return null; // or throw an exception if you prefer
         }
 
-        TraineeProgress entity = new TraineeProgress();
-        entity.setTrainees(trainees); // Associate the Trainees entity
-        entity.setDuration(dto.getDuration()); // Map duration to duration column
-        entity.setEstimatedDuration(dto.getEstimatedDuration()); // Map estimated_duration to estimated_duration column
-        entity.setCompletionStatus(dto.getStatus()); // Map status to completion_status column
-        entity.setCourseName(dto.getContentTitle()); // Map contentTitle to course_name column
-        entity.setCompletedDate(dto.getCompletedDate());
-        // Other mappings as needed
-        return entity;
+        // Check if the completed date is after the cutoff date
+        if (dto.getCompletedDate().after(cutoffDate)) {
+            TraineeProgress entity = new TraineeProgress();
+            entity.setTrainees(trainees); // Associate the Trainees entity
+            entity.setDuration(dto.getDuration()); // Map duration to duration column
+            entity.setEstimatedDuration(dto.getEstimatedDuration()); // Map estimated_duration to estimated_duration column
+            entity.setCompletionStatus(dto.getStatus()); // Map status to completion_status column
+            entity.setCourseName(dto.getContentTitle()); // Map contentTitle to course_name column
+            entity.setCompletedDate(dto.getCompletedDate()); // Map completedDate to the entity
+            // Other mappings as needed
+            return entity;
+        }
+
+        // If the completed date is not after the cutoff, do not map and save
+        return null;
     }
+
 
 
     public void processDataAndSaveToDatabase() {

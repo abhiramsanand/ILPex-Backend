@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -26,5 +27,10 @@ public class TraineeProgressController {
     public ResponseEntity<Object> getCourseProgressByTraineeId(@PathVariable Long traineeId) {
         List<CourseProgressDTO> courseProgress = traineeProgressService.getCourseProgressByTraineeId(traineeId);
         return ResponseHandler.responseBuilder(Message.REQUESTED_COURSE_PROGRESS_DETAILS, HttpStatus.OK, courseProgress);
+    }
+
+    @GetMapping("/status")
+    public Map<String, Integer> getProgressStatusCounts() {
+        return traineeProgressService.getProgressStatusCounts();
     }
 }
