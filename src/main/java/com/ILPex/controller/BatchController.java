@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/v1/batches")
@@ -34,5 +35,8 @@ public class BatchController {
         return ResponseHandler.responseBuilder(Message.REQUESTED_DAYWISE_COURSE_DETAILS, HttpStatus.OK, courseDayBatchList);
     }
 
-
+    @GetMapping("/{batchId}/dayNumber")
+    public BatchDTO getBatchDayNumber(@PathVariable Long batchId) {
+        return batchService.calculateDayNumber(batchId);
+    }
 }

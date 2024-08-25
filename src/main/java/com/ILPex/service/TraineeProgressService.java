@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TraineeProgressService {
     List<CourseProgressDTO> getCourseProgressByTraineeId(Long traineeId);
-
+    void updateCourseIdsInTraineeProgress();
 
 }
 

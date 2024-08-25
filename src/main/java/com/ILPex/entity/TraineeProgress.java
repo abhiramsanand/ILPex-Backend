@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+
 @Entity
 @Table(name = "trainee_Progress")
 @NoArgsConstructor
@@ -29,6 +31,9 @@ public class TraineeProgress extends BaseEntity {
 
     @Column(name = "estimated_duration", nullable = false)
     private int estimatedDuration;
+
+    @Column(name = "completed_date", nullable = false)
+    private Timestamp completedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("trainee_progress")

@@ -154,8 +154,8 @@ public class PercipioApiService {
     private void saveUserContentAccessData(List<UserContentAccessDTO> dtoList) {
         for (UserContentAccessDTO dto : dtoList) {
             // Map DTO to UserContentAccess entity
-            UserContentAccess userContentAccess = mapDTOToUserContentAccess(dto);
-            userContentAccessRepository.save(userContentAccess);
+//            UserContentAccess userContentAccess = mapDTOToUserContentAccess(dto);
+//            userContentAccessRepository.save(userContentAccess);
 
             // Handle Trainees separately
             Trainees trainees = mapDTOToTrainees(dto);
@@ -235,6 +235,7 @@ public class PercipioApiService {
         entity.setEstimatedDuration(dto.getEstimatedDuration()); // Map estimated_duration to estimated_duration column
         entity.setCompletionStatus(dto.getStatus()); // Map status to completion_status column
         entity.setCourseName(dto.getContentTitle()); // Map contentTitle to course_name column
+        entity.setCompletedDate(dto.getCompletedDate());
         // Other mappings as needed
         return entity;
     }

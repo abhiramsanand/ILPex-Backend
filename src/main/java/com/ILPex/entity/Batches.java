@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,7 +17,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "batches")
-public class Batches extends BaseEntity{
+public class Batches extends BaseEntity {
 
     @Column(name="batch_name")
     private String batchName;
@@ -31,14 +32,32 @@ public class Batches extends BaseEntity{
     private Boolean isActive;
 
     @Column(name="day_number")
-    private Boolean dayNumber;
+    private Long dayNumber;
 
-    @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL,targetEntity = Trainees.class)
+    @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL, targetEntity = Trainees.class)
     private Set<Trainees> trainees = new HashSet<>();
 
-    @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL,targetEntity = AssessmentBatchAllocation.class)
+    @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL, targetEntity = AssessmentBatchAllocation.class)
     private Set<AssessmentBatchAllocation> assessmentBatchAllocations = new HashSet<>();
 
+    @PrePersist
+    @PreUpdate
+    private void updateDayNumber() {
+        if (startDate != null) {
+            LocalDate start = startDate.toLocalDateTime().toLocalDate();
+            LocalDate today = LocalDate.now();
+            this.dayNumber = calculateWorkingDays(start, today);
+        }
+    }
 
+    private long calculateWorkingDays(LocalDate start, LocalDate end) {
+        long count = 0;
+        while (!start.isAfter(end)) {
+            if (start.getDayOfWeek().getValue() < 6) { // Monday to Friday are working days (1-5)
+                count++;
+            }
+            start = start.plusDays(1);
+        }
+        return count;
+    }
 }
-

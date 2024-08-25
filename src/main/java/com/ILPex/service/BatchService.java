@@ -8,4 +8,5 @@ import java.util.List;
 public interface BatchService {
     List<BatchDTO> getBatches();
     List<CourseDayBatchDTO> getDaywiseCoursesForAllBatches();
+    BatchDTO calculateDayNumber(Long batchId);
 }
