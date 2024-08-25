@@ -11,14 +11,26 @@ import java.util.List;
 @Repository
 public interface TraineeAssessmentRepository extends JpaRepository<Results, Long> {
 
+//    @Query("SELECT new com.ILPex.DTO.TraineeAssessmentDTO(" +
+//            "t.percipioEmail, " +
+//            "r.score, " +
+//            "CASE WHEN r.score IS NOT NULL THEN 'Completed' ELSE 'Not Completed' END, " +
+//            "a.assessmentName) " +
+//            "FROM Results r " +
+//            "JOIN r.trainees t " +
+//            "JOIN r.assessmentBatchAllocation aba " +
+//            "JOIN aba.assessments a")
+
     @Query("SELECT new com.ILPex.DTO.TraineeAssessmentDTO(" +
-            "t.percipioEmail, " +
+            "u.userName, " +  // Fetching userName (corrected field name for Users entity)
             "r.score, " +
             "CASE WHEN r.score IS NOT NULL THEN 'Completed' ELSE 'Not Completed' END, " +
             "a.assessmentName) " +
             "FROM Results r " +
             "JOIN r.trainees t " +
+            "JOIN t.users u " +  // Corrected join to use 'users' instead of 'user'
             "JOIN r.assessmentBatchAllocation aba " +
             "JOIN aba.assessments a")
+
     List<TraineeAssessmentDTO> fetchTraineeAssessmentDetails();
 }
