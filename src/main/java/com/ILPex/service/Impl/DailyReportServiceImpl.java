@@ -76,7 +76,7 @@ public class DailyReportServiceImpl implements DailyReportService {
         // Create and populate DailyReports entity
         DailyReports dailyReports = new DailyReports();
         dailyReports.setDate(dailyReportAddDTO.getDate());
-        dailyReports.setTimeTaken(dailyReportAddDTO.getTimeTaken());
+//        dailyReports.setTimeTaken(dailyReportAddDTO.getTimeTaken());
         dailyReports.setKeyLearnings(dailyReportAddDTO.getKeyLearnings());
         dailyReports.setPlanForTomorrow(dailyReportAddDTO.getPlanForTomorrow());
         dailyReports.setStatus(DailyReports.ReportStatus.valueOf(dailyReportAddDTO.getStatus().name()));

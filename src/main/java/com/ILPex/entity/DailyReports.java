@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -23,7 +24,7 @@ public class DailyReports extends BaseEntity {
     private LocalDate date;
 
     @Column(name = "time_taken")
-    private LocalDateTime timeTaken;
+    private Integer timeTaken;
 
     @Column(name = "key_learnings")
     private String keyLearnings;

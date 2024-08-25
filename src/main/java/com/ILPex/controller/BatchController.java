@@ -1,9 +1,6 @@
 package com.ILPex.controller;
 
-import com.ILPex.DTO.BatchCreationDTO;
-import com.ILPex.DTO.BatchDTO;
-import com.ILPex.DTO.CourseDayBatchDTO;
-import com.ILPex.DTO.TraineeDTO;
+import com.ILPex.DTO.*;
 import com.ILPex.constants.Message;
 import com.ILPex.entity.Batches;
 import com.ILPex.entity.Roles;
@@ -142,8 +139,9 @@ public class BatchController {
                 user.setRoles(traineeRole); // Set the role
 
                 Trainees trainee = new Trainees();
+                BatchCreationDTO batchCreationDTO = new BatchCreationDTO();
                 trainee.setPercipioEmail(getCellValueAsString(row.getCell(3))); // Percipio_Email
-                trainee.setIsActive(true);
+                trainee.setIsActive(batchCreationDTO.getIsActive());
                 trainee.setUsers(user);
                 trainee.setBatches(batch); // Set the batch for the trainee
 //                trainee.setUserUuid(UUID.randomUUID());
@@ -193,5 +191,25 @@ public class BatchController {
                 return "";
         }
     }
+
+    @GetMapping("/{batchId}/trainees")
+    public ResponseEntity<List<TraineeDisplayByBatchDTO>> getTraineesByBatchId(@PathVariable("batchId") Long batchId) {
+        List<TraineeDisplayByBatchDTO> trainees = batchService.getTraineesByBatchId(batchId);
+        return ResponseEntity.ok(trainees);
+    }
+
+    @PostMapping("/{batchId}/trainees")
+    public ResponseEntity<TraineeDisplayByBatchDTO> addTraineeToBatch(
+            @PathVariable Long batchId,
+            @RequestBody TraineeCreationDTO traineeCreationDTO) {
+
+        TraineeDisplayByBatchDTO createdTrainee = batchService.addTraineeToBatch(batchId, traineeCreationDTO);
+        return new ResponseEntity<>(createdTrainee, HttpStatus.CREATED);
+    }
+
+
+
+
+
 
 }

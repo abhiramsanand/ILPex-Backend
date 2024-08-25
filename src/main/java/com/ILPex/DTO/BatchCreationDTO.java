@@ -18,4 +18,16 @@ public class BatchCreationDTO {
     private Timestamp endDate;
     private Boolean isActive;
     private Set<Trainees> trainees;
+
+    public Boolean getIsActive() {
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+
+        if (startDate == null || endDate == null) {
+            // You can either return false or handle the null case appropriately
+            return false;
+        }
+
+        return currentTimestamp.after(startDate) && currentTimestamp.before(endDate);
+    }
+
 }
