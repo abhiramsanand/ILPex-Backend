@@ -20,4 +20,9 @@ public interface ResultsRepository extends JpaRepository<Results,Integer> {
             "WHERE r.traineeId = :traineeId AND r.score IS NOT NULL")
     List<TraineeCompletedAssessmentDTO> findCompletedAssessmentsByTraineeId(int traineeId);
 
+    @Query("SELECT DISTINCT r.traineeId FROM Results r")
+    List<Long> findDistinctTraineeIds();
+
+    @Query("SELECT AVG(r.score) FROM Results r WHERE r.traineeId = :traineeId")
+    Double findAverageScoreByTraineeId(Long traineeId);
 }
