@@ -140,7 +140,8 @@ public class PercipioApiService {
                         node.path("durationHms").asText(),
                         node.path("estimatedDurationHms").asText(),
                         node.path("userUuid").asText(),
-                        node.path("userStatus").asText()
+                        node.path("userStatus").asText(),
+                        Integer.parseInt(node.path("highScore").asText())
                 );
                 list.add(dto);
             }

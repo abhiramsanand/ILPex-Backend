@@ -35,4 +35,5 @@ public class UserContentAccessDTO {
     private String estimatedDurationHms;
     private String userUuid;
     private String userStatus;
+    private  int highScore;
 }

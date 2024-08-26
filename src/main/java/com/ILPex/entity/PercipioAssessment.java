@@ -15,8 +15,8 @@ import lombok.Setter;
 @Setter
 public class PercipioAssessment extends BaseEntity {
 
-    @Column(name="day_number",nullable= false)
-    private int dayNumber;
+    @Column(name="course_name",nullable= false)
+    private int courseName;
 
     @Column(name="score",nullable= false)
     private Long score;
@@ -25,9 +25,4 @@ public class PercipioAssessment extends BaseEntity {
     @JsonIgnoreProperties("percipio_assessment")
     @JoinColumn(name = "trainee_id", referencedColumnName = "id", nullable = false)
     Trainees trainees;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("percipio_assessment")
-    @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
-    Courses courses;
 }

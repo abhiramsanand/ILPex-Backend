@@ -1,4 +1,4 @@
-package com.ILPex.service.impl;
+package com.ILPex.service.Impl;
 
 import com.ILPex.dto.ProfileDTO;
 import com.ILPex.entity.Trainees;

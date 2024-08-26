@@ -28,6 +28,5 @@ public class PercipioController {
     public String saveData(){
         percipioApiService.processDataAndSaveToDatabase();
         return "succesful";
-
     }
 }
