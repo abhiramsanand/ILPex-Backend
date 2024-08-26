@@ -41,4 +41,3 @@ public class AssessmentBatchAllocation extends BaseEntity {
     @JoinColumn(name = "assessment_id", referencedColumnName = "id", nullable = false)
     private Assessments assessments;
 }
-

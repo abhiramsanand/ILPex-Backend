@@ -24,7 +24,7 @@ public class Assessments extends BaseEntity{
     @Column(name="due_date")
     private Timestamp dueDate;
 
-    @Column(name="isActive")
+    @Column(name="isactive")
     private Boolean isActive;
 
     @OneToMany(mappedBy = "assessments", cascade = CascadeType.ALL,targetEntity = Questions.class)
