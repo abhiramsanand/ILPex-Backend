@@ -59,7 +59,8 @@ public class PercipioApiService {
 
         String body = """
         {
-            "timeFrame": "DAY",
+            "start": "2024-08-01T10:10:24Z",
+            "end": "2024-09-10T10:20:24Z",
             "audience": "ALL",
             "contentType": "Course,Linked Content,Scheduled Content,Assessment",
             "csvPreferences": {
@@ -117,6 +118,15 @@ public class PercipioApiService {
 
             // Iterate over the JSON array
             for (JsonNode node : rootNode) {
+                // Extract highScore as a String
+                String highScoreValue = node.path("highScore").asText();
+
+                // Default highScore to 0 or handle it appropriately if it's empty
+                int highScore = (highScoreValue != null && !highScoreValue.isEmpty())
+                        ? Integer.parseInt(highScoreValue)
+                        : 0; // Default value can be set to 0 or another appropriate value
+
+                // Create the DTO with the parsed or default highScore
                 UserContentAccessDTO dto = new UserContentAccessDTO(
                         null, // id will be auto-generated
                         node.path("userId").asText(),
@@ -141,8 +151,9 @@ public class PercipioApiService {
                         node.path("estimatedDurationHms").asText(),
                         node.path("userUuid").asText(),
                         node.path("userStatus").asText(),
-                        Integer.parseInt(node.path("highScore").asText())
+                        highScore // Use the parsed or default highScore
                 );
+
                 list.add(dto);
             }
         } catch (Exception e) {
@@ -218,8 +229,6 @@ public class PercipioApiService {
 
 
     private TraineeProgress mapDTOToTraineeProgress(UserContentAccessDTO dto, Trainees trainees) {
-        // Define the cutoff date for comparison
-        Timestamp cutoffDate = Timestamp.valueOf("2024-08-05 00:00:00");
 
         // Check if the completion status for this course is already complete for the given trainee
         boolean exists = traineeProgressRepository.existsByTraineesAndCourseNameAndCompletionStatus(
@@ -233,24 +242,16 @@ public class PercipioApiService {
             return null; // or throw an exception if you prefer
         }
 
-        // Check if the completed date is after the cutoff date
-        if (dto.getCompletedDate().after(cutoffDate)) {
             TraineeProgress entity = new TraineeProgress();
             entity.setTrainees(trainees); // Associate the Trainees entity
             entity.setDuration(dto.getDuration()); // Map duration to duration column
             entity.setEstimatedDuration(dto.getEstimatedDuration()); // Map estimated_duration to estimated_duration column
             entity.setCompletionStatus(dto.getStatus()); // Map status to completion_status column
             entity.setCourseName(dto.getContentTitle()); // Map contentTitle to course_name column
-            entity.setCompletedDate(dto.getCompletedDate()); // Map completedDate to the entity
+            entity.setCompletedDate(dto.getLastAccess()); // Map completedDate to the entity
             // Other mappings as needed
             return entity;
         }
-
-        // If the completed date is not after the cutoff, do not map and save
-        return null;
-    }
-
-
 
     public void processDataAndSaveToDatabase() {
         String requestId = generateRequestId();
