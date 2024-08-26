@@ -1,5 +1,6 @@
 package com.ILPex.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,12 +31,12 @@ public class DailyReports extends BaseEntity {
     private String planfortomorrow;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("daily_reports")
+    @JsonIgnore
     @JoinColumn(name = "trainee_id", referencedColumnName = "id", nullable = false)
     private Trainees trainees;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("daily_reports")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
     private Courses courses;
 }

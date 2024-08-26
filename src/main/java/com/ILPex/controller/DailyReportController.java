@@ -18,7 +18,7 @@ public class DailyReportController {
     @Autowired
     private DailyReportService dailyReportService;
 
-    @GetMapping("/courseDetails")
+    @GetMapping("/courseDetails")       //To view coursename and time taken
     public List<DailyReportDTO> getCourseDetailsWithTimeTaken(
             @RequestParam("courseDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime courseDate,
             @RequestParam("batchId") Long batchId,
@@ -27,7 +27,7 @@ public class DailyReportController {
         return dailyReportService.getCourseDetailsWithTimeTaken(courseDate, batchId, traineeId);
     }
 
-    @GetMapping("/learningPlanDetails")
+    @GetMapping("/learningPlanDetails")       //To view keyLearnings and Plan for tomorrow
     public ResponseEntity<DailyReportDetailsDTO> getLearningPlanDetails(
             @RequestParam("courseId") Long courseId,
             @RequestParam("traineeId") Long traineeId) {
@@ -41,12 +41,12 @@ public class DailyReportController {
         }
     }
 
-    @GetMapping("/editDetails")
+    @GetMapping("/editDetails")     //To view details to edit
     public DailyReportEditDTO getDailyReportEditDetails(@RequestParam Long dailyReportId) {
         return dailyReportService.getDailyReportEditDetails(dailyReportId);
     }
 
-        @PostMapping("/updateDetails")
+        @PostMapping("/updateDetails")  //To post updated report
     public ResponseEntity<DailyReports> addOrUpdateDailyReport(
 
             @RequestBody DailyReportRequestDTO dailyReportRequestDTO,
@@ -56,38 +56,5 @@ public class DailyReportController {
         DailyReports updatedReport = dailyReportService.addOrUpdateDailyReport(dailyReportRequestDTO, traineeId, courseId);
         return ResponseEntity.ok(updatedReport);
     }
-//    @GetMapping("/view/{batch_id}/{date}/{trainee_id}")
-//    public ResponseEntity<List<DailyReportDTO>> getDailyReportByBatchAndDateAndTrainee(
-//            @PathVariable("batch_id") Long batchId,
-//            @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate courseDate,
-//            @PathVariable("trainee_id") Long traineeId) {
-//        // Call the service method with the provided batchId, courseDate, and traineeId
-//        List<DailyReportDTO> dailyReportList = dailyReportService.getDailyReportByBatchIdDateAndTraineeId(batchId, courseDate, traineeId);
-//        return ResponseEntity.ok(dailyReportList);
-//    }
-
-
-//
-//    @GetMapping("/viewReport/{id}")        //api to display daily report
-//    public ResponseEntity<List<DailyReportCreationDTO>> getDailyReport(
-//            @PathVariable("id") Long id ){
-//        // Call the service method with the provided traineeId and reportDate
-//        List<DailyReportCreationDTO> dailyReportList = dailyReportService.getDailyReportById(id);
-//        return ResponseEntity.ok(dailyReportList);
-//    }
-
-//    @PostMapping("/save/{courseId}")
-//    public ResponseEntity<DailyReportAddDTO> addDailyReport(
-//            @PathVariable("courseId") Long courseId,
-//            @RequestBody DailyReportAddDTO dailyReportAddDTO) {
-//
-//        // Set the courseId from the path variable
-//        dailyReportAddDTO.setCourseId(courseId);
-//
-//        // Call the service to add the daily report
-//        DailyReportAddDTO createdReport = dailyReportService.addDailyReport(dailyReportAddDTO);
-//
-//        return new ResponseEntity<>(createdReport, HttpStatus.CREATED);
-//    }
 
 }

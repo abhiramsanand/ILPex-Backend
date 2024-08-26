@@ -33,7 +33,7 @@ public class UserController {
     public ResponseEntity<UserPostDTO> createUser(@Valid @RequestBody UserPostDTO userPostDTO){
         return new ResponseEntity<>(userService.createUser(userPostDTO), HttpStatus.CREATED);
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")  //To delete admin
     public ResponseEntity<Object> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseHandler.responseBuilder(USER_DELETED_SUCCESSFULLY,
