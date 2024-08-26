@@ -17,6 +17,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "users")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Users extends BaseEntity{
 
     @Column(name="username")

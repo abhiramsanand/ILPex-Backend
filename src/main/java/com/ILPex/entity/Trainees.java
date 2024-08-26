@@ -17,6 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Table(name = "trainees")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Trainees  extends BaseEntity{
 
     @Column(name="percipio_email")
