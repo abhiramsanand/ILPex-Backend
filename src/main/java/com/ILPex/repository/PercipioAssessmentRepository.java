@@ -2,6 +2,11 @@ package com.ILPex.repository;
 
 import com.ILPex.entity.PercipioAssessment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface PercipioAssessmentRepository extends JpaRepository<PercipioAssessment,Long> {
+import java.util.List;
+
+@Repository
+public interface PercipioAssessmentRepository extends JpaRepository<PercipioAssessment, Long> {
+
 }
