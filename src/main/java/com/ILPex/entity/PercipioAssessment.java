@@ -16,10 +16,10 @@ import lombok.Setter;
 public class PercipioAssessment extends BaseEntity {
 
     @Column(name="course_name",nullable= false)
-    private int courseName;
+    private String courseName;
 
     @Column(name="score",nullable= false)
-    private Long score;
+    private int score;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("percipio_assessment")

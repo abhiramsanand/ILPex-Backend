@@ -1,9 +1,11 @@
 package com.ILPex.service;
 
 import com.ILPex.DTO.UserContentAccessDTO;
+import com.ILPex.entity.PercipioAssessment;
 import com.ILPex.entity.TraineeProgress;
 import com.ILPex.entity.Trainees;
 import com.ILPex.entity.UserContentAccess;
+import com.ILPex.repository.PercipioAssessmentRepository;
 import com.ILPex.repository.TraineeProgressRepository;
 import com.ILPex.repository.TraineesRepository;
 import com.ILPex.repository.UserContentAccessRepository;
@@ -31,6 +33,7 @@ public class PercipioApiService {
     private final UserContentAccessRepository userContentAccessRepository;
     private final TraineesRepository traineesRepository;
     private final TraineeProgressRepository traineeProgressRepository;
+    private final PercipioAssessmentRepository percipioAssessmentRepository;
 
     public PercipioApiService(RestTemplate restTemplate,
                               @Value("${percipio.api.url}") String apiUrl,
@@ -39,7 +42,8 @@ public class PercipioApiService {
                               @Value("${percipio.api.jwt}") String jwtToken,
                               UserContentAccessRepository userContentAccessRepository,
                               TraineesRepository traineesRepository,
-                              TraineeProgressRepository traineeProgressRepository) {
+                              TraineeProgressRepository traineeProgressRepository,
+                              PercipioAssessmentRepository percipioAssessmentRepository) {
         this.restTemplate = restTemplate;
         this.apiUrl = apiUrl;
         this.apiUrl2 = apiUrl2;
@@ -48,6 +52,7 @@ public class PercipioApiService {
         this.userContentAccessRepository = userContentAccessRepository;
         this.traineesRepository = traineesRepository;
         this.traineeProgressRepository = traineeProgressRepository;
+        this.percipioAssessmentRepository = percipioAssessmentRepository;
     }
 
     public String generateRequestId() {
@@ -179,6 +184,11 @@ public class PercipioApiService {
                     traineeProgressRepository.save(traineeProgress);
                 }
             }
+
+            PercipioAssessment percipioAssessment = mapDTOToPercipioAssessment(dto, trainees);
+            if (percipioAssessment != null && percipioAssessment.getTrainees() != null) {
+                percipioAssessmentRepository.save(percipioAssessment);
+            }
         }
     }
 
@@ -252,6 +262,16 @@ public class PercipioApiService {
             // Other mappings as needed
             return entity;
         }
+
+    private PercipioAssessment mapDTOToPercipioAssessment(UserContentAccessDTO dto, Trainees trainees) {
+        PercipioAssessment entity = new PercipioAssessment();
+
+        entity.setTrainees(trainees);
+        entity.setCourseName(dto.getContentTitle());
+        entity.setScore(dto.getHighScore());
+
+        return entity;
+    }
 
     public void processDataAndSaveToDatabase() {
         String requestId = generateRequestId();
