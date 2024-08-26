@@ -31,6 +31,9 @@ public class Users extends BaseEntity{
     @Column(name="last_access")
     private Timestamp lastAccess;
 
+    @Column(name="is_active")
+    private Boolean isActive;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("users")
     @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)

@@ -27,31 +27,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDTO> getUsers() {
-        List<Users> userList = userRepository.findByRoles_Id(1L);
-        return userList.stream().map(user -> {
-            return modelMapper.map(user, UserDTO.class);
-        }).collect(Collectors.toList());
+        List<Users> userList = userRepository.findByRoles_IdAndIsActiveTrue(1L);
+        return userList.stream().map(user -> modelMapper.map(user, UserDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public UserPostDTO createUser(UserPostDTO userPostDTO) {
-        Users users = modelMapper.map(userPostDTO,Users.class);
+        Users users = modelMapper.map(userPostDTO, Users.class);
         Users newUser = userRepository.save(users);
-        UserPostDTO newUserDto =modelMapper.map(newUser,UserPostDTO.class);
-        return newUserDto;
+        return modelMapper.map(newUser, UserPostDTO.class);
     }
 
     @Override
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found with id: " + id);
-        }
-        userRepository.deleteById(id);
+        Users user = userRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("User not found with id: " + id));
+                        user.setIsActive(false);
+        userRepository.save(user);
     }
 
     @Override
     public void saveUser(Users user) {
         userRepository.save(user);
     }
-
 }

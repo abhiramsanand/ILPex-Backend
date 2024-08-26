@@ -17,5 +17,5 @@ public class UserDTO {
     private Timestamp lastAccess;
     private String rolesName;
     private String rolesId;
-    private Long traineeId; // Add this field
+    private Long traineeId; 
 }
