@@ -2,15 +2,15 @@ package com.ILPex.controller;
 
 import com.ILPex.DTO.*;
 import com.ILPex.constants.Message;
-import com.ILPex.entity.Batches;
-import com.ILPex.entity.Roles;
-import com.ILPex.entity.Trainees;
-import com.ILPex.entity.Users;
+import com.ILPex.entity.*;
+import com.ILPex.exceptions.ResourceNotFoundException;
 import com.ILPex.repository.BatchRepository;
 import com.ILPex.repository.TraineesRepository;
 import com.ILPex.repository.UserRepository;
+import com.ILPex.response.BatchIdResponse;
 import com.ILPex.response.ResponseHandler;
 import com.ILPex.service.BatchService;
+import com.ILPex.service.ProgramService;
 import com.ILPex.service.RolesService;
 import com.ILPex.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,6 +40,9 @@ public class BatchController {
     private BatchService batchService;
 
     @Autowired
+    private ProgramService programService;
+
+    @Autowired
     private TraineesRepository traineesRepository;
 
     @Autowired
@@ -64,7 +67,7 @@ public class BatchController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Batches> createBatch(
+    public ResponseEntity<BatchIdResponse> createBatch(
             @RequestParam("batchData") String batchData,
             @RequestParam("file") MultipartFile file) {
 
@@ -81,9 +84,28 @@ public class BatchController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        // Create the batch first and save it to get the generated batch ID
-        Batches batch = batchService.createBatch(batchCreationDTO);
-        logger.info("Created batch with ID: {}", batch.getId());
+        // Fetch the Program entity based on the program name
+        Programs program = programService.findByProgramName(batchCreationDTO.getProgramName());
+        if (program == null) {
+            logger.error("Program not found: {}", batchCreationDTO.getProgramName());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+
+        // Set the program in the batch entity
+        Batches batch = new Batches();
+        batch.setPrograms(program);  // Set the program entity in the batch
+
+        // Set other batch details from DTO
+        batch.setBatchName(batchCreationDTO.getBatchName());
+        batch.setStartDate(batchCreationDTO.getStartDate());
+        batch.setEndDate(batchCreationDTO.getEndDate());
+        batch.setIsActive(batchCreationDTO.getIsActive());
+
+        // Save the batch to get the generated batch ID
+        batch = batchService.createBatch(batchCreationDTO);
+        Long batchId = batch.getId();  // Assuming batch ID is of type Long
+
+        logger.info("Created batch with ID: {}", batchId);
 
         // Parse the Excel file and set the batch ID for each trainee
         List<Users> usersList;
@@ -101,14 +123,15 @@ public class BatchController {
             logger.info("Saved user: {}", user);
         }
 
-
-
         Set<Trainees> traineesSet = usersList.stream()
                 .map(user -> user.getTrainees().iterator().next())
                 .collect(Collectors.toSet());
 
         batchCreationDTO.setTrainees(traineesSet);
-        return ResponseEntity.ok(batch);
+
+        // Return the batch ID as a response object
+        BatchIdResponse response = new BatchIdResponse(batchId);
+        return ResponseEntity.ok(response);
     }
 
     @Autowired
@@ -206,10 +229,79 @@ public class BatchController {
         TraineeDisplayByBatchDTO createdTrainee = batchService.addTraineeToBatch(batchId, traineeCreationDTO);
         return new ResponseEntity<>(createdTrainee, HttpStatus.CREATED);
     }
+//    @PutMapping("/{batchId}/trainees")
+//    public ResponseEntity<Void> updateTrainees(@PathVariable Long batchId, @RequestBody List<TraineeDisplayByBatchDTO> traineeDtos) {
+//        try {
+//            traineeService.updateTrainees(batchId, traineeDtos);
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+
+    @DeleteMapping("/trainees/{traineeId}")
+    public ResponseEntity<String> deleteTrainee(@PathVariable("traineeId") Long traineeId) {
+        try {
+            // Find the Trainee entity
+            Optional<Trainees> traineeOptional = traineesRepository.findById(traineeId);
+
+            if (traineeOptional.isPresent()) {
+                Trainees trainee = traineeOptional.get();
+
+                // Find the associated user
+                Users user = trainee.getUsers();
+
+                // Delete the trainee
+                traineesRepository.delete(trainee);
+                // Delete the associated user
+                if (user != null) {
+                    userRepository.delete(user);
+                }
+
+                return ResponseEntity.ok("Trainee and associated user deleted successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainee not found.");
+            }
+        } catch (Exception e) {
+            // Log the exception (e.g., using SLF4J)
+            logger.error("Error deleting trainee with ID: " + traineeId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting trainee.");
+        }
+    }
+
+
+    @GetMapping("/{batchId}/details")
+    public ResponseEntity<BatchDetailsDTO> getBatchDetails(@PathVariable("batchId") Long batchId) {
+        try {
+            BatchDetailsDTO batchDetails = batchService.getBatchDetails(batchId);
+            return ResponseEntity.ok(batchDetails);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            logger.error("Error fetching batch details for ID: " + batchId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @PutMapping("/trainees/{traineeId}")
+    public ResponseEntity<TraineeDisplayByBatchDTO> updateTrainee(
+            @PathVariable("traineeId") Long traineeId,
+            @RequestBody TraineeUpdateDTO traineeUpdateDTO) {
+        try {
+            TraineeDisplayByBatchDTO updatedTrainee = batchService.updateTrainee(traineeId, traineeUpdateDTO);
+            return ResponseEntity.ok(updatedTrainee);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            logger.error("Error updating trainee with ID: " + traineeId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    }
 
 
 
 
 
 
-}
+
+

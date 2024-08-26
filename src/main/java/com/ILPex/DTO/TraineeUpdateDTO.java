@@ -7,8 +7,8 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TraineeDisplayByBatchDTO {
-    private Long traineeId;
+public class TraineeUpdateDTO {
+    private int id;
     private String userName;
     private String email;
     private String percipioEmail;

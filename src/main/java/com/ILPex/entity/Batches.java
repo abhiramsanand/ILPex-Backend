@@ -1,5 +1,6 @@
 package com.ILPex.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,6 +40,10 @@ public class Batches extends BaseEntity{
     @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL,targetEntity = AssessmentBatchAllocation.class)
     private Set<AssessmentBatchAllocation> assessmentBatchAllocations = new HashSet<>();
 
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JsonIgnoreProperties("programs")
+    @JoinColumn(name = "program_id", referencedColumnName = "id", nullable = false)
+    private Programs programs;
 
 }
 
