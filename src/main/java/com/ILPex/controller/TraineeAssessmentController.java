@@ -44,4 +44,10 @@ public class TraineeAssessmentController {
         return ResponseEntity.ok(pendingAssessments);
     }
 
+    @GetMapping("/name/{name}")
+    public ResponseEntity<TraineeAssessmentDisplayDTO> getAssessmentByName(@PathVariable("name") String assessmentName) {
+        TraineeAssessmentDisplayDTO assessmentDTO = assessmentService.getAssessmentByName(assessmentName);
+        return ResponseEntity.ok(assessmentDTO);
+    }
+
 }

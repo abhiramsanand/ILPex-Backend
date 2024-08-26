@@ -1,6 +1,8 @@
 package com.ILPex.service.Impl;
 
 import com.ILPex.DTO.TraineeAssessmentDTO;
+import com.ILPex.DTO.TraineeAssessmentDisplayDTO;
+import com.ILPex.exceptions.ResourceNotFoundException;
 import com.ILPex.repository.TraineeAssessmentRepository;
 import com.ILPex.service.TraineeAssessmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,4 +24,6 @@ public class TraineeAssessmentServiceImpl implements TraineeAssessmentService {
     public List<TraineeAssessmentDTO> getTraineeAssessmentDetails() {
         return traineeAssessmentRepository.fetchTraineeAssessmentDetails();
     }
+
+
 }
