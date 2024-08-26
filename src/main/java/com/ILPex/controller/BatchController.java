@@ -84,9 +84,6 @@ public class BatchController {
         for (Users user : usersList) {
             userService.saveUser(user);
         }
-
-
-
         Set<Trainees> traineesSet = usersList.stream()
                 .map(user -> user.getTrainees().iterator().next())
                 .collect(Collectors.toSet());
@@ -189,5 +186,15 @@ public class BatchController {
 
         TraineeDisplayByBatchDTO createdTrainee = batchService.addTraineeToBatch(batchId, traineeCreationDTO);
         return new ResponseEntity<>(createdTrainee, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{batchId}")
+    public ResponseEntity<Batches> getBatchById(@PathVariable Long batchId) {
+        Batches batch = batchService.getBatchById(batchId);
+        if (batch != null) {
+            return ResponseEntity.ok(batch);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -10,6 +10,7 @@ import com.ILPex.repository.BatchRepository;
 import com.ILPex.repository.UserRepository;
 import com.ILPex.service.BatchService;
 import com.ILPex.service.RolesService;
+import jakarta.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -133,6 +134,20 @@ public class BatchServiceImpl implements BatchService {
         userRepository.save(user);
 
         return modelMapper.map(trainee, TraineeDisplayByBatchDTO.class);
+    }
+
+    @PostConstruct
+    public void updateDayNumbers() {
+        List<Batches> batches = (List<Batches>) batchRepository.findAll();
+
+        for (Batches batch : batches) {
+            if (batch.getStartDate() != null) {
+                LocalDate start = batch.getStartDate().toLocalDateTime().toLocalDate();
+                LocalDate today = LocalDate.now();
+                batch.setDayNumber(calculateWorkingDays(start, today));
+                batchRepository.save(batch); // Save the updated batch
+            }
+        }
     }
 
     private long calculateWorkingDays(LocalDate start, LocalDate end) {

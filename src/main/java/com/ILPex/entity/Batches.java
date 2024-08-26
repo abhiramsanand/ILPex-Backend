@@ -1,5 +1,6 @@
 package com.ILPex.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,45 +20,27 @@ import java.util.Set;
 @Table(name = "batches")
 public class Batches extends BaseEntity {
 
-    @Column(name="batch_name")
+    @Column(name = "batch_name")
     private String batchName;
 
-    @Column(name="start_date")
+    @Column(name = "start_date")
     private Timestamp startDate;
 
-    @Column(name="end_date")
+    @Column(name = "end_date")
     private Timestamp endDate;
 
-    @Column(name="is_active")
+    @Column(name = "is_active")
     private Boolean isActive;
 
-    @Column(name="day_number")
+    @Column(name = "day_number")
     private Long dayNumber;
 
     @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL, targetEntity = Trainees.class)
+    @JsonIgnore // Prevent serialization
     private Set<Trainees> trainees = new HashSet<>();
 
     @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL, targetEntity = AssessmentBatchAllocation.class)
+    @JsonIgnore // Prevent serialization
     private Set<AssessmentBatchAllocation> assessmentBatchAllocations = new HashSet<>();
 
-    @PrePersist
-    @PreUpdate
-    private void updateDayNumber() {
-        if (startDate != null) {
-            LocalDate start = startDate.toLocalDateTime().toLocalDate();
-            LocalDate today = LocalDate.now();
-            this.dayNumber = calculateWorkingDays(start, today);
-        }
-    }
-
-    private long calculateWorkingDays(LocalDate start, LocalDate end) {
-        long count = 0;
-        while (!start.isAfter(end)) {
-            if (start.getDayOfWeek().getValue() < 6) { // Monday to Friday are working days (1-5)
-                count++;
-            }
-            start = start.plusDays(1);
-        }
-        return count;
-    }
 }
