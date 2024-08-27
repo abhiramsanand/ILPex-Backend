@@ -62,7 +62,7 @@ public class BatchController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Batches> createBatch(
+    public ResponseEntity<Long> createBatch(
             @RequestParam("batchData") String batchData,
             @RequestParam("file") MultipartFile file) {
 
@@ -95,7 +95,7 @@ public class BatchController {
                 .collect(Collectors.toSet());
 
         batchCreationDTO.setTrainees(traineesSet);
-        return ResponseEntity.ok(batch);
+        return ResponseEntity.ok(batch.getId());
     }
 
     @Autowired
