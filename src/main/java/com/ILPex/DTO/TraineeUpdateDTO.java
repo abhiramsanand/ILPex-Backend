@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TraineeUpdateDTO {
-    private int id;
+    private int traineeId;
     private String userName;
     private String email;
     private String percipioEmail;

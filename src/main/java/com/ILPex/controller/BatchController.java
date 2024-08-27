@@ -296,7 +296,61 @@ public class BatchController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+    @PutMapping("/{batchId}/trainees")
+    public ResponseEntity<Map<String, String>> updateAllTrainees(
+            @PathVariable Long batchId,
+            @RequestBody List<TraineeUpdateDTO> traineeDtos) {
+        try {
+            batchService.updateAllTrainees(batchId, traineeDtos);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Trainees updated successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error updating trainees for batch ID: " + batchId, e);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Error updating trainees");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
+
+
+//    @PutMapping("/{batchId}/trainees")
+//    public ResponseEntity<Void> updateBatchAndTrainees(
+//            @PathVariable Long batchId,
+//            @RequestBody BatchAndTraineeUpdateDTO updateDTO) {
+//        try {
+//            batchService.updateBatchAndTrainees(batchId, updateDTO.getBatchDetails(), updateDTO.getTrainees());
+//            return ResponseEntity.ok().build();
+//        } catch (Exception e) {
+//            logger.error("Error updating batch and trainees for batch ID: " + batchId, e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+@PutMapping("/{batchId}")
+public ResponseEntity<BatchDTO> updateBatch(
+        @PathVariable("batchId") Long batchId,
+        @RequestBody BatchUpdateDTO batchUpdateDTO) {
+    try {
+        Batches updatedBatch = batchService.updateBatch(batchId, batchUpdateDTO);
+
+        // Convert entity to DTO
+        BatchDTO batchDTO = new BatchDTO();
+        batchDTO.setId(updatedBatch.getId());
+        batchDTO.setBatchName(updatedBatch.getBatchName());
+        batchDTO.setStartDate(updatedBatch.getStartDate());
+        batchDTO.setEndDate(updatedBatch.getEndDate());
+        batchDTO.setIsActive(updatedBatch.getIsActive());
+
+        return ResponseEntity.ok(batchDTO);
+    } catch (ResourceNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    } catch (Exception e) {
+        logger.error("Error updating batch with ID: " + batchId, e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    }
+}
+
+}
 
 
 

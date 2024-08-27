@@ -17,5 +17,8 @@ public interface BatchService {
     void deleteTrainee(Long traineeId);
     BatchDetailsDTO getBatchDetails(Long batchId);
     TraineeDisplayByBatchDTO updateTrainee(Long traineeId, TraineeUpdateDTO traineeUpdateDTO);
-
+//
+//void updateBatchAndTrainees(Long batchId, BatchDetailsDTO batchDetailsDTO, List<TraineeUpdateDTO> traineeDtos);
+void updateAllTrainees(Long batchId, List<TraineeUpdateDTO> traineeDtos);
+    Batches updateBatch(Long batchId, BatchUpdateDTO batchUpdateDTO);
 }

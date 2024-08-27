@@ -4,6 +4,8 @@ package com.ILPex.DTO;
 
 import lombok.*;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -20,4 +22,5 @@ public class BatchDetailsDTO {
     private String endDate;
     private int numberOfTrainees;
     private List<TraineeDisplayByBatchDTO> trainees;
+
 }

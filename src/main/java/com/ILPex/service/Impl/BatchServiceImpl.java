@@ -9,10 +9,13 @@ import com.ILPex.repository.UserRepository;
 import com.ILPex.service.BatchService;
 import com.ILPex.service.ProgramService;
 import com.ILPex.service.RolesService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -203,13 +206,50 @@ public class BatchServiceImpl implements BatchService {
         return modelMapper.map(trainee, TraineeDisplayByBatchDTO.class);
     }
 
+    public void updateAllTrainees(Long batchId, List<TraineeUpdateDTO> traineeDtos) {
+        // Fetch the batch to ensure it exists
+        Batches batch = batchRepository.findById(batchId)
+                .orElseThrow(() -> new ResourceNotFoundException("Batch not found with ID: " + batchId));
+
+        for (TraineeUpdateDTO traineeDto : traineeDtos) {
+            // Fetch the trainee by ID
+            Trainees trainee = traineesRepository.findById((long) traineeDto.getTraineeId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Trainee not found with ID: " + traineeDto.getTraineeId()));
+
+            // Fetch the associated user
+            Users user = trainee.getUsers();
+
+            // Update the user details
+            user.setUserName(traineeDto.getUserName());
+            user.setEmail(traineeDto.getEmail());
+            user.setPassword(traineeDto.getPassword());
+
+            // Update trainee-specific details if needed
+            trainee.setPercipioEmail(traineeDto.getPercipioEmail());
+            // Update other fields as necessary
+
+            // Save the updated user and trainee
+            traineesRepository.save(trainee);
+        }
 
 
+    }
+    public Batches updateBatch(Long batchId, BatchUpdateDTO batchUpdateDTO) {
+        Batches batch = batchRepository.findById(batchId)
+                .orElseThrow(() -> new ResourceNotFoundException("Batch not found with id: " + batchId));
 
+        // Update fields only if they are not null
+        if (batchUpdateDTO.getBatchName() != null) {
+            batch.setBatchName(batchUpdateDTO.getBatchName());
+        }
+        if (batchUpdateDTO.getStartDate() != null) {
+            batch.setStartDate(batchUpdateDTO.getStartDate());
+        }
+        if (batchUpdateDTO.getEndDate() != null) {
+            batch.setEndDate(batchUpdateDTO.getEndDate());
+        }
 
-
-
-
-
+        return batchRepository.save(batch);
+    }
 
 }
