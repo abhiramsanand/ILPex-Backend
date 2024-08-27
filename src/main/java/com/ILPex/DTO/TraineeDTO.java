@@ -8,8 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TraineeDTO {
-
-
     private Long traineeId;
     private String traineeName;
 }

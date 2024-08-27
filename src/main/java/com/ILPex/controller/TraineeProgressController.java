@@ -1,6 +1,7 @@
 package com.ILPex.controller;
 
 import com.ILPex.DTO.CourseProgressDTO;
+import com.ILPex.DTO.TraineeDTO;
 import com.ILPex.constants.Message;
 import com.ILPex.response.ResponseHandler;
 import com.ILPex.service.TraineeProgressService;
@@ -31,6 +32,12 @@ public class TraineeProgressController {
     @GetMapping("/last-accessed-day-number")
     public ResponseEntity<Map<Long, Integer>> getLastAccessedDayNumberForTrainees() {
         Map<Long, Integer> traineeDayNumberMap = traineeProgressService.getLastAccessedDayNumberForTrainees();
+        return ResponseEntity.ok(traineeDayNumberMap);
+    }
+
+    @GetMapping("/trainee/last-accessed-day-number")
+    public ResponseEntity<Map<String, Integer>> getLastAccessedDayNumberForTraineesName() {
+        Map<String, Integer> traineeDayNumberMap = traineeProgressService.getLastAccessedDayNumberForTraineesName();
         return ResponseEntity.ok(traineeDayNumberMap);
     }
 
