@@ -158,15 +158,12 @@ public class PercipioApiService {
                         node.path("userStatus").asText(),
                         highScore // Use the parsed or default highScore
                 );
-                System.out.println(" Before Date" + node.path("lastAccess").asText());
-                System.out.println("Date" + convertToTimestamp(node.path("lastAccess").asText()));
                 list.add(dto);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         saveUserContentAccessData(list);
-        System.out.println("Size of list" + list.size());
         return list;
     }
 
