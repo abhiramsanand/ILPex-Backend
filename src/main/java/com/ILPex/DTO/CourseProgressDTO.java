@@ -9,9 +9,9 @@ import lombok.*;
 @AllArgsConstructor
 public class CourseProgressDTO {
     private String courseName;
-    private int dayNumber;
-    private String courseDuration;
-    private int traineeDuration;
-    private double completionPercentage;
+    private Integer dayNumber;
+    private Integer estimatedDuration;
+    private Integer duration;
+    private Double percentageCompleted;
 }
 

@@ -23,12 +23,6 @@ public class TraineeProgressController {
     @Autowired
     private TraineeProgressService traineeProgressService;
 
-    @GetMapping("/courseprogress/{traineeId}")
-    public ResponseEntity<Object> getCourseProgressByTraineeId(@PathVariable Long traineeId) {
-        List<CourseProgressDTO> courseProgress = traineeProgressService.getCourseProgressByTraineeId(traineeId);
-        return ResponseHandler.responseBuilder(Message.REQUESTED_COURSE_PROGRESS_DETAILS, HttpStatus.OK, courseProgress);
-    }
-
     @GetMapping("/status")
     public Map<String, Integer> getProgressStatusCounts() {
         return traineeProgressService.getProgressStatusCounts();
@@ -43,5 +37,10 @@ public class TraineeProgressController {
     @GetMapping("/Daily-Report-day-number")
     public Map<Long, Integer> getDayNumberForTrainees() {
         return traineeProgressService.getDayNumberForTrainees();
+    }
+
+    @GetMapping("/{traineeId}")
+    public List<CourseProgressDTO> getTraineeProgress(@PathVariable Long traineeId) {
+        return traineeProgressService.getTraineeProgress(traineeId);
     }
 }

@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface TraineeProgressService {
-    List<CourseProgressDTO> getCourseProgressByTraineeId(Long traineeId);
 //    void updateCourseIdsInTraineeProgress();
 void calculateLatestDayNumberForTrainees();
     Map<String, Integer> getProgressStatusCounts();
     Map<Long, Integer> getLastAccessedDayNumberForTrainees();
     Map<Long, Integer> getDayNumberForTrainees();
-
+    List<CourseProgressDTO> getTraineeProgress(Long traineeId);
 }
 
