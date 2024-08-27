@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserPostDTO createUser(UserPostDTO userPostDTO) {
         Users users = modelMapper.map(userPostDTO, Users.class);
+        users.setIsActive(true);
         Users newUser = userRepository.save(users);
         return modelMapper.map(newUser, UserPostDTO.class);
     }
