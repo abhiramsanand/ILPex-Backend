@@ -11,6 +11,7 @@ public interface TraineeProgressService {
 void calculateLatestDayNumberForTrainees();
     Map<String, Integer> getProgressStatusCounts();
     Map<Long, Integer> getLastAccessedDayNumberForTrainees();
+    Map<Long, Integer> getDayNumberForTrainees();
 
 }
 

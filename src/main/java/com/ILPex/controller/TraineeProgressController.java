@@ -39,4 +39,9 @@ public class TraineeProgressController {
         Map<Long, Integer> traineeDayNumberMap = traineeProgressService.getLastAccessedDayNumberForTrainees();
         return ResponseEntity.ok(traineeDayNumberMap);
     }
+
+    @GetMapping("/Daily-Report-day-number")
+    public Map<Long, Integer> getDayNumberForTrainees() {
+        return traineeProgressService.getDayNumberForTrainees();
+    }
 }

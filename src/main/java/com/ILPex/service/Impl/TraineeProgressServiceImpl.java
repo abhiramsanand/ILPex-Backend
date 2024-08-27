@@ -1,14 +1,8 @@
 package com.ILPex.service.Impl;
 
 import com.ILPex.DTO.CourseProgressDTO;
-import com.ILPex.entity.Batches;
-import com.ILPex.entity.Courses;
-import com.ILPex.entity.TraineeProgress;
-import com.ILPex.entity.Trainees;
-import com.ILPex.repository.BatchRepository;
-import com.ILPex.repository.CoursesRepository;
-import com.ILPex.repository.TraineeProgressRepository;
-import com.ILPex.repository.TraineesRepository;
+import com.ILPex.entity.*;
+import com.ILPex.repository.*;
 import com.ILPex.service.TraineeProgressService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +27,9 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
 
     @Autowired
     private TraineesRepository traineesRepository;
+
+    @Autowired
+    private DailyReportsRepository dailyReportsRepository;
 
     @Override
     public List<CourseProgressDTO> getCourseProgressByTraineeId(Long traineeId) {
@@ -132,6 +129,38 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
                 traineeDayNumberMap.put(traineeId, dayNumberOpt.orElse(0));
             } else {
                 // No progress found, set day_number to 0
+                traineeDayNumberMap.put(traineeId, 0);
+            }
+        }
+
+        return traineeDayNumberMap;
+    }
+
+    @Override
+    public Map<Long, Integer> getDayNumberForTrainees() {
+        Map<Long, Integer> traineeDayNumberMap = new HashMap<>();
+
+        // Get all trainee IDs
+        List<Trainees> traineesList = traineesRepository.findAll();
+
+        for (Trainees trainee : traineesList) {
+            Long traineeId = trainee.getId();
+
+            // Get the latest daily report for the trainee
+            List<DailyReports> reportsList = dailyReportsRepository.findDailyReportsByTraineeId(traineeId);
+
+            if (!reportsList.isEmpty()) {
+                DailyReports latestReport = reportsList.get(0); // Latest report based on the date
+
+                Long courseId = latestReport.getCourses().getId();
+
+                // Get the day number from the Courses entity
+                Optional<Integer> dayNumberOpt = coursesRepository.findDayNumberByCourseId(courseId);
+
+                // Set day_number in the map
+                traineeDayNumberMap.put(traineeId, dayNumberOpt.orElse(0));
+            } else {
+                // No reports found, set day_number to 0
                 traineeDayNumberMap.put(traineeId, 0);
             }
         }

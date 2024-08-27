@@ -30,5 +30,8 @@ public interface CoursesRepository extends JpaRepository<Courses,Long> {
 
     @Query("SELECT c.dayNumber FROM Courses c WHERE c.courseName = :courseName")
     Optional<Integer> findDayNumberByCourseName(String courseName);
+
+    @Query("SELECT c.dayNumber FROM Courses c WHERE c.id = :courseId")
+    Optional<Integer> findDayNumberByCourseId(Long courseId);
 }
 
