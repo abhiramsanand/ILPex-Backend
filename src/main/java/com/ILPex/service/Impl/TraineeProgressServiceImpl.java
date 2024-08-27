@@ -23,7 +23,7 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
                     Integer dayNumber = (Integer) result[1];
                     Integer estimatedDuration = (Integer) result[2];
                     Integer duration = (Integer) result[3];
-                    Double percentageCompleted = calculatePercentageCompleted(duration, estimatedDuration);
+                    Integer percentageCompleted = calculatePercentageCompleted(duration, estimatedDuration);
 
                     return new CourseProgressDTO(
                             courseName,
@@ -37,10 +37,14 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
     }
 
     // Method to calculate percentage completed
-    private Double calculatePercentageCompleted(Integer duration, Integer estimatedDuration) {
+    private Integer calculatePercentageCompleted(Integer duration, Integer estimatedDuration) {
         if (estimatedDuration != null && estimatedDuration > 0) {
-            return Math.round(((double) duration / estimatedDuration) * 10000.0) / 100.0; // Rounded to 2 decimal places
+            double percentage = ((double) duration / estimatedDuration) * 100;
+            // Round to the nearest integer and cap at 100%
+            return (int) Math.min(Math.round(percentage), 100);
         }
-        return 0.0;
+        return 0; // Return 0% if estimatedDuration is not valid
     }
+
+
 }
