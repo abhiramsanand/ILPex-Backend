@@ -63,24 +63,24 @@ public class PercipioApiService {
         headers.setBearerAuth(jwtToken);
 
         String body = """
-        {
-            "start": "2024-08-01T10:10:24Z",
-            "end": "2024-09-10T10:20:24Z",
-            "audience": "ALL",
-            "contentType": "Course,Linked Content,Scheduled Content,Assessment",
-            "csvPreferences": {
-                "header": true,
-                "rowDelimiter": "\\n",
-                "columnDelimiter": ",",
-                "headerForNoRecords": false
-            },
-            "sort": {
-                "field": "lastAccessDate",
-                "order": "desc"
-            },
-            "isFileRequiredInSftp": false,
-            "formatType": "JSON"
-        }
+                {
+                             "start": "2024-08-26T10:10:24Z",
+                             "end": "2024-08-27T10:20:24Z",
+                             "audience": "ALL",
+                             "contentType": "Course,Linked Content,Scheduled Content,Assessment",
+                             "csvPreferences": {
+                                 "header": true,
+                                 "rowDelimiter": "\\n",
+                                 "columnDelimiter": ",",
+                                 "headerForNoRecords": false
+                             },
+                             "sort": {
+                                 "field": "lastAccessDate",
+                                 "order": "desc"
+                             },
+                             "isFileRequiredInSftp": false,
+                             "formatType": "JSON"
+                         }
         """;
 
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
@@ -92,7 +92,7 @@ public class PercipioApiService {
     }
 
     public String fetchData(String requestId) {
-        String url = apiUrl2; // Assuming requestId is used in the URL to fetch data
+        String url = apiUrl2 + requestId; // Assuming requestId is used in the URL to fetch data
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -158,13 +158,15 @@ public class PercipioApiService {
                         node.path("userStatus").asText(),
                         highScore // Use the parsed or default highScore
                 );
-
+                System.out.println(" Before Date" + node.path("lastAccess").asText());
+                System.out.println("Date" + convertToTimestamp(node.path("lastAccess").asText()));
                 list.add(dto);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         saveUserContentAccessData(list);
+        System.out.println("Size of list" + list.size());
         return list;
     }
 
