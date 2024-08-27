@@ -4,9 +4,11 @@ import com.ILPex.DTO.CourseProgressDTO;
 import com.ILPex.entity.Batches;
 import com.ILPex.entity.Courses;
 import com.ILPex.entity.TraineeProgress;
+import com.ILPex.entity.Trainees;
 import com.ILPex.repository.BatchRepository;
 import com.ILPex.repository.CoursesRepository;
 import com.ILPex.repository.TraineeProgressRepository;
+import com.ILPex.repository.TraineesRepository;
 import com.ILPex.service.TraineeProgressService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
 
     @Autowired
     private BatchRepository batchRepository;
+
+    @Autowired
+    private TraineesRepository traineesRepository;
 
     @Override
     public List<CourseProgressDTO> getCourseProgressByTraineeId(Long traineeId) {
@@ -99,5 +104,38 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
         progressStatusCounts.put("onTrack", onTrackCount);
         progressStatusCounts.put("behind", behindCount);
         return progressStatusCounts;
+    }
+
+    @Override
+    public Map<Long, Integer> getLastAccessedDayNumberForTrainees() {
+        Map<Long, Integer> traineeDayNumberMap = new HashMap<>();
+
+        // Get all trainee IDs
+        List<Trainees> traineesList = traineesRepository.findAll();
+
+        for (Trainees trainee : traineesList) {
+            Long traineeId = trainee.getId();
+
+            // Get all progress for the trainee
+            List<TraineeProgress> progressList = traineeProgressRepository.findProgressByTraineeId(traineeId);
+
+            if (!progressList.isEmpty()) {
+                // Get the latest progress entry
+                TraineeProgress latestProgress = progressList.get(0); // assuming the list is ordered by completedDate
+
+                String courseName = latestProgress.getCourseName();
+
+                // Get the day number from the Courses entity
+                Optional<Integer> dayNumberOpt = coursesRepository.findDayNumberByCourseName(courseName);
+
+                // Set day_number in the map
+                traineeDayNumberMap.put(traineeId, dayNumberOpt.orElse(0));
+            } else {
+                // No progress found, set day_number to 0
+                traineeDayNumberMap.put(traineeId, 0);
+            }
+        }
+
+        return traineeDayNumberMap;
     }
 }

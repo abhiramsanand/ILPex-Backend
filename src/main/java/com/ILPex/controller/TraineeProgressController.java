@@ -33,4 +33,10 @@ public class TraineeProgressController {
     public Map<String, Integer> getProgressStatusCounts() {
         return traineeProgressService.getProgressStatusCounts();
     }
+
+    @GetMapping("/last-accessed-day-number")
+    public ResponseEntity<Map<Long, Integer>> getLastAccessedDayNumberForTrainees() {
+        Map<Long, Integer> traineeDayNumberMap = traineeProgressService.getLastAccessedDayNumberForTrainees();
+        return ResponseEntity.ok(traineeDayNumberMap);
+    }
 }

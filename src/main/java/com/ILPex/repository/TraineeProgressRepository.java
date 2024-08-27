@@ -26,4 +26,7 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
     List<Long> findDistinctTraineeIds();
 
     Optional<TraineeProgress> findTopByTrainees_IdOrderByCompletedDateDesc(Long traineeId);
+
+    @Query("SELECT tp FROM TraineeProgress tp WHERE tp.trainees.id = :traineeId ORDER BY tp.completedDate DESC")
+    List<TraineeProgress> findProgressByTraineeId(Long traineeId);
 }

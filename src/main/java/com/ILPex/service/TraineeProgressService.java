@@ -10,6 +10,7 @@ public interface TraineeProgressService {
 //    void updateCourseIdsInTraineeProgress();
 void calculateLatestDayNumberForTrainees();
     Map<String, Integer> getProgressStatusCounts();
+    Map<Long, Integer> getLastAccessedDayNumberForTrainees();
 
 }
 

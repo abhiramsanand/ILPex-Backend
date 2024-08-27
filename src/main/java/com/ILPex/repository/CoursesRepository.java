@@ -27,5 +27,8 @@ public interface CoursesRepository extends JpaRepository<Courses,Long> {
                 "WHERE b.id = :batchId " +
                 "ORDER BY c.dayNumber")
         List<CourseDayBatchDTO> findCoursesByBatchId(@Param("batchId") Long batchId);
+
+    @Query("SELECT c.dayNumber FROM Courses c WHERE c.courseName = :courseName")
+    Optional<Integer> findDayNumberByCourseName(String courseName);
 }
 
