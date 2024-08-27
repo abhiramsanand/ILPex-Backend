@@ -1,6 +1,7 @@
 package com.ILPex.service.Impl;
 
 import com.ILPex.DTO.CourseDayBatchDTO;
+import com.ILPex.entity.Courses;
 import com.ILPex.repository.CoursesRepository;
 import com.ILPex.repository.TraineesRepository;
 import com.ILPex.service.CourseService;
@@ -20,5 +21,10 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<CourseDayBatchDTO> getCoursesByBatchId(Long batchId) {
         return coursesRepository.findCoursesByBatchId(batchId);
+    }
+
+    @Override
+    public void saveCourses(List<Courses> courses) {
+        coursesRepository.saveAll(courses);
     }
 }

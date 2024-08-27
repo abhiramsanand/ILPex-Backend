@@ -1,6 +1,7 @@
 package com.ILPex.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,4 +44,8 @@ public class Batches extends BaseEntity {
     @JsonIgnore // Prevent serialization
     private Set<AssessmentBatchAllocation> assessmentBatchAllocations = new HashSet<>();
 
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JsonIgnoreProperties("programs")
+    @JoinColumn(name = "program_id", referencedColumnName = "id", nullable = false)
+    private Programs programs;
 }

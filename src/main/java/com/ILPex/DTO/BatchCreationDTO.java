@@ -13,6 +13,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BatchCreationDTO {
+    private String programId;
+    private String programName;
     private String batchName;
     private Timestamp startDate;
     private Timestamp endDate;

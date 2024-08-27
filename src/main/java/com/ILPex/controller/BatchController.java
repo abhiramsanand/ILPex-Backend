@@ -6,6 +6,9 @@ import com.ILPex.entity.Batches;
 import com.ILPex.entity.Roles;
 import com.ILPex.entity.Trainees;
 import com.ILPex.entity.Users;
+import com.ILPex.exceptions.ResourceNotFoundException;
+import com.ILPex.repository.TraineesRepository;
+import com.ILPex.repository.UserRepository;
 import com.ILPex.response.ResponseHandler;
 import com.ILPex.service.BatchService;
 import com.ILPex.service.RolesService;
@@ -22,10 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,6 +37,12 @@ public class BatchController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private TraineesRepository traineesRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping
     public ResponseEntity<List<BatchDTO>> getBatches() {
@@ -197,4 +203,74 @@ public class BatchController {
             return ResponseEntity.notFound().build();
         }
     }
+    @DeleteMapping("/trainees/{traineeId}")
+    public ResponseEntity<String> deleteTrainee(@PathVariable("traineeId") Long traineeId) {
+        try {
+            // Find the Trainee entity
+            Optional<Trainees> traineeOptional = traineesRepository.findById(traineeId);
+
+            if (traineeOptional.isPresent()) {
+                Trainees trainee = traineeOptional.get();
+
+                // Find the associated user
+                Users user = trainee.getUsers();
+
+                // Delete the trainee
+                traineesRepository.delete(trainee);
+                // Delete the associated user
+                if (user != null) {
+                    userRepository.delete(user);
+                }
+
+                return ResponseEntity.ok("Trainee and associated user deleted successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Trainee not found.");
+            }
+        } catch (Exception e) {
+            // Log the exception (e.g., using SLF4J)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting trainee.");
+        }
+    }
+
+
+    @GetMapping("/{batchId}/details")
+    public ResponseEntity<BatchDetailsDTO> getBatchDetails(@PathVariable("batchId") Long batchId) {
+        try {
+            BatchDetailsDTO batchDetails = batchService.getBatchDetails(batchId);
+            return ResponseEntity.ok(batchDetails);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @PutMapping("/trainees/{traineeId}")
+    public ResponseEntity<TraineeDisplayByBatchDTO> updateTrainee(
+            @PathVariable("traineeId") Long traineeId,
+            @RequestBody TraineeUpdateDTO traineeUpdateDTO) {
+        try {
+            TraineeDisplayByBatchDTO updatedTrainee = batchService.updateTrainee(traineeId, traineeUpdateDTO);
+            return ResponseEntity.ok(updatedTrainee);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+    @PutMapping("/{batchId}/trainees")
+    public ResponseEntity<Map<String, String>> updateAllTrainees(
+            @PathVariable Long batchId,
+            @RequestBody List<TraineeUpdateDTO> traineeDtos) {
+        try {
+            batchService.updateAllTrainees(batchId, traineeDtos);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Trainees updated successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Error updating trainees");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 }

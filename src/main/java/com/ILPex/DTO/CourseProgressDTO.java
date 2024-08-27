@@ -12,6 +12,6 @@ public class CourseProgressDTO {
     private Integer dayNumber;
     private Integer estimatedDuration;
     private Integer duration;
-    private Double percentageCompleted;
+    private Integer percentageCompleted;
 }
 
