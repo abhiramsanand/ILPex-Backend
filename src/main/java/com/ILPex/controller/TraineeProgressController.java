@@ -14,17 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-
 @RestController
-@RequestMapping("/api/v1/ilpex/traineeprogress")
+@RequestMapping("/api/trainee-progress")
 public class TraineeProgressController {
+
 
     @Autowired
     private TraineeProgressService traineeProgressService;
 
-    @GetMapping("/courseprogress/{traineeId}")
-    public ResponseEntity<Object> getCourseProgressByTraineeId(@PathVariable Long traineeId) {
-        List<CourseProgressDTO> courseProgress = traineeProgressService.getCourseProgressByTraineeId(traineeId);
-        return ResponseHandler.responseBuilder(Message.REQUESTED_COURSE_PROGRESS_DETAILS, HttpStatus.OK, courseProgress);
+    @GetMapping("/{traineeId}")
+    public List<CourseProgressDTO> getTraineeProgress(@PathVariable Long traineeId) {
+        return traineeProgressService.getTraineeProgress(traineeId);
     }
 }

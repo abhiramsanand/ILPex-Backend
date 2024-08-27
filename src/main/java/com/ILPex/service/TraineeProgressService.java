@@ -5,7 +5,7 @@ import com.ILPex.DTO.CourseProgressDTO;
 import java.util.List;
 
 public interface TraineeProgressService {
-    List<CourseProgressDTO> getCourseProgressByTraineeId(Long traineeId);
+    List<CourseProgressDTO> getTraineeProgress(Long traineeId);
 
 
 }

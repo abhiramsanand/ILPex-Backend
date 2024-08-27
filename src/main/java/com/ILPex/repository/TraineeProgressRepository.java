@@ -15,13 +15,22 @@ import java.util.List;
 @Repository
 public interface TraineeProgressRepository extends JpaRepository<TraineeProgress, Long> {
 
-    @Query("SELECT new com.ILPex.DTO.CourseProgressDTO(c.courseName, tp.dayNumber, c.courseDuration, tp.duration, " +
-            "(CASE WHEN tp.estimatedDuration > 0 THEN (tp.duration / CAST(tp.estimatedDuration AS double)) * 100 " +
-            "ELSE 0 END)) " +
-            "FROM TraineeProgress tp " +
-            "JOIN tp.courses c " +
-            "WHERE tp.trainees.id = :traineeId")
-    List<CourseProgressDTO> findCourseProgressByTraineeId(@Param("traineeId") Long traineeId);
 
+    @Query(value = "SELECT " +
+            "    t.course_name AS courseName, " +
+            "    c.day_number AS dayNumber, " +
+            "    t.estimated_duration AS estimatedDuration, " +
+            "    t.duration AS duration " +
+            "FROM " +
+            "    trainee_progress t " +
+            "JOIN " +
+            "    courses c " +
+            "    ON c.course_name = t.course_name " +
+            "WHERE " +
+            "    t.trainee_id = :traineeId " +
+            "ORDER BY " +
+            "    c.day_number, c.course_name",
+            nativeQuery = true)
+    List<Object[]> findCourseProgressByTraineeId(@Param("traineeId") Long traineeId);
 
 }
