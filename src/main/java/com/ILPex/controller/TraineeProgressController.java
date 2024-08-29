@@ -23,26 +23,10 @@ public class TraineeProgressController {
     @Autowired
     private TraineeProgressService traineeProgressService;
 
-    @GetMapping("/status")
-    public Map<String, Integer> getProgressStatusCounts() {
-        return traineeProgressService.getProgressStatusCounts();
-    }
-
-    @GetMapping("/last-accessed-day-number")
-    public ResponseEntity<Map<Long, Integer>> getLastAccessedDayNumberForTrainees() {
-        Map<Long, Integer> traineeDayNumberMap = traineeProgressService.getLastAccessedDayNumberForTrainees();
-        return ResponseEntity.ok(traineeDayNumberMap);
-    }
-
     @GetMapping("/trainee/last-accessed-day-number")
     public ResponseEntity<Map<String, Integer>> getLastAccessedDayNumberForTraineesName() {
         Map<String, Integer> traineeDayNumberMap = traineeProgressService.getLastAccessedDayNumberForTraineesName();
         return ResponseEntity.ok(traineeDayNumberMap);
-    }
-
-    @GetMapping("/Daily-Report-day-number")
-    public Map<Long, Integer> getDayNumberForTrainees() {
-        return traineeProgressService.getDayNumberForTrainees();
     }
 
     @GetMapping("/{traineeId}")
