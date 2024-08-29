@@ -13,4 +13,5 @@ public class BatchDTO {
     private Timestamp endDate;
     private Boolean isActive;
     private Long dayNumber;
+    private Integer totalTrainees;
 }

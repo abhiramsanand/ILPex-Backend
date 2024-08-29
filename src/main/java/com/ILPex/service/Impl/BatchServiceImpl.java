@@ -44,7 +44,9 @@ public class BatchServiceImpl implements BatchService {
     public List<BatchDTO> getBatches() {
         List<Batches> batchList = batchRepository.findAll();
         return batchList.stream().map(batch -> {
-            return modelMapper.map(batch, BatchDTO.class);
+            BatchDTO batchDTO = modelMapper.map(batch, BatchDTO.class);
+            batchDTO.setTotalTrainees(batch.getTrainees().size()); // Set the total number of trainees
+            return batchDTO;
         }).collect(Collectors.toList());
     }
 

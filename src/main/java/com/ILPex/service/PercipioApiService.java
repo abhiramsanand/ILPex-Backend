@@ -64,8 +64,8 @@ public class PercipioApiService {
 
         String body = """
                 {
-                             "start": "2024-08-26T10:10:24Z",
-                             "end": "2024-08-27T10:20:24Z",
+                             "start": "2024-08-25T10:10:24Z",
+                             "end": "2024-08-28T10:20:24Z",
                              "audience": "ALL",
                              "contentType": "Course,Linked Content,Scheduled Content,Assessment",
                              "csvPreferences": {
