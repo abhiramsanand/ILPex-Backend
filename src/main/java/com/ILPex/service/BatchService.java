@@ -2,7 +2,9 @@ package com.ILPex.service;
 
 import com.ILPex.DTO.*;
 import com.ILPex.entity.Batches;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface BatchService {
@@ -19,4 +21,5 @@ public interface BatchService {
     Batches updateBatch(Long batchId, BatchUpdateDTO batchUpdateDTO);
     BatchDetailsDTO getBatchDetails(Long batchId);
     void deleteTrainee(Long traineeId);
+    Batches createBatchWithTrainees(BatchCreationDTO batchCreationDTO, MultipartFile file) throws IOException;
 }

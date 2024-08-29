@@ -4,11 +4,17 @@ import com.ILPex.DTO.CourseDayBatchDTO;
 import com.ILPex.DTO.CourseDurationDTO;
 import com.ILPex.DTO.TotalCourseDaysDTO;
 import com.ILPex.DTO.TotalCourseDurationDTO;
+import com.ILPex.entity.Batches;
+import com.ILPex.entity.Courses;
+import com.ILPex.service.BatchService;
 import com.ILPex.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,6 +23,9 @@ public class CourseController {
 
     @Autowired
     private final CourseService courseService;
+
+    @Autowired
+    private BatchService batchService;
 
     @Autowired
     public CourseController(CourseService courseService) {
@@ -43,6 +52,29 @@ public class CourseController {
     public ResponseEntity<TotalCourseDurationDTO> getTotalCourseDuration(@PathVariable Long batchId) {
         TotalCourseDurationDTO dto = courseService.getTotalCourseDuration(batchId);
         return ResponseEntity.ok(dto);
+    }
+
+
+    @PostMapping("/create")
+    public ResponseEntity<String> createCourses(
+            @RequestParam("batchId") Long batchId,
+            @RequestParam("file") MultipartFile file) {
+
+        Batches batch = batchService.getBatchById(batchId);
+        if (batch == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Batch not found with ID " + batchId);
+        }
+
+        try {
+            List<Courses> coursesList = courseService.parseCourseExcelFile(file, batch);
+            courseService.saveCourses(coursesList);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error processing Excel file");
+        }
+
+        return ResponseEntity.ok("Courses created successfully");
     }
 }
 
