@@ -1,5 +1,6 @@
 package com.ILPex.controller;
 
+import com.ILPex.DTO.DayNumberWithDateDTO;
 import com.ILPex.entity.Batches;
 import com.ILPex.entity.Courses;
 import com.ILPex.service.BatchService;
@@ -17,9 +18,11 @@ import java.io.InputStream;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/courses")
@@ -206,4 +209,26 @@ public class CoursesController {
         }
         return null; // Return null if conversion fails or cell is empty
     }
+
+    @GetMapping("/dates")
+    public List<LocalDate> getAllCourseDates() {
+        return courseService.getAllCourseDates();
+    }
+
+    @GetMapping("/dates/dayNumber")
+    public List<DayNumberWithDateDTO> getAllCourseDatesAndDayNumber() {
+        return courseService.getAllCourseDatesWithDayNumber();
+    }
+
+    @PostMapping("/mark-holiday")
+    public String markHoliday(@RequestBody Map<String, String> payload) {
+        String holidayDateStr = payload.get("holidayDate");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate holidayDate = LocalDate.parse(holidayDateStr, formatter);
+
+        courseService.updateCourseDatesForHoliday(holidayDate);
+
+        return "Holiday marked and course dates updated successfully.";
+    }
+
 }
