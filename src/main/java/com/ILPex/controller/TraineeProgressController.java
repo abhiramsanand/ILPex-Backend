@@ -1,9 +1,9 @@
 package com.ILPex.controller;
 
 import com.ILPex.DTO.CourseProgressDTO;
+import com.ILPex.DTO.TraineeActualVsEstimatedDurationDTO;
 import com.ILPex.DTO.TraineeDTO;
-import com.ILPex.DTO.TraineeCourseCountDTO;
-import com.ILPex.DTO.TraineeCourseDurationDTO;
+import com.ILPex.DTO.TraineeDurationDTO;
 import com.ILPex.constants.Message;
 import com.ILPex.response.ResponseHandler;
 import com.ILPex.service.TraineeProgressService;
@@ -49,16 +49,10 @@ public class TraineeProgressController {
     public List<CourseProgressDTO> getTraineeProgress(@PathVariable Long traineeId) {
         return traineeProgressService.getTraineeProgress(traineeId);
     }
-
-    @GetMapping("/course-duration")
-    public ResponseEntity<List<TraineeCourseDurationDTO>> getTotalCourseDurationByBatchId(
+    @GetMapping("/duration")
+    public ResponseEntity<List<TraineeActualVsEstimatedDurationDTO>> getTotalDurationAndEstimatedDurationByTraineeAndBatch(
             @RequestParam Long batchId) {
-        List<TraineeCourseDurationDTO> response = traineeProgressService.findTotalCourseDurationDTOByBatchId(batchId);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/course-count/{batchId}")
-    public List<TraineeCourseCountDTO> getDistinctCourseDurationCountByBatchId(@PathVariable Long batchId) {
-        return traineeProgressService.getDistinctCourseDurationCountByBatchId(batchId);
+        List<TraineeActualVsEstimatedDurationDTO> results = traineeProgressService.getTotalDurationAndEstimatedDurationByTraineeIdAndBatch(batchId);
+        return ResponseEntity.ok(results);
     }
 }

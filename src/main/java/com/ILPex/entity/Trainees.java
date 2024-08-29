@@ -32,13 +32,12 @@ public class Trainees  extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("trainees")
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    Users users;
+    private Users users;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("trainees")
     @JoinColumn(name = "batch_id", referencedColumnName = "id", nullable = false)
-    Batches batches;
-
+    private Batches batches;
 
 
     @OneToMany(mappedBy = "trainees", cascade = CascadeType.ALL,targetEntity = PercipioAssessment.class)
