@@ -1,9 +1,6 @@
 package com.ILPex.service.Impl;
 
-import com.ILPex.DTO.CourseProgressDTO;
-import com.ILPex.DTO.TraineeDTO;
-import com.ILPex.DTO.TraineeCourseCountDTO;
-import com.ILPex.DTO.TraineeCourseDurationDTO;
+import com.ILPex.DTO.*;
 import com.ILPex.entity.*;
 import com.ILPex.repository.*;
 import com.ILPex.service.TraineeProgressService;
@@ -12,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,45 +31,49 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
     private DailyReportsRepository dailyReportsRepository;
 
     @Override
-    public Map<String, Integer> getLastAccessedDayNumberForTraineesName() {
-        Map<String, Integer> traineeDayNumberMap = new HashMap<>();
+    public List<Map<String, Object>> getLastAccessedDayNumberForTrainees() {
+        List<Map<String, Object>> traineeList = new ArrayList<>();
 
-        // Get all trainee IDs
+        // Get all trainees
         List<Trainees> traineesList = traineesRepository.findAll();
 
         for (Trainees trainee : traineesList) {
-            Long traineeId = trainee.getId();
+            Map<String, Object> traineeMap = new HashMap<>();
+
+            // Fetch trainee's name from the associated Users entity
+            Users user = trainee.getUsers();
+            String traineeName = user.getUserName();
+            traineeMap.put("traineeName", traineeName);
+
+            // Fetch the associated batch's day number
+            Batches batch = trainee.getBatches();
+            int batchDayNumber = batch.getDayNumber().intValue();
+            traineeMap.put("batchDayNumber", batchDayNumber);
 
             // Get all progress for the trainee
-            List<TraineeProgress> progressList = traineeProgressRepository.findProgressByTraineeId(traineeId);
+            List<TraineeProgress> progressList = traineeProgressRepository.findProgressByTraineeId(trainee.getId());
 
             if (!progressList.isEmpty()) {
                 // Get the latest progress entry
                 TraineeProgress latestProgress = progressList.get(0); // assuming the list is ordered by completedDate
 
-                String courseName = latestProgress.getCourseName();
-
                 // Get the day number from the Courses entity
-                Optional<Integer> dayNumberOpt = coursesRepository.findDayNumberByCourseName(courseName);
+                Optional<Integer> dayNumberOpt = coursesRepository.findDayNumberByCourseName(latestProgress.getCourseName());
 
-                // Fetch trainee's name from the associated Users entity
-                Users user = trainee.getUsers();
-                String traineeName = user.getUserName();
-
-                // Set day_number in the map with traineeName as key
-                traineeDayNumberMap.put(traineeName, dayNumberOpt.orElse(0));
+                // Set traineeDayNumber in the map
+                traineeMap.put("traineeDayNumber", dayNumberOpt.orElse(0));
             } else {
-                // No progress found, set day_number to 0
-                // Fetch trainee's name from the associated Users entity
-                Users user = trainee.getUsers();
-                String traineeName = user.getUserName();
-
-                traineeDayNumberMap.put(traineeName, 0);
+                // No progress found, set traineeDayNumber to 0
+                traineeMap.put("traineeDayNumber", 0);
             }
+
+            // Add to the list
+            traineeList.add(traineeMap);
         }
 
-        return traineeDayNumberMap;
+        return traineeList;
     }
+
 
     @Override
     public List<CourseProgressDTO> getTraineeProgress(Long traineeId) {
@@ -132,4 +130,7 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
                 .collect(Collectors.toList());
     }
 
+    public List<TraineeActualVsEstimatedDurationDTO> getTotalDurationAndEstimatedDurationByTraineeIdAndBatch(Long batchId) {
+        return traineeProgressRepository.findTotalDurationAndEstimatedDurationByBatchId(batchId);
+    }
 }

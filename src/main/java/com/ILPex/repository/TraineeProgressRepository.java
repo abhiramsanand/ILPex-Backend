@@ -1,6 +1,7 @@
 package com.ILPex.repository;
 
 import com.ILPex.DTO.CourseProgressDTO;
+import com.ILPex.DTO.TraineeActualVsEstimatedDurationDTO;
 import com.ILPex.DTO.TraineeCourseCountDTO;
 import com.ILPex.DTO.TraineeCourseDurationDTO;
 import com.ILPex.entity.TraineeProgress;
@@ -60,4 +61,11 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
             "WHERE b.id = :batchId " +
             "GROUP BY u.username", nativeQuery = true)
     List<Object[]> getDistinctCourseDurationCountByBatchId(@Param("batchId") Long batchId);
+
+    @Query("SELECT new com.ILPex.DTO.TraineeActualVsEstimatedDurationDTO( u.userName, SUM(tp.duration), SUM(tp.estimatedDuration)) " +
+            "FROM TraineeProgress tp JOIN tp.trainees t JOIN t.users u " +
+            "WHERE t.batches.id = :batchId " +
+            "GROUP BY u.userName")
+    List<TraineeActualVsEstimatedDurationDTO> findTotalDurationAndEstimatedDurationByBatchId(@Param("batchId") Long batchId);
+
 }
