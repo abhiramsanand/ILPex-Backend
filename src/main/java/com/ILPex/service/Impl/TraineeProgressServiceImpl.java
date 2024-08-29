@@ -2,6 +2,8 @@ package com.ILPex.service.Impl;
 
 import com.ILPex.DTO.CourseProgressDTO;
 import com.ILPex.DTO.TraineeDTO;
+import com.ILPex.DTO.TraineeCourseCountDTO;
+import com.ILPex.DTO.TraineeCourseDurationDTO;
 import com.ILPex.entity.*;
 import com.ILPex.repository.*;
 import com.ILPex.service.TraineeProgressService;
@@ -238,6 +240,29 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
             return (int) Math.min(Math.round(percentage), 100);
         }
         return 0; // Return 0% if estimatedDuration is not valid
+    }
+
+    @Override
+    public List<TraineeCourseDurationDTO> findTotalCourseDurationDTOByBatchId(Long batchId) {
+        List<Object[]> results = traineeProgressRepository.findTotalCourseDurationByBatchId(batchId);
+        return results.stream()
+                .map(result -> new TraineeCourseDurationDTO(
+                        (String) result[0], // userName
+                        ((Number) result[1]).longValue())) // totalDuration
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TraineeCourseCountDTO> getDistinctCourseDurationCountByBatchId(Long batchId) {
+        // Fetch results from repository
+        List<Object[]> results = traineeProgressRepository.getDistinctCourseDurationCountByBatchId(batchId);
+
+        // Convert results to DTOs
+        return results.stream()
+                .map(result -> new TraineeCourseCountDTO(
+                        (String) result[0], // trainee_name
+                        ((Number) result[1]).longValue())) // distinct_course_duration_count
+                .collect(Collectors.toList());
     }
 
 }
