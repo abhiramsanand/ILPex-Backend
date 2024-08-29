@@ -33,5 +33,14 @@ public interface CoursesRepository extends JpaRepository<Courses,Long> {
 
     @Query("SELECT c.dayNumber FROM Courses c WHERE c.id = :courseId")
     Optional<Integer> findDayNumberByCourseId(Long courseId);
+
+    @Query("SELECT SUM(FUNCTION('parse_duration_to_minutes', c.courseDuration)) " +
+            "FROM Courses c " +
+            "WHERE c.batch.id = :batchId " +
+            "AND c.courseDate <= CURRENT_DATE")
+    Long findTotalCourseDurationByBatchId(@Param("batchId") Long batchId);
+
+    @Query("SELECT COUNT(DISTINCT c.dayNumber) FROM Courses c WHERE c.batch.id = :batchId AND c.courseDate <= CURRENT_DATE")
+    Long countDistinctCourseDaysCompletedByBatchId(@Param("batchId") Long batchId);
 }
 

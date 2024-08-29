@@ -1,16 +1,15 @@
 package com.ILPex.controller;
 
 import com.ILPex.DTO.CourseProgressDTO;
+import com.ILPex.DTO.TraineeCourseCountDTO;
+import com.ILPex.DTO.TraineeCourseDurationDTO;
 import com.ILPex.constants.Message;
 import com.ILPex.response.ResponseHandler;
 import com.ILPex.service.TraineeProgressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -42,5 +41,17 @@ public class TraineeProgressController {
     @GetMapping("/{traineeId}")
     public List<CourseProgressDTO> getTraineeProgress(@PathVariable Long traineeId) {
         return traineeProgressService.getTraineeProgress(traineeId);
+    }
+
+    @GetMapping("/course-duration")
+    public ResponseEntity<List<TraineeCourseDurationDTO>> getTotalCourseDurationByBatchId(
+            @RequestParam Long batchId) {
+        List<TraineeCourseDurationDTO> response = traineeProgressService.findTotalCourseDurationDTOByBatchId(batchId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/course-count/{batchId}")
+    public List<TraineeCourseCountDTO> getDistinctCourseDurationCountByBatchId(@PathVariable Long batchId) {
+        return traineeProgressService.getDistinctCourseDurationCountByBatchId(batchId);
     }
 }

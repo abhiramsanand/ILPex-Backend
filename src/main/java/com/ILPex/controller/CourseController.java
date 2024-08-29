@@ -1,12 +1,12 @@
 package com.ILPex.controller;
 
 import com.ILPex.DTO.CourseDayBatchDTO;
+import com.ILPex.DTO.CourseDurationDTO;
+import com.ILPex.DTO.TotalCourseDaysDTO;
 import com.ILPex.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,6 +14,7 @@ import java.util.List;
 @RequestMapping("/api/courses")
 public class CourseController {
 
+    @Autowired
     private final CourseService courseService;
 
     @Autowired
@@ -24,6 +25,17 @@ public class CourseController {
     @GetMapping("/batch/{batchId}")
     public List<CourseDayBatchDTO> getCoursesByBatchId(@PathVariable Long batchId) {
         return courseService.getCoursesByBatchId(batchId);
+    }
+
+    @GetMapping("/total-duration")
+    public CourseDurationDTO getTotalCourseDuration(@RequestParam Long batchId) {
+        return courseService.getTotalCourseDuration(batchId);
+    }
+
+    @GetMapping("/total-course-days-completed/{batchId}")
+    public ResponseEntity<TotalCourseDaysDTO> getTotalCourseDaysCompleted(@PathVariable Long batchId) {
+        TotalCourseDaysDTO totalCourseDays = courseService.getTotalCourseDaysCompleted(batchId);
+        return ResponseEntity.ok(totalCourseDays);
     }
 }
 
