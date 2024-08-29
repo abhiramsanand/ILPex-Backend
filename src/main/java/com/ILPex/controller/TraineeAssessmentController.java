@@ -44,4 +44,18 @@ public class TraineeAssessmentController {
         return ResponseEntity.ok(pendingAssessments);
     }
 
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<TraineeAssessmentDisplayDTO> getAssessmentByName(@PathVariable("name") String assessmentName) {
+        TraineeAssessmentDisplayDTO assessmentDTO = assessmentService.getAssessmentByName(assessmentName);
+        return ResponseEntity.ok(assessmentDTO);
+    }
+
+    @PostMapping("/submit")
+    public ResponseEntity<Integer> submitAssessment(@RequestBody AssessmentResponseDTO responseDTO) {
+        int score = assessmentService.calculateAssessmentScore(responseDTO);
+        return ResponseEntity.ok(score);
+    }
+
+
 }

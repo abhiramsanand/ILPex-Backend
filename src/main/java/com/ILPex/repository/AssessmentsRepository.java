@@ -23,4 +23,6 @@ public interface AssessmentsRepository extends JpaRepository<Assessments, Long> 
 
     @Query("SELECT new com.ILPex.DTO.TraineePendingAssessmentDTO(a.assessmentName, a.dueDate, t.id) " + "FROM Assessments a " + "JOIN a.assessmentBatchAllocations aba " + "JOIN aba.batches b " + "JOIN b.trainees t " + "LEFT JOIN Results r ON aba.id = r.assessmentBatchAllocation.id AND r.traineeId = t.id " + "WHERE r.id IS NULL AND t.id = :traineeId")
     List<TraineePendingAssessmentDTO> findPendingAssessmentsByTraineeId(@Param("traineeId") int traineeId);
+
+    Assessments findByAssessmentName(String assessmentName);
 }
