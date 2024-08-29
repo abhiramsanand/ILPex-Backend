@@ -18,15 +18,16 @@ import java.util.Optional;
 @Repository
 public interface CoursesRepository extends JpaRepository<Courses,Long> {
     Optional<Courses> findByCourseName(String courseName);
+
     List<Courses> findByCourseDateAndBatchId(LocalDateTime courseDate, Long batchId);
 
 
-        @Query("SELECT new com.ILPex.DTO.CourseDayBatchDTO(c.courseName, c.dayNumber, b.batchName, c.courseDuration) " +
-                "FROM Courses c " +
-                "JOIN c.batch b " +
-                "WHERE b.id = :batchId " +
-                "ORDER BY c.dayNumber")
-        List<CourseDayBatchDTO> findCoursesByBatchId(@Param("batchId") Long batchId);
+    @Query("SELECT new com.ILPex.DTO.CourseDayBatchDTO(c.courseName, c.dayNumber, b.batchName, c.courseDuration) " +
+            "FROM Courses c " +
+            "JOIN c.batch b " +
+            "WHERE b.id = :batchId " +
+            "ORDER BY c.dayNumber")
+    List<CourseDayBatchDTO> findCoursesByBatchId(@Param("batchId") Long batchId);
 
     @Query("SELECT c.dayNumber FROM Courses c WHERE c.courseName = :courseName")
     Optional<Integer> findDayNumberByCourseName(String courseName);
@@ -42,5 +43,19 @@ public interface CoursesRepository extends JpaRepository<Courses,Long> {
 
     @Query("SELECT COUNT(DISTINCT c.dayNumber) FROM Courses c WHERE c.batch.id = :batchId AND c.courseDate <= CURRENT_DATE")
     Long countDistinctCourseDaysCompletedByBatchId(@Param("batchId") Long batchId);
+
+    @Query(value = "SELECT SUM(" +
+            "CASE " +
+            "WHEN course_duration ~ '^[0-9]+h [0-9]+m$' THEN " +
+            "CAST(SPLIT_PART(course_duration, 'h', 1) AS INTEGER) * 60 + " +
+            "CAST(SPLIT_PART(SPLIT_PART(course_duration, 'h', 2), 'm', 1) AS INTEGER) " +
+            "WHEN course_duration ~ '^[0-9]+m$' THEN " +
+            "CAST(SPLIT_PART(course_duration, 'm', 1) AS INTEGER) " +
+            "ELSE 0 " +
+            "END " +
+            ") AS total_duration_minutes " +
+            "FROM courses " +
+            "WHERE day_number <= :dayNumber", nativeQuery = true)
+    Long getTotalCourseDurationUpToDayNumber(@Param("dayNumber") Integer dayNumber);
 }
 
