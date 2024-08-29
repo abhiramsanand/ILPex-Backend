@@ -3,6 +3,7 @@ package com.ILPex.controller;
 
 
 import com.ILPex.DTO.TraineeDTO;
+import com.ILPex.DTO.TraineeDailyReportDTO;
 import com.ILPex.service.TraineeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/trainees")
+@CrossOrigin(origins = "http://localhost:5173")
 public class TraineeController {
 
     @Autowired
@@ -21,5 +23,11 @@ public class TraineeController {
     public ResponseEntity<List<TraineeDTO>> getTraineesByBatchId(@PathVariable Long batchId) {
         List<TraineeDTO> trainees = traineeService.getTraineesByBatchId(batchId);
         return ResponseEntity.ok(trainees);
+    }
+
+    @GetMapping("/reports")
+    public ResponseEntity<List<TraineeDailyReportDTO>> getTraineeReportsByBatchId(@RequestParam Long batchId) {
+        List<TraineeDailyReportDTO> traineeReports = traineeService.getTraineeReportsByBatchId(batchId);
+        return ResponseEntity.ok(traineeReports);
     }
 }
