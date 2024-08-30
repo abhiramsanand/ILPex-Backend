@@ -11,10 +11,15 @@ import com.ILPex.service.ProgramService;
 import com.ILPex.service.RolesService;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -54,6 +59,7 @@ public class BatchServiceImpl implements BatchService {
     public List<CourseDayBatchDTO> getDaywiseCoursesForAllBatches() {
         return batchRepository.findDaywiseCoursesForAllBatches();
     }
+
 
     @Override
     public Batches createBatch(BatchCreationDTO batchCreationDTO) {
@@ -156,6 +162,101 @@ public class BatchServiceImpl implements BatchService {
             throw new ResourceNotFoundException("Trainee not found with ID " + traineeId);
         }
     }
+
+    @Override
+    public Batches createBatchWithTrainees(BatchCreationDTO batchCreationDTO, MultipartFile file) throws IOException {
+        // Create the batch first and save it to get the generated batch ID
+        Batches batch = createBatch(batchCreationDTO);
+
+        // Parse the Excel file and set the batch ID for each trainee
+        List<Users> usersList = parseExcelFile(file, batch,batchCreationDTO);
+
+        // Save each user and trainee with the associated batch ID
+        for (Users user : usersList) {
+            userRepository.save(user);
+        }
+        Set<Trainees> traineesSet = usersList.stream()
+                .map(user -> user.getTrainees().iterator().next())
+                .collect(Collectors.toSet());
+
+        batchCreationDTO.setTrainees(traineesSet);
+
+        return batch;
+    }
+    private List<Users> parseExcelFile(MultipartFile file, Batches batch, BatchCreationDTO batchCreationDTO) throws IOException {
+        List<Users> usersList = new ArrayList<>();
+        Roles traineeRole = rolesService.getRoleByName("Trainee");
+
+        if (traineeRole == null) {
+            traineeRole = rolesService.createRole("Trainee");
+        }
+
+        try (InputStream inputStream = file.getInputStream(); Workbook workbook = new XSSFWorkbook(inputStream)) {
+            Sheet sheet = workbook.getSheetAt(0); // Assuming data is in the first sheet
+
+            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
+                Row row = sheet.getRow(i);
+
+                if (row == null || isRowEmpty(row)) {
+                    break;
+                }
+
+                Users user = new Users();
+                user.setUserName(getCellValueAsString(row.getCell(0))); // Name
+                user.setEmail(getCellValueAsString(row.getCell(2))); // Email
+                user.setPassword(getCellValueAsString(row.getCell(4))); // Password
+                user.setRoles(traineeRole); // Set the role
+
+                Trainees trainee = new Trainees();
+                trainee.setPercipioEmail(getCellValueAsString(row.getCell(3))); // Percipio_Email
+                trainee.setIsActive(batchCreationDTO.getIsActive()); // Use the passed batchCreationDTO
+                trainee.setUsers(user);
+                trainee.setBatches(batch); // Set the batch for the trainee
+
+                Set<Trainees> traineesSet = new HashSet<>();
+                traineesSet.add(trainee);
+                user.setTrainees(traineesSet);
+
+                usersList.add(user);
+            }
+        }
+
+        return usersList;
+    }
+
+    private boolean isRowEmpty(Row row) {
+        for (int i = 0; i < row.getLastCellNum(); i++) {
+            Cell cell = row.getCell(i);
+            if (cell != null && cell.getCellType() != CellType.BLANK && !getCellValueAsString(cell).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                } else {
+                    return String.valueOf((int) cell.getNumericCellValue());
+                }
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            case BLANK:
+            default:
+                return "";
+        }
+    }
+
 
     @Override
     public BatchDetailsDTO getBatchDetails(Long batchId) {

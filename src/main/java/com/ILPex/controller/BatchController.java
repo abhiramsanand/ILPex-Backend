@@ -75,107 +75,11 @@ public class BatchController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        // Create the batch first and save it to get the generated batch ID
-        Batches batch = batchService.createBatch(batchCreationDTO);
-
-        // Parse the Excel file and set the batch ID for each trainee
-        List<Users> usersList;
         try {
-            usersList = parseExcelFile(file, batch);
+            Batches batch = batchService.createBatchWithTrainees(batchCreationDTO, file);
+            return ResponseEntity.ok(batch.getId());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-
-        // Save each user and trainee with the associated batch ID
-        for (Users user : usersList) {
-            userService.saveUser(user);
-        }
-        Set<Trainees> traineesSet = usersList.stream()
-                .map(user -> user.getTrainees().iterator().next())
-                .collect(Collectors.toSet());
-
-        batchCreationDTO.setTrainees(traineesSet);
-        return ResponseEntity.ok(batch.getId());
-    }
-
-    @Autowired
-    private RolesService rolesService;
-
-    private List<Users> parseExcelFile(MultipartFile file, Batches batch) throws IOException {
-        List<Users> usersList = new ArrayList<>();
-        Roles traineeRole = rolesService.getRoleByName("Trainee");
-
-        if (traineeRole == null) {
-            traineeRole = rolesService.createRole("Trainee");
-        }
-
-        try (InputStream inputStream = file.getInputStream(); Workbook workbook = new XSSFWorkbook(inputStream)) {
-            Sheet sheet = workbook.getSheetAt(0); // Assuming data is in the first sheet
-
-            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
-                Row row = sheet.getRow(i);
-
-                if (row == null || isRowEmpty(row)) {
-                    break;
-                }
-
-                Users user = new Users();
-                user.setUserName(getCellValueAsString(row.getCell(0))); // Name
-                user.setEmail(getCellValueAsString(row.getCell(2))); // Email
-                user.setPassword(getCellValueAsString(row.getCell(4))); // Password
-                user.setRoles(traineeRole); // Set the role
-
-                Trainees trainee = new Trainees();
-                BatchCreationDTO batchCreationDTO = new BatchCreationDTO();
-                trainee.setPercipioEmail(getCellValueAsString(row.getCell(3))); // Percipio_Email
-                trainee.setIsActive(batchCreationDTO.getIsActive());
-                trainee.setUsers(user);
-                trainee.setBatches(batch); // Set the batch for the trainee
-//                trainee.setUserUuid(UUID.randomUUID());
-
-                Set<Trainees> traineesSet = new HashSet<>();
-                traineesSet.add(trainee);
-                user.setTrainees(traineesSet);
-
-                usersList.add(user);
-            }
-        }
-
-        return usersList;
-    }
-
-
-    private boolean isRowEmpty(Row row) {
-        for (int i = 0; i < row.getLastCellNum(); i++) {
-            Cell cell = row.getCell(i);
-            if (cell != null && cell.getCellType() != CellType.BLANK && !getCellValueAsString(cell).isEmpty()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    private String getCellValueAsString(Cell cell) {
-        if (cell == null) {
-            return "";
-        }
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    return cell.getDateCellValue().toString();
-                } else {
-                    return String.valueOf((int) cell.getNumericCellValue());
-                }
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case FORMULA:
-                return cell.getCellFormula();
-            case BLANK:
-            default:
-                return "";
         }
     }
 
@@ -203,6 +107,21 @@ public class BatchController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PutMapping("/{batchId}/update-end-date")
+    public ResponseEntity<Batches> updateBatchEndDate(
+            @PathVariable Long batchId,
+            @RequestBody BatchUpdateDTO batchUpdateDTO) {
+
+        // Ensure that only endDate is being updated
+        if (batchUpdateDTO.getEndDate() == null) {
+            return ResponseEntity.badRequest().body(null);  // Return 400 Bad Request if endDate is not provided
+        }
+
+        Batches updatedBatch = batchService.updateBatch(batchId, batchUpdateDTO);
+        return ResponseEntity.ok(updatedBatch);
+    }
+
     @DeleteMapping("/trainees/{traineeId}")
     public ResponseEntity<String> deleteTrainee(@PathVariable("traineeId") Long traineeId) {
         try {
@@ -232,7 +151,6 @@ public class BatchController {
         }
     }
 
-
     @GetMapping("/{batchId}/details")
     public ResponseEntity<BatchDetailsDTO> getBatchDetails(@PathVariable("batchId") Long batchId) {
         try {
@@ -244,6 +162,7 @@ public class BatchController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
     @PutMapping("/trainees/{traineeId}")
     public ResponseEntity<TraineeDisplayByBatchDTO> updateTrainee(
             @PathVariable("traineeId") Long traineeId,

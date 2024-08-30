@@ -11,17 +11,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name="programs")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(name = "programs")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "batches"})
 public class Programs extends BaseEntity {
-    @Column(name = "program_name", nullable = false)
+
+    @Column(name = "program_name")
     private String programName;
 
-    @OneToMany(mappedBy = "programs", cascade = CascadeType.ALL, fetch = FetchType.LAZY, targetEntity = Batches.class)
+    @OneToMany(mappedBy = "programs", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("programs") // Ignore 'programs' property in Batches to break the cycle
     private Set<Batches> batches = new HashSet<>();
-
-
 }

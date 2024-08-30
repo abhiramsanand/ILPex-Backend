@@ -20,16 +20,11 @@ public class TraineeAssessmentController {
     @Autowired
     private AssessmentService assessmentService;
 
-
-
     @GetMapping("/{id}")
     public ResponseEntity<TraineeAssessmentDisplayDTO> getAssessment(@PathVariable("id") Long assessmentId) {
         TraineeAssessmentDisplayDTO assessmentDTO = assessmentService.getAssessmentById(assessmentId);
         return ResponseEntity.ok(assessmentDTO);
     }
-
-
-
 
     @GetMapping("/completed/{traineeId}")
     public ResponseEntity<List<TraineeCompletedAssessmentDTO>> getCompletedAssessmentsByTraineeId(@PathVariable int traineeId) {
@@ -44,4 +39,15 @@ public class TraineeAssessmentController {
         return ResponseEntity.ok(pendingAssessments);
     }
 
+    @GetMapping("/name/{name}")
+    public ResponseEntity<TraineeAssessmentDisplayDTO> getAssessmentByName(@PathVariable("name") String assessmentName) {
+        TraineeAssessmentDisplayDTO assessmentDTO = assessmentService.getAssessmentByName(assessmentName);
+        return ResponseEntity.ok(assessmentDTO);
+    }
+
+    @PostMapping("/submit")
+    public ResponseEntity<Integer> submitAssessment(@RequestBody AssessmentResponseDTO responseDTO) {
+        int score = assessmentService.calculateAssessmentScore(responseDTO);
+        return ResponseEntity.ok(score);
+    }
 }
