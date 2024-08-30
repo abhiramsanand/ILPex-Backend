@@ -16,18 +16,25 @@ public class TraineeScoreServiceImpl implements TraineeScoreService {
     private ResultsRepository resultsRepository;
 
     @Override
-    public Map<Long, Double> getAverageScoresForAllTrainees() {
-        Map<Long, Double> traineeScores = new HashMap<>();
+    public Map<String, Double> getAverageScoresForAllTraineesByName() {
+        Map<String, Double> traineeScores = new HashMap<>();
 
         // Fetch all distinct trainee IDs
         List<Long> traineeIds = resultsRepository.findDistinctTraineeIds();
 
-        // Calculate the average score for each trainee
+        // Calculate the average score for each trainee and map it to their name
         for (Long traineeId : traineeIds) {
-            Double averageScore = resultsRepository.findAverageScoreByTraineeId(traineeId);
-            traineeScores.put(traineeId, averageScore);
+            List<Object[]> results = resultsRepository.findTraineeNameAndAverageScoreByTraineeId(traineeId);
+
+            for (Object[] result : results) {
+                // Ensure proper casting of each element in the Object array
+                String traineeName = (String) result[0];
+                Double averageScore = (Double) result[1];
+                traineeScores.put(traineeName, averageScore);
+            }
         }
 
         return traineeScores;
     }
+
 }

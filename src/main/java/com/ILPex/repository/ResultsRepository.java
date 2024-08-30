@@ -23,6 +23,11 @@ public interface ResultsRepository extends JpaRepository<Results,Integer> {
     @Query("SELECT DISTINCT r.traineeId FROM Results r")
     List<Long> findDistinctTraineeIds();
 
-    @Query("SELECT AVG(r.score) FROM Results r WHERE r.traineeId = :traineeId")
-    Double findAverageScoreByTraineeId(Long traineeId);
+    @Query("SELECT u.userName, AVG(r.score) " +
+            "FROM Results r " +
+            "JOIN r.trainees t " +
+            "JOIN t.users u " +
+            "GROUP BY u.userName, t.id " +
+            "HAVING t.id = :traineeId")
+    List<Object[]> findTraineeNameAndAverageScoreByTraineeId(@Param("traineeId") Long traineeId);
 }

@@ -30,6 +30,10 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
     @Autowired
     private DailyReportsRepository dailyReportsRepository;
 
+    /**
+     *
+     * @return
+     */
     @Override
     public List<Map<String, Object>> getLastAccessedDayNumberForTrainees() {
         List<Map<String, Object>> traineeList = new ArrayList<>();

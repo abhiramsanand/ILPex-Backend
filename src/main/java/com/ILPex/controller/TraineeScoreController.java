@@ -16,9 +16,9 @@ public class TraineeScoreController {
     @Autowired
     private TraineeScoreService traineeScoreService;
 
-    @GetMapping("/average")
-    public ResponseEntity<Map<Long, Double>> getAverageScoresForAllTrainees() {
-        Map<Long, Double> averageScores = traineeScoreService.getAverageScoresForAllTrainees();
-        return ResponseEntity.ok(averageScores);
+    @GetMapping("/average/name")
+    public ResponseEntity<Map<String, Double>> getAverageScoresForAllTraineesByName() {
+        Map<String, Double> averageScoresByName = traineeScoreService.getAverageScoresForAllTraineesByName();
+        return ResponseEntity.ok(averageScoresByName);
     }
 }
