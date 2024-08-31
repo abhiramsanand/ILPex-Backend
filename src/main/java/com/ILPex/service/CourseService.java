@@ -10,6 +10,7 @@ public interface CourseService {
     TotalCourseDaysDTO getTotalCourseDaysCompleted(Long batchId);
     TotalCourseDurationDTO getTotalCourseDuration(Long batchId);
     List<CourseDailyReportDTO> getCourseDetails(Long traineeId, Long batchId);
+    List<PendingSubmissionDTO> getPendingSubmissions(Long batchId, Long traineeId);
 
 
 }

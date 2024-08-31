@@ -42,11 +42,15 @@ public class CourseController {
         return ResponseEntity.ok(dto);
     }
 
-    @GetMapping("/WholeReport/{traineeId}/batch/{batchId}")
+    @GetMapping("/WholeReport/{traineeId}/batch/{batchId}")     //Whole Reports
     public List<CourseDailyReportDTO> getCourseDetails(
             @PathVariable Long traineeId,
             @PathVariable Long batchId) {
         return courseService.getCourseDetails(traineeId, batchId);
+    }
+    @GetMapping("/pending-submissions")         //pending dailyrepots
+    public List<PendingSubmissionDTO> getPendingSubmissions(@RequestParam Long batchId, @RequestParam Long traineeId) {
+        return courseService.getPendingSubmissions(batchId, traineeId);
     }
 }
 

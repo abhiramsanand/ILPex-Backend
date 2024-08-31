@@ -58,9 +58,12 @@ public interface CoursesRepository extends JpaRepository<Courses,Long> {
             "WHERE day_number <= :dayNumber", nativeQuery = true)
     Long getTotalCourseDurationUpToDayNumber(@Param("dayNumber") Integer dayNumber);
 
-    @Query("SELECT c FROM Courses c WHERE c.batch.id = :batchId AND c.courseDate < :currentDate")
+    @Query("SELECT c FROM Courses c WHERE c.batch.id = :batchId AND c.courseDate < :currentDate")                       //to display wholereport
     List<Courses> findByBatchIdAndCourseDateBefore(@Param("batchId") Long batchId, @Param("currentDate") Date currentDate);
 
+    @Query("SELECT c FROM Courses c WHERE c.batch.id = :batchId AND c.courseDate < CURRENT_DATE AND c.id NOT IN " +     //to display pending submission
+            "(SELECT dr.courses.id FROM DailyReports dr WHERE dr.trainees.id = :traineeId)")
+    List<Courses> findPendingSubmissions(Long batchId, Long traineeId);
 
 }
 

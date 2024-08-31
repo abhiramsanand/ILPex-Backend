@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -92,5 +93,10 @@ public class CourseServiceImpl implements CourseService {
 
         return responseList;
     }
-
+    @Override
+    public List<PendingSubmissionDTO> getPendingSubmissions(Long batchId, Long traineeId) {
+        List<Courses> pendingCourses = coursesRepository.findPendingSubmissions(batchId, traineeId);
+        return pendingCourses.stream().map(course -> new PendingSubmissionDTO(course.getId(), course.getCourseName(), course.getDayNumber()))
+                .collect(Collectors.toList());
+    }
 }
