@@ -16,7 +16,8 @@ public interface CourseService {
     void saveCourses(List<Courses> coursesList);
     List<Courses> parseCourseExcelFile(MultipartFile file, Batches batch) throws IOException;
 
-    void updateCourseDatesForHoliday(LocalDate holidayDate);
+    void updateCourseDatesForHoliday(LocalDate holidayDate, String description);
+
     List<DayNumberWithDateDTO> getAllCourseDatesWithDayNumber();
     void restoreCourseDatesForWorkingDay(LocalDate holidayDate);
 

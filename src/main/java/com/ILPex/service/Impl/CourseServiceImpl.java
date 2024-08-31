@@ -234,12 +234,12 @@ public class CourseServiceImpl implements CourseService {
 
     private final List<LocalDate> holidays = List.of();
     @Override
-    public void updateCourseDatesForHoliday(LocalDate holidayDate) {
+    public void updateCourseDatesForHoliday(LocalDate holidayDate, String description) {
         Holiday holiday = new Holiday();
         holiday.setDate(holidayDate);
+        holiday.setDescription(description);
         holidayRepository.save(holiday);
 
-        // Extend the holiday period to include weekends
         LocalDate startDate = holidayDate.minusDays(6);
         LocalDate endDate = holidayDate.plusDays(6);
 
@@ -253,6 +253,7 @@ public class CourseServiceImpl implements CourseService {
         }
 
         Timestamp holidayTimestamp = convertToTimestamp(holidayDate);
+
         List<Courses> courses = coursesRepository.findAllByOrderByDayNumberAscCourseDateAsc();
         Map<Integer, Timestamp> updatedDates = new HashMap<>();
 
@@ -275,7 +276,9 @@ public class CourseServiceImpl implements CourseService {
         }
 
         coursesRepository.saveAll(courses);
+        checkAndMarkEmptyDaysAsHolidays();
     }
+
 
     private LocalDate findNextWorkingDay(LocalDate date) {
         while (isHoliday(date) || isWeekend(date)) {
