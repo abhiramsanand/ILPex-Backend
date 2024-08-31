@@ -73,10 +73,24 @@ public class CourseServiceImpl implements CourseService {
         return new TotalCourseDurationDTO(totalDuration);
     }
 
+
     @Override
-    public void saveCourses(List<Courses> coursesList) {
-        coursesRepository.saveAll(coursesList);
+    public void saveCourses(List<Courses> courses) {
+        coursesRepository.saveAll(courses);
+        checkAndMarkEmptyDaysAsHolidays();
     }
+
+    @Override
+    public List<LocalDate> getAllCourseDates() {
+        return coursesRepository.findAll().stream()
+                .map(course -> course.getCourseDate().toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate())
+                .collect(Collectors.toList());
+    }
+
+
+
 
     @Override
     public List<Courses> parseCourseExcelFile(MultipartFile file, Batches batch) throws IOException {
