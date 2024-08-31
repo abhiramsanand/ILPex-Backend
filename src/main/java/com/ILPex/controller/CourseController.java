@@ -1,9 +1,6 @@
 package com.ILPex.controller;
 
-import com.ILPex.DTO.CourseDayBatchDTO;
-import com.ILPex.DTO.CourseDurationDTO;
-import com.ILPex.DTO.TotalCourseDaysDTO;
-import com.ILPex.DTO.TotalCourseDurationDTO;
+import com.ILPex.DTO.*;
 import com.ILPex.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +40,13 @@ public class CourseController {
     public ResponseEntity<TotalCourseDurationDTO> getTotalCourseDuration(@PathVariable Long batchId) {
         TotalCourseDurationDTO dto = courseService.getTotalCourseDuration(batchId);
         return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/WholeReport/{traineeId}/batch/{batchId}")
+    public List<CourseDailyReportDTO> getCourseDetails(
+            @PathVariable Long traineeId,
+            @PathVariable Long batchId) {
+        return courseService.getCourseDetails(traineeId, batchId);
     }
 }
 

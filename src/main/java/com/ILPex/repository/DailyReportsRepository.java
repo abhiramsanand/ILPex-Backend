@@ -1,6 +1,8 @@
 package com.ILPex.repository;
 
+import com.ILPex.entity.Courses;
 import com.ILPex.entity.DailyReports;
+import com.ILPex.entity.Trainees;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
