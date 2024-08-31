@@ -3,30 +3,31 @@ package com.ILPex.controller;
 import com.ILPex.DTO.AssessmentCreationDTO;
 import com.ILPex.service.AssessmentCreation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/assessmentcreation")
+@RequestMapping("/api/v1/assessments")
 public class AssessmentCreationController {
+
     @Autowired
-    private AssessmentCreation assessmentCreation;
+    private AssessmentCreation assessmentCreationService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> createAssessment(@RequestParam("title") String title,
-                                                   @RequestParam("batchId") Long batchId,
-                                                   @RequestParam("startDate") String startDate,
-                                                   @RequestParam("endDate") String endDate,
-                                                   @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> createAssessment(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("title") String title,
+            @RequestParam("batchId") Long batchId,
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate) {
+
         try {
-            // Convert file to DTO and pass it to service
-            AssessmentCreationDTO assessmentCreationDTO = assessmentCreation.parseExcelFile(file, title, batchId, startDate, endDate);
-            assessmentCreation.createAssessment(assessmentCreationDTO);
-            return new ResponseEntity<>("Assessment created successfully", HttpStatus.CREATED);
+            AssessmentCreationDTO assessmentCreationDTO = assessmentCreationService.parseExcelFile(file, title, batchId, startDate, endDate);
+            assessmentCreationService.createAssessment(assessmentCreationDTO);
+            return ResponseEntity.ok("Assessment created and notifications sent to all trainees of the batch.");
         } catch (Exception e) {
-            return new ResponseEntity<>("Error creating assessment: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 }

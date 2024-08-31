@@ -53,6 +53,8 @@ public class Trainees  extends BaseEntity{
     @OneToMany(mappedBy = "trainees", cascade = CascadeType.ALL,targetEntity = DailyReports.class)
     private Set<DailyReports> dailyReports = new HashSet<>();
 
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, targetEntity = AssessmentNotification.class)
+    private Set<AssessmentNotification> assessmentNotifications = new HashSet<>();
 
 
 

@@ -11,6 +11,7 @@ import com.ILPex.repository.AssessmentsRepository;
 import com.ILPex.repository.BatchRepository;
 import com.ILPex.repository.QuestionsRepository;
 import com.ILPex.service.AssessmentCreation;
+import com.ILPex.service.AssessmentNotificationService;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -40,6 +41,9 @@ public class AssessmentCreationImpl implements AssessmentCreation {
     @Autowired
     private BatchRepository batchRepository;
 
+    @Autowired
+    private AssessmentNotificationService assessmentNotificationService;
+
     @Override
     public void createAssessment(AssessmentCreationDTO assessmentCreationDTO) throws Exception {
         // Create and save the assessment
@@ -59,6 +63,8 @@ public class AssessmentCreationImpl implements AssessmentCreation {
         Optional<Batches> batchOptional = batchRepository.findById(assessmentCreationDTO.getBatchId());
         if (!batchOptional.isPresent()) {
             throw new Exception("Batch not found");
+
+
         }
         Batches batch = batchOptional.get();
 
@@ -82,7 +88,11 @@ public class AssessmentCreationImpl implements AssessmentCreation {
             question.setCorrectAnswer(questionDTO.getCorrectAnswer());
             question.setAssessments(assessment);
             questionRepository.save(question);
+
+
         }
+        // Notify all trainees of the batch
+        assessmentNotificationService.notifyAllTraineesOfBatch(batch.getId(), allocation.getId());
     }
 
     @Override

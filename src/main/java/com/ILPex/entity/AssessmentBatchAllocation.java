@@ -31,6 +31,9 @@ public class AssessmentBatchAllocation extends BaseEntity {
     @OneToMany(mappedBy = "assessmentBatchAllocation", cascade = CascadeType.ALL, targetEntity = Results.class)
     private Set<Results> results = new HashSet<>();
 
+    @OneToMany(mappedBy = "assessmentBatchAllocation", cascade = CascadeType.ALL, targetEntity = AssessmentNotification.class)
+    private Set<AssessmentNotification> assessmentNotifications = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties("assessment_batch_allocation")
     @JoinColumn(name = "batch_id", referencedColumnName = "id", nullable = false)
