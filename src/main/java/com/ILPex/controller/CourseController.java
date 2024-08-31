@@ -83,6 +83,7 @@ public class CourseController {
     public List<PendingSubmissionDTO> getPendingSubmissions(@RequestParam Long batchId, @RequestParam Long traineeId) {
         return courseService.getPendingSubmissions(batchId, traineeId);
     }
+
     @GetMapping("/dates/dayNumber")
     public List<DayNumberWithDateDTO> getAllCourseDatesAndDayNumber() {
         return courseService.getAllCourseDatesWithDayNumber();

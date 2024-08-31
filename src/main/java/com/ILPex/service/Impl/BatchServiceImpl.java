@@ -409,7 +409,6 @@ public class BatchServiceImpl implements BatchService {
         }
     }
 
-
     private long calculateWorkingDays(LocalDate start, LocalDate end) {
         long count = 0;
         while (!start.isAfter(end)) {

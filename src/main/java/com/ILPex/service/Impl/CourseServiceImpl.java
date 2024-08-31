@@ -50,7 +50,6 @@ public class CourseServiceImpl implements CourseService {
     private HolidayRepository holidayRepository;
 
 
-
     @Override
     public List<CourseDayBatchDTO> getCoursesByBatchId(Long batchId) {
         return coursesRepository.findCoursesByBatchId(batchId);
@@ -99,8 +98,6 @@ public class CourseServiceImpl implements CourseService {
                         .toLocalDate())
                 .collect(Collectors.toList());
     }
-
-
 
 
     @Override
@@ -181,7 +178,7 @@ public class CourseServiceImpl implements CourseService {
             dto.setCourseName(course.getCourseName());
 
             // Fetch daily report based on traineeId and courseId
-            Optional<DailyReports> dailyReportOpt = dailyReportsRepository.findByTrainees_IdAndCourses_Id(traineeId , course.getId());
+            Optional<DailyReports> dailyReportOpt = dailyReportsRepository.findByTrainees_IdAndCourses_Id(traineeId, course.getId());
             if (dailyReportOpt.isPresent()) {
                 DailyReports dailyReport = dailyReportOpt.get();
                 dto.setTimeTaken(dailyReport.getTimeTaken());
@@ -195,6 +192,7 @@ public class CourseServiceImpl implements CourseService {
 
         return responseList;
     }
+
     @Override
     public List<PendingSubmissionDTO> getPendingSubmissions(Long batchId, Long traineeId) {
         List<Courses> pendingCourses = coursesRepository.findPendingSubmissions(batchId, traineeId);
@@ -282,18 +280,23 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<DayNumberWithDateDTO> getAllCourseDatesWithDayNumber() {
-        return coursesRepository.findAll().stream()
-                .map(course -> new DayNumberWithDateDTO(
-                        course.getCourseDate().toInstant()
+        return new ArrayList<>(coursesRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        course -> course.getCourseDate().toInstant()
                                 .atZone(ZoneId.systemDefault())
                                 .toLocalDate(),
-                        course.getDayNumber()))
-                .collect(Collectors.toList());
+                        course -> new DayNumberWithDateDTO(
+                                course.getCourseDate().toInstant()
+                                        .atZone(ZoneId.systemDefault())
+                                        .toLocalDate(),
+                                course.getDayNumber()),
+                        (existing, replacement) -> replacement // If a duplicate key is found, keep the last one
+                ))
+                .values());
     }
 
-
-
     private final List<LocalDate> holidays = List.of();
+
     @Override
     public void updateCourseDatesForHoliday(LocalDate holidayDate, String description) {
         Holiday holiday = new Holiday();
@@ -361,6 +364,7 @@ public class CourseServiceImpl implements CourseService {
         ZonedDateTime zonedDateTime = date.atStartOfDay(ZoneId.systemDefault());
         return Timestamp.from(zonedDateTime.toInstant());
     }
+
     @Override
     public void restoreCourseDatesForWorkingDay(LocalDate holidayDate) {
         // Fetch all courses sorted by day number and course date
@@ -406,10 +410,6 @@ public class CourseServiceImpl implements CourseService {
         holidayRepository.deleteById(holidayDate);
         System.out.println("Holiday on " + holidayDate + " has been removed.");
     }
-
-
-
-
 
 
     private LocalDate findPreviousWorkingDay(LocalDate date) {
