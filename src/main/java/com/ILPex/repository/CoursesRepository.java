@@ -57,5 +57,9 @@ public interface CoursesRepository extends JpaRepository<Courses,Long> {
             "FROM courses " +
             "WHERE day_number <= :dayNumber", nativeQuery = true)
     Long getTotalCourseDurationUpToDayNumber(@Param("dayNumber") Integer dayNumber);
+
+    List<Courses> findAllByOrderByDayNumberAscCourseDateAsc();
+    List<Courses> findByCourseDate(Timestamp courseDate);
+
 }
 

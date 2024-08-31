@@ -34,7 +34,7 @@ public class Courses extends BaseEntity{
     private String courseDuration;
 
     @Column(name = "course_date")
-    private  Date courseDate;
+    private Timestamp courseDate;
 
     @OneToMany(mappedBy = "courses", cascade = CascadeType.ALL,targetEntity = TraineeProgress.class)
     private Set<TraineeProgress> traineeProgresses = new HashSet<>();
