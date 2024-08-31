@@ -73,6 +73,7 @@ public class AssessmentServiceImpl implements AssessmentService{
             // Assuming you have a method to convert Questions entities to QuestionsDTOs
             dto.setQuestions(assessment.getQuestions().stream()
                     .map(question -> new QuestionsDTO(
+                            question.getId(),
                             question.getQuestion(),
                             question.getOptionA(),
                             question.getOptionB(),
@@ -102,6 +103,12 @@ public class AssessmentServiceImpl implements AssessmentService{
             throw new IllegalArgumentException("Question responses cannot be null or empty");
         }
 
+        // Fetch the assessment by name
+        Assessments assessment = assessmentRepository.findByAssessmentName(responseDTO.getAssessmentName());
+        if (assessment == null) {
+            throw new IllegalArgumentException("Assessment not found with name: " + responseDTO.getAssessmentName());
+        }
+
         // Iterate through each response
         for (Map.Entry<Long, String> entry : questionResponses.entrySet()) {
             Long questionId = entry.getKey();
@@ -127,9 +134,8 @@ public class AssessmentServiceImpl implements AssessmentService{
         result.setAssessmentAttempts(1); // Adjust if multiple attempts are tracked
 
         // Find and set the assessment batch allocation
-        Assessments assessment = assessmentRepository.findById(responseDTO.getAssessmentId()).orElse(null);
         Trainees trainee = traineesRepository.findById(responseDTO.getTraineeId()).orElse(null);
-        if (assessment != null && trainee != null) {
+        if (trainee != null) {
             AssessmentBatchAllocation batchAllocation = assessmentBatchAllocationRepository
                     .findByAssessmentsAndBatches(assessment, trainee.getBatches());
 
@@ -139,15 +145,15 @@ public class AssessmentServiceImpl implements AssessmentService{
             // Save the result to the repository
             resultsRepository.save(result);
         } else {
-            throw new IllegalArgumentException("Invalid assessment or trainee ID");
+            throw new IllegalArgumentException("Invalid trainee ID");
         }
 
         return score;
     }
 
-
     private QuestionsDTO convertToQuestionDTO(Questions question) {
         return new QuestionsDTO(
+                question.getId(),
                 question.getQuestion(),
                 question.getOptionA(),
                 question.getOptionB(),
