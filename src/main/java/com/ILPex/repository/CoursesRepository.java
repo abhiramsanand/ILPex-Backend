@@ -64,6 +64,8 @@ public interface CoursesRepository extends JpaRepository<Courses,Long> {
     @Query("SELECT c FROM Courses c WHERE c.batch.id = :batchId AND c.courseDate < CURRENT_DATE AND c.id NOT IN " +     //to display pending submission
             "(SELECT dr.courses.id FROM DailyReports dr WHERE dr.trainees.id = :traineeId)")
     List<Courses> findPendingSubmissions(Long batchId, Long traineeId);
+    List<Courses> findAllByOrderByDayNumberAscCourseDateAsc();
+    List<Courses> findByCourseDate(Timestamp courseDate);
 
 }
 

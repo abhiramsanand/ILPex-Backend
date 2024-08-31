@@ -62,7 +62,7 @@ public class BatchController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Long> createBatch(
+    public ResponseEntity<?> createBatch(
             @RequestParam("batchData") String batchData,
             @RequestParam("file") MultipartFile file) {
 
@@ -72,16 +72,18 @@ public class BatchController {
         try {
             batchCreationDTO = objectMapper.readValue(batchData, BatchCreationDTO.class);
         } catch (JsonProcessingException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid batch data format.");
         }
-
         try {
             Batches batch = batchService.createBatchWithTrainees(batchCreationDTO, file);
             return ResponseEntity.ok(batch.getId());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing the file.");
         }
     }
+
 
     @GetMapping("/{batchId}/trainees")
     public ResponseEntity<List<TraineeDisplayByBatchDTO>> getTraineesByBatchId(@PathVariable("batchId") Long batchId) {

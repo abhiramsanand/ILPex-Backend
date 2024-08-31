@@ -25,7 +25,6 @@ public class BatchCreationDTO {
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
 
         if (startDate == null || endDate == null) {
-            // You can either return false or handle the null case appropriately
             return false;
         }
 

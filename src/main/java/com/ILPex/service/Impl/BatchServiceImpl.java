@@ -201,14 +201,27 @@ public class BatchServiceImpl implements BatchService {
                     break;
                 }
 
+                String email = getCellValueAsString(row.getCell(1)); // Email
+                String percipioEmail = getCellValueAsString(row.getCell(2)); // Percipio_Email
+
+                // Validate email format
+                if (!email.endsWith("@experionglobal.com")) {
+                    throw new IllegalArgumentException("Invalid email format in row " + (i  + 1) + ": " + email);
+                }
+
+                // Validate Percipio email format
+                if (!percipioEmail.endsWith("@experionglobal.com")) {
+                    throw new IllegalArgumentException("Invalid Percipio email format in row " + (i + 1) + ": " + percipioEmail);
+                }
+
                 Users user = new Users();
                 user.setUserName(getCellValueAsString(row.getCell(0))); // Name
-                user.setEmail(getCellValueAsString(row.getCell(2))); // Email
-                user.setPassword(getCellValueAsString(row.getCell(4))); // Password
+                user.setEmail(email);
+                user.setPassword(getCellValueAsString(row.getCell(3))); // Password
                 user.setRoles(traineeRole); // Set the role
 
                 Trainees trainee = new Trainees();
-                trainee.setPercipioEmail(getCellValueAsString(row.getCell(3))); // Percipio_Email
+                trainee.setPercipioEmail(percipioEmail);
                 trainee.setIsActive(batchCreationDTO.getIsActive()); // Use the passed batchCreationDTO
                 trainee.setUsers(user);
                 trainee.setBatches(batch); // Set the batch for the trainee

@@ -6,6 +6,7 @@ import com.ILPex.entity.Courses;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 public interface CourseService {
@@ -16,4 +17,11 @@ public interface CourseService {
     List<Courses> parseCourseExcelFile(MultipartFile file, Batches batch) throws IOException;
     List<CourseDailyReportDTO> getCourseDetails(Long traineeId, Long batchId);
     List<PendingSubmissionDTO> getPendingSubmissions(Long batchId, Long traineeId);
+
+    void updateCourseDatesForHoliday(LocalDate holidayDate, String description);
+    List<LocalDate> getAllCourseDates();
+    List<DayNumberWithDateDTO> getAllCourseDatesWithDayNumber();
+    void restoreCourseDatesForWorkingDay(LocalDate holidayDate);
+
+
 }

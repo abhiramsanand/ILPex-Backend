@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuestionsDTO {
+    private Long questionId;
     private String question;
     private String optionA;
     private String optionB;

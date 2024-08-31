@@ -10,7 +10,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AssessmentResponseDTO {
-    private Long assessmentId;
+    private String assessmentName;
     private Long traineeId;
     private Map<Long, String> questionResponses;
 }
