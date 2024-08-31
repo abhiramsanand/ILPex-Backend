@@ -1,9 +1,6 @@
 package com.ILPex.service;
 
-import com.ILPex.DTO.CourseDayBatchDTO;
-import com.ILPex.DTO.CourseDurationDTO;
-import com.ILPex.DTO.TotalCourseDaysDTO;
-import com.ILPex.DTO.TotalCourseDurationDTO;
+import com.ILPex.DTO.*;
 import com.ILPex.entity.Batches;
 import com.ILPex.entity.Courses;
 import org.springframework.web.multipart.MultipartFile;

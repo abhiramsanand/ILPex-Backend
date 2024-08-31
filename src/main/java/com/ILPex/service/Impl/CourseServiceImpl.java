@@ -1,9 +1,6 @@
 package com.ILPex.service.Impl;
 
-import com.ILPex.DTO.CourseDayBatchDTO;
-import com.ILPex.DTO.CourseDurationDTO;
-import com.ILPex.DTO.TotalCourseDaysDTO;
-import com.ILPex.DTO.TotalCourseDurationDTO;
+import com.ILPex.DTO.*;
 import com.ILPex.entity.Batches;
 import com.ILPex.entity.Courses;
 import com.ILPex.entity.Holiday;
@@ -26,6 +23,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl implements CourseService {
