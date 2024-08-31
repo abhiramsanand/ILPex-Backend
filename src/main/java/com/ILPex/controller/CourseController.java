@@ -1,9 +1,6 @@
 package com.ILPex.controller;
 
-import com.ILPex.DTO.CourseDayBatchDTO;
-import com.ILPex.DTO.CourseDurationDTO;
-import com.ILPex.DTO.TotalCourseDaysDTO;
-import com.ILPex.DTO.TotalCourseDurationDTO;
+import com.ILPex.DTO.*;
 import com.ILPex.entity.Batches;
 import com.ILPex.entity.Courses;
 import com.ILPex.service.BatchService;
@@ -37,11 +34,6 @@ public class CourseController {
         return courseService.getCoursesByBatchId(batchId);
     }
 
-//    @GetMapping("/total-duration")
-//    public CourseDurationDTO getTotalCourseDuration(@RequestParam Long batchId) {
-//        return courseService.getTotalCourseDuration(batchId);
-//    }
-
     @GetMapping("/total-course-days-completed/{batchId}")
     public ResponseEntity<TotalCourseDaysDTO> getTotalCourseDaysCompleted(@PathVariable Long batchId) {
         TotalCourseDaysDTO totalCourseDays = courseService.getTotalCourseDaysCompleted(batchId);
@@ -73,8 +65,19 @@ public class CourseController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error processing Excel file");
         }
-
         return ResponseEntity.ok("Courses created successfully");
+    }
+
+    @GetMapping("/WholeReport/{traineeId}/batch/{batchId}")     //Whole Reports
+    public List<CourseDailyReportDTO> getCourseDetails(
+            @PathVariable Long traineeId,
+            @PathVariable Long batchId) {
+        return courseService.getCourseDetails(traineeId, batchId);
+    }
+
+    @GetMapping("/pending-submissions")         //pending dailyrepots
+    public List<PendingSubmissionDTO> getPendingSubmissions(@RequestParam Long batchId, @RequestParam Long traineeId) {
+        return courseService.getPendingSubmissions(batchId, traineeId);
     }
 }
 

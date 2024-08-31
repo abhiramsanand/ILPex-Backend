@@ -16,6 +16,5 @@ public interface DailyReportsRepository extends JpaRepository<DailyReports, Long
     @Query("SELECT dr FROM DailyReports dr WHERE dr.trainees.id = :traineeId ORDER BY dr.date DESC")
     List<DailyReports> findDailyReportsByTraineeId(Long traineeId);
 
-
     //    Optional<DailyReports> findById(Long id);
 }
