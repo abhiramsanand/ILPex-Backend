@@ -6,8 +6,10 @@ import com.ILPex.DTO.TotalCourseDaysDTO;
 import com.ILPex.DTO.TotalCourseDurationDTO;
 import com.ILPex.entity.Batches;
 import com.ILPex.entity.Courses;
+import com.ILPex.entity.Holiday;
 import com.ILPex.repository.BatchRepository;
 import com.ILPex.repository.CoursesRepository;
+import com.ILPex.repository.HolidayRepository;
 import com.ILPex.repository.TraineesRepository;
 import com.ILPex.service.CourseService;
 import org.apache.poi.ss.usermodel.*;
@@ -19,11 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -34,6 +36,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     private BatchRepository batchesRepository;
+
+    @Autowired
+    private HolidayRepository holidayRepository;
+
 
 
     @Override
@@ -214,4 +220,175 @@ public class CourseServiceImpl implements CourseService {
         }
         return null;
     }
+
+    @Override
+    public List<DayNumberWithDateDTO> getAllCourseDatesWithDayNumber() {
+        return coursesRepository.findAll().stream()
+                .map(course -> new DayNumberWithDateDTO(
+                        course.getCourseDate().toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate(),
+                        course.getDayNumber()))
+                .collect(Collectors.toList());
+    }
+
+
+
+    private final List<LocalDate> holidays = List.of();
+    @Override
+    public void updateCourseDatesForHoliday(LocalDate holidayDate) {
+        Holiday holiday = new Holiday();
+        holiday.setDate(holidayDate);
+        holidayRepository.save(holiday);
+
+        // Extend the holiday period to include weekends
+        LocalDate startDate = holidayDate.minusDays(6);
+        LocalDate endDate = holidayDate.plusDays(6);
+
+        for (LocalDate date = startDate; date.isBefore(endDate); date = date.plusDays(1)) {
+            if (isWeekend(date)) {
+                Holiday weekendHoliday = new Holiday();
+                weekendHoliday.setDate(date);
+                weekendHoliday.setDescription("Weekend");
+                holidayRepository.save(weekendHoliday);
+            }
+        }
+
+        Timestamp holidayTimestamp = convertToTimestamp(holidayDate);
+        List<Courses> courses = coursesRepository.findAllByOrderByDayNumberAscCourseDateAsc();
+        Map<Integer, Timestamp> updatedDates = new HashMap<>();
+
+        LocalDate nextWorkingDay = findNextWorkingDay(holidayDate.plusDays(1));
+        Timestamp nextWorkingDayTimestamp = convertToTimestamp(nextWorkingDay);
+
+        for (Courses course : courses) {
+            int dayNumber = course.getDayNumber();
+            Timestamp currentDate = course.getCourseDate();
+
+            if (currentDate.toLocalDateTime().toLocalDate().isAfter(holidayDate) ||
+                    currentDate.toLocalDateTime().toLocalDate().isEqual(holidayDate)) {
+                if (!updatedDates.containsKey(dayNumber)) {
+                    updatedDates.put(dayNumber, nextWorkingDayTimestamp);
+                    nextWorkingDay = findNextWorkingDay(nextWorkingDay.plusDays(1));
+                    nextWorkingDayTimestamp = convertToTimestamp(nextWorkingDay);
+                }
+                course.setCourseDate(updatedDates.get(dayNumber));
+            }
+        }
+
+        coursesRepository.saveAll(courses);
+    }
+
+    private LocalDate findNextWorkingDay(LocalDate date) {
+        while (isHoliday(date) || isWeekend(date)) {
+            date = date.plusDays(1);
+        }
+        return date;
+    }
+
+    private boolean isWeekend(LocalDate date) {
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY;
+    }
+
+    private boolean isHoliday(LocalDate date) {
+        return holidays.contains(date) || holidayRepository.existsById(date);
+    }
+
+    private Timestamp convertToTimestamp(LocalDate date) {
+        ZonedDateTime zonedDateTime = date.atStartOfDay(ZoneId.systemDefault());
+        return Timestamp.from(zonedDateTime.toInstant());
+    }
+    @Override
+    public void restoreCourseDatesForWorkingDay(LocalDate holidayDate) {
+        // Fetch all courses sorted by day number and course date
+        List<Courses> courses = coursesRepository.findAllByOrderByDayNumberAscCourseDateAsc();
+
+        // Maps to keep track of changes
+        Map<Integer, LocalDate> dayNumberToOriginalDate = new HashMap<>();
+        List<Courses> updatedCourses = new ArrayList<>();
+
+        // Determine the original dates before the holiday was applied
+        LocalDate nextWorkingDay = findNextWorkingDay(holidayDate.plusDays(1));
+        LocalDate shiftedDate = nextWorkingDay.minusDays(1); // This should be the unmarked holiday date
+
+        boolean shouldShift = false; // Flag to start shifting dates after the unmarked holiday
+
+        for (Courses course : courses) {
+            int dayNumber = course.getDayNumber();
+            LocalDate courseDate = course.getCourseDate().toLocalDateTime().toLocalDate();
+
+            if (courseDate.equals(nextWorkingDay)) {
+                // Restore the course that was scheduled on the unmarked holiday
+                course.setCourseDate(Timestamp.valueOf(shiftedDate.atStartOfDay()));
+                updatedCourses.add(course);
+                shouldShift = true; // Start shifting subsequent courses
+                System.out.println("Restored course with Day Number: " + dayNumber + " to Date: " + shiftedDate);
+            } else if (shouldShift && courseDate.isAfter(holidayDate)) {
+                // For courses after the holiday, use the previous working day logic
+                LocalDate originalDate = findPreviousWorkingDay(courseDate.minusDays(1)); // Shift back one day
+                course.setCourseDate(Timestamp.valueOf(originalDate.atStartOfDay()));
+                updatedCourses.add(course);
+                System.out.println("Updated course with Day Number: " + dayNumber + " to Date: " + originalDate);
+            } else {
+                // For courses before the holiday, ensure dates are correct (no changes needed here)
+                updatedCourses.add(course);
+                System.out.println("No change for course with Day Number: " + dayNumber);
+            }
+        }
+
+        // Save all updated courses back to the repository
+        coursesRepository.saveAll(updatedCourses);
+
+        // Remove the holiday from the holiday table
+        holidayRepository.deleteById(holidayDate);
+        System.out.println("Holiday on " + holidayDate + " has been removed.");
+    }
+
+
+
+
+
+
+    private LocalDate findPreviousWorkingDay(LocalDate date) {
+        while (isHoliday(date) || isWeekend(date)) {
+            date = date.minusDays(1);
+        }
+        return date;
+    }
+
+    private void checkAndMarkEmptyDaysAsHolidays() {
+        // Fetch all course dates
+        List<LocalDate> courseDates = getAllCourseDates();
+
+        // Determine the earliest date to start from
+        LocalDate startDate = courseDates.isEmpty() ? LocalDate.now() : courseDates.get(0).withDayOfMonth(1);
+
+        // Determine the end date as the last course date
+        LocalDate endDate = courseDates.isEmpty() ? LocalDate.now() : Collections.max(courseDates);
+
+        for (LocalDate date = startDate; date.isBefore(endDate.plusDays(1)); date = date.plusDays(1)) {
+            // Log the date being processed
+            System.out.println("Processing date: " + date);
+
+            if (!isWeekend(date) && !courseDates.contains(date) && !isHoliday(date)) {
+                System.out.println("Marking as holiday: " + date);
+
+                Holiday holiday = new Holiday();
+                holiday.setDate(date);
+                holiday.setDescription("Automatically marked as holiday (no courses)");
+                holidayRepository.save(holiday);
+            } else {
+                // Log if the date is skipped
+                if (isWeekend(date)) {
+                    System.out.println("Skipping weekend: " + date);
+                } else if (courseDates.contains(date)) {
+                    System.out.println("Skipping course date: " + date);
+                } else if (isHoliday(date)) {
+                    System.out.println("Skipping existing holiday: " + date);
+                }
+            }
+        }
+    }
+
 }

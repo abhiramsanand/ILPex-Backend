@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -76,5 +79,34 @@ public class CourseController {
 
         return ResponseEntity.ok("Courses created successfully");
     }
+
+    @GetMapping("/dates/dayNumber")
+    public List<DayNumberWithDateDTO> getAllCourseDatesAndDayNumber() {
+        return courseService.getAllCourseDatesWithDayNumber();
+    }
+
+    @PostMapping("/unmark-holiday")
+    public ResponseEntity<String> unmarkHoliday(@RequestBody Map<String, String> payload) {
+        String holidayDateStr = payload.get("holidayDate");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate holidayDate = LocalDate.parse(holidayDateStr, formatter);
+
+        courseService.restoreCourseDatesForWorkingDay(holidayDate);
+
+        return ResponseEntity.ok("Holiday unmarked and course dates updated successfully.");
+    }
+
+    @PostMapping("/mark-holiday/day")
+    public String markHolidayDay(@RequestBody Map<String, String> payload) {
+        String holidayDateStr = payload.get("holidayDate");
+        String description = payload.get("description");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate holidayDate = LocalDate.parse(holidayDateStr, formatter);
+
+        courseService.updateCourseDatesForHoliday(holidayDate, description);
+
+        return "Holiday marked and course dates updated successfully.";
+    }
+
 }
 
