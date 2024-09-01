@@ -68,4 +68,5 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
             "GROUP BY u.userName")
     List<TraineeActualVsEstimatedDurationDTO> findTotalDurationAndEstimatedDurationByBatchId(@Param("batchId") Long batchId);
 
+    Optional<TraineeProgress> findByCourseNameAndTraineesId(String courseName, Long traineeId);
 }
