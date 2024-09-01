@@ -20,17 +20,17 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
 
 
     @Query(value = "SELECT " +
-            "    t.course_name AS courseName, " +
+            "    c.course_name AS courseName, " +
             "    c.day_number AS dayNumber, " +
-            "    t.estimated_duration AS estimatedDuration, " +
-            "    t.duration AS duration " +
+            "    COALESCE(tp.estimated_duration, 0) AS estimatedDuration, " +
+            "    COALESCE(tp.duration, 0) AS actualDuration " +
             "FROM " +
-            "    trainee_progress t " +
-            "JOIN " +
             "    courses c " +
-            "    ON c.course_name = t.course_name " +
-            "WHERE " +
-            "    t.trainee_id = :traineeId " +
+            "LEFT JOIN " +
+            "    trainee_progress tp " +
+            "    ON c.course_name = tp.course_name " +
+            "    AND c.day_number = tp.day_number " +
+            "    AND tp.trainee_id = :traineeId " +
             "ORDER BY " +
             "    c.day_number, c.course_name",
             nativeQuery = true)
