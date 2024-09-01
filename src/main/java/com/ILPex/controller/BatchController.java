@@ -57,11 +57,6 @@ public class BatchController {
         return ResponseHandler.responseBuilder(Message.REQUESTED_DAYWISE_COURSE_DETAILS, HttpStatus.OK, courseDayBatchList);
     }
 
-    @GetMapping("/{batchId}/dayNumber")
-    public BatchDTO getBatchDayNumber(@PathVariable Long batchId) {
-        return batchService.calculateDayNumber(batchId);
-    }
-
     @PostMapping("/create")
     public ResponseEntity<?> createBatch(
             @RequestParam("batchData") String batchData,

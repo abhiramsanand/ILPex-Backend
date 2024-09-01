@@ -4,6 +4,7 @@ import com.ILPex.DTO.*;
 import com.ILPex.entity.*;
 import com.ILPex.exceptions.ResourceNotFoundException;
 import com.ILPex.repository.BatchRepository;
+import com.ILPex.repository.CoursesRepository;
 import com.ILPex.repository.TraineesRepository;
 import com.ILPex.repository.UserRepository;
 import com.ILPex.service.BatchService;
@@ -44,6 +45,9 @@ public class BatchServiceImpl implements BatchService {
 
     @Autowired
     private ProgramService programService;
+
+    @Autowired
+    private CoursesRepository coursesRepository;
 
     @Override
     public List<BatchDTO> getBatches() {
@@ -169,7 +173,7 @@ public class BatchServiceImpl implements BatchService {
         Batches batch = createBatch(batchCreationDTO);
 
         // Parse the Excel file and set the batch ID for each trainee
-        List<Users> usersList = parseExcelFile(file, batch,batchCreationDTO);
+        List<Users> usersList = parseExcelFile(file, batch, batchCreationDTO);
 
         // Save each user and trainee with the associated batch ID
         for (Users user : usersList) {
@@ -183,6 +187,7 @@ public class BatchServiceImpl implements BatchService {
 
         return batch;
     }
+
     private List<Users> parseExcelFile(MultipartFile file, Batches batch, BatchCreationDTO batchCreationDTO) throws IOException {
         List<Users> usersList = new ArrayList<>();
         Roles traineeRole = rolesService.getRoleByName("Trainee");
@@ -206,7 +211,7 @@ public class BatchServiceImpl implements BatchService {
 
                 // Validate email format
                 if (!email.endsWith("@experionglobal.com")) {
-                    throw new IllegalArgumentException("Invalid email format in row " + (i  + 1) + ": " + email);
+                    throw new IllegalArgumentException("Invalid email format in row " + (i + 1) + ": " + email);
                 }
 
                 // Validate Percipio email format
@@ -351,6 +356,7 @@ public class BatchServiceImpl implements BatchService {
 
 
     }
+
     public Batches updateBatch(Long batchId, BatchUpdateDTO batchUpdateDTO) {
         Batches batch = batchRepository.findById(batchId)
                 .orElseThrow(() -> new ResourceNotFoundException("Batch not found with id: " + batchId));
@@ -369,45 +375,49 @@ public class BatchServiceImpl implements BatchService {
         return batchRepository.save(batch);
     }
 
-    @Override
-    public BatchDTO calculateDayNumber(Long batchId) {
-        Batches batch = batchRepository.findById(batchId)
-                .orElseThrow(() -> new RuntimeException("Batch not found with id: " + batchId));
-
-        LocalDate startDate = batch.getStartDate().toLocalDateTime().toLocalDate();
-        LocalDate currentDate = LocalDate.now(); // Use current date instead of endDate
-
-        long dayNumber = calculateWorkingDays(startDate, currentDate);
-
-        // Update the entity with the calculated day number
-        batch.setDayNumber(dayNumber);
-        batchRepository.save(batch);
-
-        // Convert entity to DTO
-        BatchDTO batchDTO = new BatchDTO();
-        batchDTO.setId(batch.getId());
-        batchDTO.setBatchName(batch.getBatchName());
-        batchDTO.setStartDate(batch.getStartDate());
-        batchDTO.setEndDate(batch.getEndDate()); // Retain original end date
-        batchDTO.setIsActive(batch.getIsActive());
-        batchDTO.setDayNumber(dayNumber);
-
-        return batchDTO;
-    }
-
-//    @PostConstruct
+    @PostConstruct
     public void updateDayNumbers() {
         List<Batches> batches = (List<Batches>) batchRepository.findAll();
 
         for (Batches batch : batches) {
             if (batch.getStartDate() != null) {
-                LocalDate start = batch.getStartDate().toLocalDateTime().toLocalDate();
                 LocalDate today = LocalDate.now();
-                batch.setDayNumber(calculateWorkingDays(start, today));
-                batchRepository.save(batch); // Save the updated batch
+                LocalDate courseDate = null;
+                Long dayNumber = null;
+
+                // Fetch the Courses associated with the current batch
+                List<Courses> courses = coursesRepository.findByBatch_Id(batch.getId());
+
+                // Start with today's date and keep going back until a course is found
+                while (courseDate == null && !today.isBefore(batch.getStartDate().toLocalDateTime().toLocalDate())) {
+                    for (Courses course : courses) {
+                        LocalDate tempCourseDate = course.getCourseDate().toLocalDateTime().toLocalDate();
+
+                        if (tempCourseDate.equals(today)) {
+                            // Match found, update the courseDate and dayNumber
+                            courseDate = tempCourseDate;
+                            dayNumber = (long) course.getDayNumber();
+                            break;
+                        }
+                    }
+
+                    if (courseDate == null) {
+                        // No match found for today, decrement the date
+                        today = today.minusDays(1);
+                    }
+                }
+
+                if (dayNumber != null) {
+                    // Update the batch with the found dayNumber
+                    batch.setDayNumber(dayNumber);
+                    batchRepository.save(batch); // Save the updated batch
+                } else {
+                    System.out.println("No matching course found for batch: " + batch.getBatchName());
+                }
             }
         }
     }
+
 
     private long calculateWorkingDays(LocalDate start, LocalDate end) {
         long count = 0;

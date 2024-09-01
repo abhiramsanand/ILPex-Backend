@@ -77,7 +77,7 @@ public class PercipioApiServiceImpl implements PercipioApiService {
                              },
                              "sort": {
                                  "field": "lastAccessDate",
-                                 "order": "desc"
+                                 "order": "asc"
                              },
                              "isFileRequiredInSftp": false,
                              "formatType": "JSON"
