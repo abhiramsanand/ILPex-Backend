@@ -137,4 +137,11 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
     public List<TraineeActualVsEstimatedDurationDTO> getTotalDurationAndEstimatedDurationByTraineeIdAndBatch(Long batchId) {
         return traineeProgressRepository.findTotalDurationAndEstimatedDurationByBatchId(batchId);
     }
+
+    @Override
+    public TraineeCurrentDayDTO getMaxDayNumber(Long traineeId) {
+        Integer maxDayNumber = traineeProgressRepository.findMaxDayNumberByTraineeId(traineeId);
+        // Return the DTO with the max day number or default to 0 if null
+        return new TraineeCurrentDayDTO(maxDayNumber != null ? maxDayNumber : 0);
+    }
 }
