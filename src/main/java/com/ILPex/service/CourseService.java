@@ -22,6 +22,7 @@ public interface CourseService {
     List<LocalDate> getAllCourseDates();
     List<DayNumberWithDateDTO> getAllCourseDatesWithDayNumber();
     void restoreCourseDatesForWorkingDay(LocalDate holidayDate);
+    CourseCountDTO getCourseCountByBatchId(long batchId);
 
 
 }

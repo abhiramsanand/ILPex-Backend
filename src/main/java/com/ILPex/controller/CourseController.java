@@ -112,5 +112,10 @@ public class CourseController {
         return "Holiday marked and course dates updated successfully.";
     }
 
+    @GetMapping("/count")
+    public CourseCountDTO getCourseCount(@RequestParam long batchId) {
+        return courseService.getCourseCountByBatchId(batchId);
+    }
+
 }
 

@@ -67,5 +67,20 @@ public interface CoursesRepository extends JpaRepository<Courses,Long> {
     List<Courses> findAllByOrderByDayNumberAscCourseDateAsc();
     List<Courses> findByCourseDate(Timestamp courseDate);
 
+    @Query(value = "WITH BatchDetails AS ("
+            + "  SELECT b.day_number AS batchDayNumber "
+            + "  FROM batches b "
+            + "  WHERE b.id = :batchId), "
+            + "CurrentDayCourses AS ("
+            + "  SELECT c.id AS courseId "
+            + "  FROM courses c "
+            + "  JOIN BatchDetails b "
+            + "  ON c.batch_id = :batchId "
+            + "  WHERE c.course_date <= (CURRENT_DATE + INTERVAL '1 day' * b.batchDayNumber)"
+            + ") "
+            + "SELECT COUNT(*) FROM CurrentDayCourses", nativeQuery = true)
+    long countCoursesByBatchId(@Param("batchId") long batchId);
+
+
 }
 

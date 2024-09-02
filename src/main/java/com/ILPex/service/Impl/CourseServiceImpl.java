@@ -412,6 +412,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
 
+
+
     private LocalDate findPreviousWorkingDay(LocalDate date) {
         while (isHoliday(date) || isWeekend(date)) {
             date = date.minusDays(1);
@@ -452,5 +454,15 @@ public class CourseServiceImpl implements CourseService {
             }
         }
     }
+
+
+    @Override
+    public CourseCountDTO getCourseCountByBatchId(long batchId) {
+        long count = coursesRepository.countCoursesByBatchId(batchId);
+        CourseCountDTO dto = new CourseCountDTO();
+        dto.setCourseCount(count);
+        return dto;
+    }
+
 
 }
