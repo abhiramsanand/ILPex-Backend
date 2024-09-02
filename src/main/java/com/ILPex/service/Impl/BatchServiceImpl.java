@@ -206,12 +206,12 @@ public class BatchServiceImpl implements BatchService {
 
                 // Validate email format
                 if (!email.endsWith("@experionglobal.com")) {
-                    throw new IllegalArgumentException("Invalid email format in row " + (i  + 1) + ": " + email);
+                    throw new IllegalArgumentException("Invalid email format in row " + i   + ": " + email);
                 }
 
                 // Validate Percipio email format
                 if (!percipioEmail.endsWith("@experionglobal.com")) {
-                    throw new IllegalArgumentException("Invalid Percipio email format in row " + (i + 1) + ": " + percipioEmail);
+                    throw new IllegalArgumentException("Invalid Percipio email format in row " + i  + ": " + percipioEmail);
                 }
 
                 Users user = new Users();
@@ -219,7 +219,7 @@ public class BatchServiceImpl implements BatchService {
 
 
                 if (!username.matches("^[a-zA-Z]+(\\s[a-zA-Z]+)*$")) {
-                    throw new IllegalArgumentException("Invalid username format in row " + (i + 1) + ": " + username);
+                    throw new IllegalArgumentException("Invalid username format in row " + i  + ": " + username);
                 }
                 user.setUserName(username);
                 user.setEmail(email);
