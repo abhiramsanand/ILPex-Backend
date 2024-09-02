@@ -215,7 +215,13 @@ public class BatchServiceImpl implements BatchService {
                 }
 
                 Users user = new Users();
-                user.setUserName(getCellValueAsString(row.getCell(0))); // Name
+                String username = getCellValueAsString(row.getCell(0)).trim(); // Trim leading and trailing spaces
+
+
+                if (!username.matches("^[a-zA-Z]+(\\s[a-zA-Z]+)*$")) {
+                    throw new IllegalArgumentException("Invalid username format in row " + (i + 1) + ": " + username);
+                }
+                user.setUserName(username);
                 user.setEmail(email);
                 user.setPassword(getCellValueAsString(row.getCell(3))); // Password
                 user.setRoles(traineeRole); // Set the role
