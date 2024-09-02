@@ -211,16 +211,22 @@ public class BatchServiceImpl implements BatchService {
 
                 // Validate email format
                 if (!email.endsWith("@experionglobal.com")) {
-                    throw new IllegalArgumentException("Invalid email format in row " + (i + 1) + ": " + email);
+                    throw new IllegalArgumentException("Invalid email format in row " + i   + ": " + email);
                 }
 
                 // Validate Percipio email format
                 if (!percipioEmail.endsWith("@experionglobal.com")) {
-                    throw new IllegalArgumentException("Invalid Percipio email format in row " + (i + 1) + ": " + percipioEmail);
+                    throw new IllegalArgumentException("Invalid Percipio email format in row " + i  + ": " + percipioEmail);
                 }
 
                 Users user = new Users();
-                user.setUserName(getCellValueAsString(row.getCell(0))); // Name
+                String username = getCellValueAsString(row.getCell(0)).trim(); // Trim leading and trailing spaces
+
+
+                if (!username.matches("^[a-zA-Z]+(\\s[a-zA-Z]+)*$")) {
+                    throw new IllegalArgumentException("Invalid username format in row " + i  + ": " + username);
+                }
+                user.setUserName(username);
                 user.setEmail(email);
                 user.setPassword(getCellValueAsString(row.getCell(3))); // Password
                 user.setRoles(traineeRole); // Set the role
@@ -241,7 +247,6 @@ public class BatchServiceImpl implements BatchService {
 
         return usersList;
     }
-
     private boolean isRowEmpty(Row row) {
         for (int i = 0; i < row.getLastCellNum(); i++) {
             Cell cell = row.getCell(i);

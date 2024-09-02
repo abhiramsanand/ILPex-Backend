@@ -25,11 +25,10 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
             "    COALESCE(tp.estimated_duration, 0) AS estimatedDuration, " +
             "    COALESCE(tp.duration, 0) AS actualDuration " +
             "FROM " +
-            "    courses c " +
+            "    public.courses c " +
             "LEFT JOIN " +
-            "    trainee_progress tp " +
+            "    public.trainee_progress tp " +
             "    ON c.course_name = tp.course_name " +
-            "    AND c.day_number = tp.day_number " +
             "    AND tp.trainee_id = :traineeId " +
             "ORDER BY " +
             "    c.day_number, c.course_name",
