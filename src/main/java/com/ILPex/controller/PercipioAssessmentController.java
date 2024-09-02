@@ -25,4 +25,11 @@ public ResponseEntity<Map<String, Double>> getAverageScoresForAllTraineesWithNam
     return ResponseEntity.ok(response);
 }
 
+    @GetMapping("/average/{traineeId}")
+    public ResponseEntity<Double> getAverageScoreForTrainee(@PathVariable Long traineeId) {
+        Double averageScore = percipioAssessmentService.getAverageScoreForTrainee(traineeId);
+        return ResponseEntity.ok(averageScore);
+    }
+
+
 }
