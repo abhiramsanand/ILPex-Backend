@@ -22,6 +22,7 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
     @Query(value = "SELECT " +
             "    c.course_name AS courseName, " +
             "    c.day_number AS dayNumber, " +
+            "    tp.completion_status, " +
             "    COALESCE(tp.estimated_duration, 0) AS estimatedDuration, " +
             "    COALESCE(tp.duration, 0) AS actualDuration " +
             "FROM " +
@@ -29,7 +30,7 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
             "LEFT JOIN " +
             "    public.trainee_progress tp " +
             "    ON c.course_name = tp.course_name " +
-            "    AND tp.trainee_id = :traineeId " +
+            "    AND tp.trainee_id = :traineeId " +  // Use a parameterized query
             "ORDER BY " +
             "    c.day_number, c.course_name",
             nativeQuery = true)
