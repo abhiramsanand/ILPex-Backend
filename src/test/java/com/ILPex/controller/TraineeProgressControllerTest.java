@@ -1,46 +1,94 @@
 package com.ILPex.controller;
-
-import com.ILPex.DTO.*;
-import com.ILPex.entity.Batches;
-import com.ILPex.entity.Courses;
-import com.ILPex.service.BatchService;
-import com.ILPex.service.CourseService;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import com.ILPex.DTO.CourseProgressDTO;
+import com.ILPex.service.TraineeProgressService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.mock.http.server.reactive.MockServerHttpRequest.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@SpringBootTest
+@WebMvcTest(TraineeProgressController.class)
 public class TraineeProgressControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private CourseService courseService;
+    private TraineeProgressService traineeProgressService;
+
+    @Test
+    public void givenValidRequest_whenGetLastAccessedDayNumberForTrainees_thenReturnList() throws Exception {
+        // Initialize mock data
+        Map<String, Object> traineeData1 = new HashMap<>();
+        traineeData1.put("traineeId", 1L);
+        traineeData1.put("lastAccessedDayNumber", 15);
+
+        Map<String, Object> traineeData2 = new HashMap<>();
+        traineeData2.put("traineeId", 2L);
+        traineeData2.put("lastAccessedDayNumber", 20);
+
+        List<Map<String, Object>> traineeList = List.of(traineeData1, traineeData2);
+
+        // Mock the service method
+        when(traineeProgressService.getLastAccessedDayNumberForTrainees()).thenReturn(traineeList);
+
+        // Perform the request and validate
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/ilpex/traineeprogress/trainee/last-accessed-day-number")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].traineeId").value(1))
+                .andExpect(jsonPath("$[0].lastAccessedDayNumber").value(15))
+                .andExpect(jsonPath("$[1].traineeId").value(2))
+                .andExpect(jsonPath("$[1].lastAccessedDayNumber").value(20));
+    }
+
+    @Test
+    public void givenValidTraineeId_whenGetTraineeProgress_thenReturnListOfCourseProgressDTO() throws Exception {
+        // Initialize mock data
+        Long traineeId = 1L;
+        List<CourseProgressDTO> courseProgressList = Arrays.asList(
+                new CourseProgressDTO("Java Basics", 5, 10, 8, 80),
+                new CourseProgressDTO("Advanced Java", 10, 20, 15, 75)
+        );
+
+        // Mock the service method
+        when(traineeProgressService.getTraineeProgress(traineeId))
+                .thenReturn(courseProgressList);
+
+        // Perform the request and validate
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/ilpex/traineeprogress/{traineeId}", traineeId)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].courseName").value("Java Basics"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].dayNumber").value(5))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].estimatedDuration").value(10))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].duration").value(8))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].percentageCompleted").value(80))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].courseName").value("Advanced Java"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].dayNumber").value(10))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].estimatedDuration").value(20))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].duration").value(15))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].percentageCompleted").value(75));
+    }
 
 }
