@@ -5,10 +5,7 @@ import com.ILPex.entity.Programs;
 import com.ILPex.service.ProgramService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
@@ -24,5 +21,10 @@ public class ProgramController {
     public ResponseEntity<List<ProgramDTO>> getAllPrograms() {
         List<ProgramDTO> programs = programService.getAllPrograms();
         return ResponseEntity.ok(programs);
+    }
+    @PostMapping
+    public ResponseEntity<String> createProgram(@RequestBody ProgramDTO programDTO) {
+        programService.createProgram(programDTO);
+        return ResponseEntity.ok("Program created successfully!");
     }
 }

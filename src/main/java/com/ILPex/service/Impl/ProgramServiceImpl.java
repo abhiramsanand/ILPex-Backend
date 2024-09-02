@@ -30,4 +30,9 @@ public class ProgramServiceImpl implements ProgramService {
                 .map(program -> modelMapper.map(program, ProgramDTO.class))
                 .collect(Collectors.toList());
     }
+    @Override
+    public void createProgram(ProgramDTO programDTO) {
+        Programs program = modelMapper.map(programDTO, Programs.class);
+        programRepository.save(program);
+    }
 }
