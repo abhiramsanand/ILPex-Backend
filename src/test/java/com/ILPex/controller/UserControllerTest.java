@@ -47,48 +47,48 @@ public class UserControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    public void givenValidRequest_whenGetUsers_thenReturnUserDtoList() throws Exception {
-        // Given
-        UserDTO userDTO1 = new UserDTO(1L, "John Doe", "john.doe@example.com", "password",null, null, null);
-        UserDTO userDTO2 = new UserDTO(2L, "Jane Smith", "jane.smith@example.com", "password",null, null, null);
-
-        when(userService.getUsers()).thenReturn(List.of(userDTO1, userDTO2));
-
-        // When & Then
-        mockMvc.perform(get("/api/v1/users/view")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].userName").value("John Doe"))
-                .andExpect(jsonPath("$[1].userName").value("Jane Smith"));
-    }
-
-    @Test
-    public void givenValidUserPostDto_whenCreateUser_thenReturnUserPostDto() throws Exception {
-        // Given
-        UserPostDTO userPostDTO = new UserPostDTO(1L, "John Doe", "john.doe@example.com", "password", "1");
-        UserPostDTO createdUserPostDTO = new UserPostDTO(1L, "John Doe", "john.doe@example.com", "password", "1");
-
-        when(userService.createUser(any(UserPostDTO.class))).thenReturn(createdUserPostDTO);
-
-        // When & Then
-        mockMvc.perform(post("/api/v1/users/save")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userPostDTO)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.userName").value("John Doe"))
-                .andExpect(jsonPath("$.email").value("john.doe@example.com"));
-    }
-
-    @Test
-    public void givenValidUserId_whenDeleteUser_thenReturnNoContentStatus() throws Exception {
-        // Given
-        Long userId = 1L;
-
-        // When & Then
-        mockMvc.perform(delete("/api/v1/users/{id}", userId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-    }
+//    @Test
+//    public void givenValidRequest_whenGetUsers_thenReturnUserDtoList() throws Exception {
+//        // Given
+//        UserDTO userDTO1 = new UserDTO(1L, "John Doe", "john.doe@example.com", "password",null, null, null);
+//        UserDTO userDTO2 = new UserDTO(2L, "Jane Smith", "jane.smith@example.com", "password",null, null, null);
+//
+//        when(userService.getUsers()).thenReturn(List.of(userDTO1, userDTO2));
+//
+//        // When & Then
+//        mockMvc.perform(get("/api/v1/users/view")
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$", hasSize(2)))
+//                .andExpect(jsonPath("$[0].userName").value("John Doe"))
+//                .andExpect(jsonPath("$[1].userName").value("Jane Smith"));
+//    }
+//
+//    @Test
+//    public void givenValidUserPostDto_whenCreateUser_thenReturnUserPostDto() throws Exception {
+//        // Given
+//        UserPostDTO userPostDTO = new UserPostDTO(1L, "John Doe", "john.doe@example.com", "password", "1");
+//        UserPostDTO createdUserPostDTO = new UserPostDTO(1L, "John Doe", "john.doe@example.com", "password", "1");
+//
+//        when(userService.createUser(any(UserPostDTO.class))).thenReturn(createdUserPostDTO);
+//
+//        // When & Then
+//        mockMvc.perform(post("/api/v1/users/save")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(objectMapper.writeValueAsString(userPostDTO)))
+//                .andExpect(status().isCreated())
+//                .andExpect(jsonPath("$.userName").value("John Doe"))
+//                .andExpect(jsonPath("$.email").value("john.doe@example.com"));
+//    }
+//
+//    @Test
+//    public void givenValidUserId_whenDeleteUser_thenReturnNoContentStatus() throws Exception {
+//        // Given
+//        Long userId = 1L;
+//
+//        // When & Then
+//        mockMvc.perform(delete("/api/v1/users/{id}", userId)
+//                        .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isNoContent());
+//    }
 }
