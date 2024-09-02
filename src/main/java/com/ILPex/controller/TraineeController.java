@@ -4,6 +4,7 @@ package com.ILPex.controller;
 
 import com.ILPex.DTO.TraineeDTO;
 import com.ILPex.DTO.TraineeDailyReportDTO;
+import com.ILPex.DTO.TraineeDayProgressDTO;
 import com.ILPex.service.TraineeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +30,10 @@ public class TraineeController {
     public ResponseEntity<List<TraineeDailyReportDTO>> getTraineeReportsByBatchId(@RequestParam Long batchId) {
         List<TraineeDailyReportDTO> traineeReports = traineeService.getTraineeReportsByBatchId(batchId);
         return ResponseEntity.ok(traineeReports);
+    }
+
+    @GetMapping("/batch/{batchId}/currentday")
+    public List<TraineeDayProgressDTO> getLastDayForTraineesInBatch(@PathVariable Long batchId) {
+        return  traineeService.getLastDayForTrainees(batchId);
     }
 }

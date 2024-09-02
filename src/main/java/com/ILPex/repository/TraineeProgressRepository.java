@@ -1,9 +1,6 @@
 package com.ILPex.repository;
 
-import com.ILPex.DTO.CourseProgressDTO;
-import com.ILPex.DTO.TraineeActualVsEstimatedDurationDTO;
-import com.ILPex.DTO.TraineeCourseCountDTO;
-import com.ILPex.DTO.TraineeCourseDurationDTO;
+import com.ILPex.DTO.*;
 import com.ILPex.entity.TraineeProgress;
 import com.ILPex.entity.Trainees;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -66,5 +63,7 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
             "WHERE t.batches.id = :batchId " +
             "GROUP BY u.userName")
     List<TraineeActualVsEstimatedDurationDTO> findTotalDurationAndEstimatedDurationByBatchId(@Param("batchId") Long batchId);
+
+
 
 }
