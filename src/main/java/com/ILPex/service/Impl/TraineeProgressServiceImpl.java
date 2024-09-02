@@ -86,9 +86,19 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
                 .map(result -> {
                     String courseName = (String) result[0];
                     Integer dayNumber = (Integer) result[1];
-                    Integer estimatedDuration = (Integer) result[2];
-                    Integer duration = (Integer) result[3];
-                    Integer percentageCompleted = calculatePercentageCompleted(duration, estimatedDuration);
+                    String completionStatus = (String) result[2];  // New: Fetch completion status from result
+                    Integer estimatedDuration = (Integer) result[3];
+                    Integer duration = (Integer) result[4];
+                    Integer percentageCompleted;
+
+                    // Determine percentage based on completion status
+                    if ("completed".equalsIgnoreCase(completionStatus)) {
+                        percentageCompleted = 100;
+                    } else if ("started".equalsIgnoreCase(completionStatus)) {
+                        percentageCompleted = calculatePercentageCompleted(duration, estimatedDuration);
+                    } else {
+                        percentageCompleted = 0; // Default to 0% for any other status
+                    }
 
                     return new CourseProgressDTO(
                             courseName,
