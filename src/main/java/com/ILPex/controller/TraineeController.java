@@ -30,4 +30,9 @@ public class TraineeController {
         List<TraineeDailyReportDTO> traineeReports = traineeService.getTraineeReportsByBatchId(batchId);
         return ResponseEntity.ok(traineeReports);
     }
+
+    @GetMapping("/{traineeId}/currentdaynumber")
+    public Long getCurrentBatchDayNumber(@PathVariable Long traineeId) {
+        return traineeService.getCurrentBatchDayNumber(traineeId);
+    }
 }

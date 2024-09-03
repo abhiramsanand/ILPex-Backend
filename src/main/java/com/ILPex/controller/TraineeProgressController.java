@@ -63,4 +63,7 @@ public class TraineeProgressController {
         Timestamp courseDateTimestamp = new Timestamp(courseDate.getTime());
         return traineeProgressService.getTraineeProgressByCourseDateAndTraineeId(courseDateTimestamp, traineeId);
     }
+
+
+
 }

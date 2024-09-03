@@ -8,4 +8,5 @@ import java.util.List;
 public interface TraineeService {
     List<TraineeDTO> getTraineesByBatchId(Long batchId);
     List<TraineeDailyReportDTO> getTraineeReportsByBatchId(Long batchId);
+    public Long getCurrentBatchDayNumber(Long traineeId);
 }
