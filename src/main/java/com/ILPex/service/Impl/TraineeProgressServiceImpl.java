@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -144,6 +145,7 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<TraineeActualVsEstimatedDurationDTO> getTotalDurationAndEstimatedDurationByTraineeIdAndBatch(Long batchId) {
         return traineeProgressRepository.findTotalDurationAndEstimatedDurationByBatchId(batchId);
     }
@@ -153,5 +155,10 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
         Integer maxDayNumber = traineeProgressRepository.findMaxDayNumberByTraineeId(traineeId);
         // Return the DTO with the max day number or default to 0 if null
         return new TraineeCurrentDayDTO(maxDayNumber != null ? maxDayNumber : 0);
+    }
+    
+    @Override
+    public List<TraineeProgressDTO> getTraineeProgressByCourseDateAndTraineeId(Timestamp courseDate, Long traineeId) {
+        return traineeProgressRepository.findTraineeProgressByCourseDateAndTraineeId(courseDate, traineeId);
     }
 }

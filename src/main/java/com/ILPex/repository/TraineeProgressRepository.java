@@ -1,9 +1,6 @@
 package com.ILPex.repository;
 
-import com.ILPex.DTO.CourseProgressDTO;
-import com.ILPex.DTO.TraineeActualVsEstimatedDurationDTO;
-import com.ILPex.DTO.TraineeCourseCountDTO;
-import com.ILPex.DTO.TraineeCourseDurationDTO;
+import com.ILPex.DTO.*;
 import com.ILPex.entity.TraineeProgress;
 import com.ILPex.entity.Trainees;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -75,4 +73,10 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
             "WHERE tp.trainee_id = :traineeId",
             nativeQuery = true)
     Integer findMaxDayNumberByTraineeId(@Param("traineeId") Long traineeId);
+    
+    @Query("SELECT new com.ILPex.DTO.TraineeProgressDTO(c.dayNumber, tp.courseName, tp.duration, tp.estimatedDuration) " +
+            "FROM TraineeProgress tp JOIN Courses c ON tp.courseName = c.courseName " +
+            "WHERE c.courseDate = :courseDate AND tp.trainees.id = :traineeId")
+    List<TraineeProgressDTO> findTraineeProgressByCourseDateAndTraineeId(@Param("courseDate") Timestamp courseDate,
+                                                                         @Param("traineeId") Long traineeId);
 }
