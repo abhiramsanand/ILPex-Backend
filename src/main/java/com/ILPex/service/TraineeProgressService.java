@@ -11,6 +11,6 @@ public interface TraineeProgressService {
     List<TraineeCourseDurationDTO> findTotalCourseDurationDTOByBatchId(Long batchId);
     List<TraineeCourseCountDTO> getDistinctCourseDurationCountByBatchId(Long batchId);
     List<TraineeActualVsEstimatedDurationDTO> getTotalDurationAndEstimatedDurationByTraineeIdAndBatch(Long BatchId);
-
+    TraineeCurrentDayDTO getMaxDayNumber(Long traineeId);
 }
 

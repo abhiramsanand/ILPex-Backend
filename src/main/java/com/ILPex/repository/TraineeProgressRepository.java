@@ -68,4 +68,11 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
             "GROUP BY u.userName")
     List<TraineeActualVsEstimatedDurationDTO> findTotalDurationAndEstimatedDurationByBatchId(@Param("batchId") Long batchId);
 
+
+    @Query(value = "SELECT COALESCE(MAX(c.day_number), 0) AS last_day_number " +
+            "FROM public.trainee_progress tp " +
+            "JOIN public.courses c ON tp.course_name = c.course_name " +
+            "WHERE tp.trainee_id = :traineeId",
+            nativeQuery = true)
+    Integer findMaxDayNumberByTraineeId(@Param("traineeId") Long traineeId);
 }

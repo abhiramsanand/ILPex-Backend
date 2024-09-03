@@ -49,4 +49,9 @@ public class TraineeProgressController {
         List<TraineeActualVsEstimatedDurationDTO> results = traineeProgressService.getTotalDurationAndEstimatedDurationByTraineeIdAndBatch(batchId);
         return ResponseEntity.ok(results);
     }
+
+    @GetMapping("/currentdaynumber/{traineeId}")
+    public TraineeCurrentDayDTO getMaxDayNumber(@PathVariable Long traineeId) {
+        return traineeProgressService.getMaxDayNumber(traineeId);
+    }
 }
