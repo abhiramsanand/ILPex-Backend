@@ -1,5 +1,7 @@
 package com.ILPex.controller;
 import com.ILPex.DTO.CourseProgressDTO;
+import com.ILPex.DTO.TraineeActualVsEstimatedDurationDTO;
+import com.ILPex.DTO.TraineeCourseDurationDTO;
 import com.ILPex.service.TraineeProgressService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -90,5 +92,57 @@ public class TraineeProgressControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].duration").value(15))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].percentageCompleted").value(75));
     }
+    @Test
+    public void givenValidBatchId_whenGetTotalCourseDurationByBatchId_thenReturnListOfTraineeCourseDurationDTO() throws Exception {
+        // Initialize mock data
+        Long batchId = 1L;
+        List<TraineeCourseDurationDTO> courseDurations = Arrays.asList(
+                new TraineeCourseDurationDTO("John Doe", 40L),
+                new TraineeCourseDurationDTO("Jane Smith", 35L)
+        );
+
+        // Mock the service method
+        when(traineeProgressService.findTotalCourseDurationDTOByBatchId(batchId))
+                .thenReturn(courseDurations);
+
+        // Perform the request and validate
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/ilpex/traineeprogress/course-duration")
+                        .param("batchId", batchId.toString())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].traineeName").value("John Doe"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].totalCourseDuration").value(40))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].traineeName").value("Jane Smith"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].totalCourseDuration").value(35));
+    }
+
+    @Test
+    public void givenValidBatchId_whenGetTotalDurationAndEstimatedDurationByTraineeAndBatch_thenReturnListOfTraineeActualVsEstimatedDurationDTO() throws Exception {
+        // Initialize mock data
+        Long batchId = 1L;
+        List<TraineeActualVsEstimatedDurationDTO> durations = Arrays.asList(
+                new TraineeActualVsEstimatedDurationDTO("john_doe", 120L, 100L),
+                new TraineeActualVsEstimatedDurationDTO("jane_smith", 90L, 85L)
+        );
+
+        // Mock the service method
+        when(traineeProgressService.getTotalDurationAndEstimatedDurationByTraineeIdAndBatch(batchId))
+                .thenReturn(durations);
+
+        // Perform the request and validate
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/ilpex/traineeprogress/duration")
+                        .param("batchId", batchId.toString())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].username").value("john_doe"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].totalDuration").value(120))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].totalEstimatedDuration").value(100))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].username").value("jane_smith"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].totalDuration").value(90))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].totalEstimatedDuration").value(85));
+    }
+
 
 }

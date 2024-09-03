@@ -4,6 +4,7 @@ package com.ILPex.controller;
 import com.ILPex.DTO.*;
 import com.ILPex.entity.Batches;
 import com.ILPex.entity.Courses;
+import com.ILPex.exceptions.ResourceNotFoundException;
 import com.ILPex.service.BatchService;
 import com.ILPex.service.CourseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,25 +62,35 @@ public class CourseControllerTest {
     @Test
     public void givenBatchId_whenGetCoursesByBatchId_thenReturnCoursesList() throws Exception {
         Long batchId = 1L;
-        List<CourseDayBatchDTO> courseDayBatchDTOs = Collections.singletonList(new CourseDayBatchDTO()); // Initialize with mock data
+
+        // Mock data for CourseDayBatchDTO
+        CourseDayBatchDTO course1 = new CourseDayBatchDTO();
+        course1.setCourseName("Java Basics");
+        course1.setDayNumber(1);
+        course1.setBatchName("Batch A");
+        course1.setCourseDuration("4 weeks");
+
+        CourseDayBatchDTO course2 = new CourseDayBatchDTO();
+        course2.setCourseName("Advanced Java");
+        course2.setDayNumber(8);
+        course2.setBatchName("Batch A");
+        course2.setCourseDuration("6 weeks");
+
+        List<CourseDayBatchDTO> courseDayBatchDTOs = List.of(course1, course2);
 
         when(courseService.getCoursesByBatchId(batchId)).thenReturn(courseDayBatchDTOs);
 
         mockMvc.perform(get("/api/courses/batch/{batchId}", batchId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0]").exists()); // Ensure that the returned list contains at least one element
-    }
-    @Test
-    public void givenInvalidBatchId_whenGetCoursesByBatchId_thenReturnEmptyList() throws Exception {
-        Long batchId = 1L;
-
-        when(courseService.getCoursesByBatchId(batchId)).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/api/courses/batch/{batchId}", batchId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isEmpty()); // Ensure that the returned list is empty
+                .andExpect(jsonPath("$[0].courseName").value("Java Basics"))
+                .andExpect(jsonPath("$[0].dayNumber").value(1))
+                .andExpect(jsonPath("$[0].batchName").value("Batch A"))
+                .andExpect(jsonPath("$[0].courseDuration").value("4 weeks"))
+                .andExpect(jsonPath("$[1].courseName").value("Advanced Java"))
+                .andExpect(jsonPath("$[1].dayNumber").value(8))
+                .andExpect(jsonPath("$[1].batchName").value("Batch A"))
+                .andExpect(jsonPath("$[1].courseDuration").value("6 weeks"));
     }
 
     @Test
@@ -95,6 +106,8 @@ public class CourseControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.totalCourseDaysCompleted").value(30)); // Adjust according to actual DTO fields
     }
+
+
     @Test
     public void givenBatchId_whenGetTotalCourseDuration_thenReturnTotalCourseDurationDTO() throws Exception {
         Long batchId = 1L;
@@ -162,8 +175,20 @@ public class CourseControllerTest {
         Long traineeId = 1L;
         Long batchId = 1L;
 
-        // Mocking a list of CourseDailyReportDTO
-        List<CourseDailyReportDTO> courseDetailsList = Collections.singletonList(new CourseDailyReportDTO());
+        // Mocking a list of CourseDailyReportDTO with some data
+        CourseDailyReportDTO courseDetail1 = new CourseDailyReportDTO();
+        courseDetail1.setDayNumber(1);
+        courseDetail1.setCourseName("Course A");
+        courseDetail1.setTimeTaken(120); // Time taken in minutes
+        courseDetail1.setDailyReportId(101L);
+
+        CourseDailyReportDTO courseDetail2 = new CourseDailyReportDTO();
+        courseDetail2.setDayNumber(2);
+        courseDetail2.setCourseName("Course B");
+        courseDetail2.setTimeTaken(90); // Time taken in minutes
+        courseDetail2.setDailyReportId(102L);
+
+        List<CourseDailyReportDTO> courseDetailsList = Arrays.asList(courseDetail1, courseDetail2);
 
         // Mocking the service method to return the mocked list
         when(courseService.getCourseDetails(traineeId, batchId)).thenReturn(courseDetailsList);
@@ -172,16 +197,49 @@ public class CourseControllerTest {
         mockMvc.perform(get("/api/courses/WholeReport/{traineeId}/batch/{batchId}", traineeId, batchId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0]").exists()); // Ensures the list contains at least one element
+                .andExpect(jsonPath("$[0].dayNumber").value(1))
+                .andExpect(jsonPath("$[0].courseName").value("Course A"))
+                .andExpect(jsonPath("$[0].timeTaken").value(120))
+                .andExpect(jsonPath("$[0].dailyReportId").value(101))
+                .andExpect(jsonPath("$[1].dayNumber").value(2))
+                .andExpect(jsonPath("$[1].courseName").value("Course B"))
+                .andExpect(jsonPath("$[1].timeTaken").value(90))
+                .andExpect(jsonPath("$[1].dailyReportId").value(102));
     }
+
+    @Test
+    public void givenInvalidBatchId_whenGetCourseDetails_thenReturnEmptyList() throws Exception {
+        Long traineeId = 1L;
+        Long invalidBatchId = -1L; // Assuming -1 is an invalid batch ID
+
+        // Mocking the service method to return an empty list for an invalid batch ID
+        when(courseService.getCourseDetails(traineeId, invalidBatchId)).thenReturn(Collections.emptyList());
+
+        // Performing the GET request and verifying the response
+        mockMvc.perform(get("/api/courses/WholeReport/{traineeId}/batch/{batchId}", traineeId, invalidBatchId))
+                .andExpect(status().isOk()) // Ensure the status is OK
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON)) // Verify content type is JSON
+                .andExpect(jsonPath("$").isEmpty()); // Ensure that the returned list is empty
+    }
+
 
     @Test
     public void givenBatchIdAndTraineeId_whenGetPendingSubmissions_thenReturnPendingSubmissionDTOList() throws Exception {
         Long batchId = 1L;
         Long traineeId = 1L;
 
-        // Mocking a list of PendingSubmissionDTO
-        List<PendingSubmissionDTO> pendingSubmissionsList = Collections.singletonList(new PendingSubmissionDTO());
+        // Creating mock data for PendingSubmissionDTO
+        PendingSubmissionDTO submission1 = new PendingSubmissionDTO();
+        submission1.setCourseId(1L);
+        submission1.setCourseName("Course A");
+        submission1.setDayNumber(10);
+
+        PendingSubmissionDTO submission2 = new PendingSubmissionDTO();
+        submission2.setCourseId(2L);
+        submission2.setCourseName("Course B");
+        submission2.setDayNumber(20);
+
+        List<PendingSubmissionDTO> pendingSubmissionsList = Arrays.asList(submission1, submission2);
 
         // Mocking the service method to return the mocked list
         when(courseService.getPendingSubmissions(batchId, traineeId)).thenReturn(pendingSubmissionsList);
@@ -192,7 +250,12 @@ public class CourseControllerTest {
                         .param("traineeId", String.valueOf(traineeId)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0]").exists()); // Ensures the list contains at least one element
+                .andExpect(jsonPath("$[0].courseId").value(1))
+                .andExpect(jsonPath("$[0].courseName").value("Course A"))
+                .andExpect(jsonPath("$[0].dayNumber").value(10))
+                .andExpect(jsonPath("$[1].courseId").value(2))
+                .andExpect(jsonPath("$[1].courseName").value("Course B"))
+                .andExpect(jsonPath("$[1].dayNumber").value(20));
     }
 
     @Test
