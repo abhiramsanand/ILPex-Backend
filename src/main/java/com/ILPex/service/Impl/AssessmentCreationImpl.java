@@ -104,14 +104,18 @@ public class AssessmentCreationImpl implements AssessmentCreation {
             for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) { // Skip header row
                 Row row = sheet.getRow(i);
                 if (row != null) {
-                    QuestionCreationDTO question = new QuestionCreationDTO();
-                    question.setQuestion(row.getCell(0).getStringCellValue());
-                    question.setOptionA(row.getCell(1).getStringCellValue());
-                    question.setOptionB(row.getCell(2).getStringCellValue());
-                    question.setOptionC(row.getCell(3).getStringCellValue());
-                    question.setOptionD(row.getCell(4).getStringCellValue());
-                    question.setCorrectAnswer(row.getCell(5).getStringCellValue());
-                    questionList.add(question);
+                    try {
+                        QuestionCreationDTO question = new QuestionCreationDTO();
+                        question.setQuestion(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : "");
+                        question.setOptionA(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : "");
+                        question.setOptionB(row.getCell(2) != null ? row.getCell(2).getStringCellValue() : "");
+                        question.setOptionC(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : "");
+                        question.setOptionD(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : "");
+                        question.setCorrectAnswer(row.getCell(5) != null ? row.getCell(5).getStringCellValue() : "");
+                        questionList.add(question);
+                    } catch (Exception e) {
+                        System.err.println("Error processing row " + i + ": " + e.getMessage());
+                    }
                 }
             }
         }
@@ -125,4 +129,5 @@ public class AssessmentCreationImpl implements AssessmentCreation {
 
         return assessmentCreationDTO;
     }
+
 }

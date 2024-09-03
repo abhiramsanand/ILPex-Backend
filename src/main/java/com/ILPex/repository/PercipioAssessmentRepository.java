@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface PercipioAssessmentRepository extends JpaRepository<PercipioAssessment, Long> {
-
+    List<PercipioAssessment> findByTraineesId(Long traineeId);
 }

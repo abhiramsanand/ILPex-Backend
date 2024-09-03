@@ -174,6 +174,7 @@ public class CourseServiceImpl implements CourseService {
         // Iterate over each course to find corresponding daily report
         for (Courses course : courses) {
             CourseDailyReportDTO dto = new CourseDailyReportDTO();
+            dto.setCourseDate(course.getCourseDate());
             dto.setDayNumber(course.getDayNumber());
             dto.setCourseName(course.getCourseName());
 

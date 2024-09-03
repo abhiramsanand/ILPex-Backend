@@ -1,4 +1,5 @@
 package com.ILPex.repository;
+import com.ILPex.DTO.TraineeAverageScoreDTO;
 import com.ILPex.DTO.TraineeCompletedAssessmentDTO;
 import com.ILPex.entity.Results;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +31,13 @@ public interface ResultsRepository extends JpaRepository<Results,Integer> {
             "GROUP BY u.userName, t.id " +
             "HAVING t.id = :traineeId")
     List<Object[]> findTraineeNameAndAverageScoreByTraineeId(@Param("traineeId") Long traineeId);
+
+    @Query("SELECT new com.ILPex.DTO.TraineeAverageScoreDTO(t.id, AVG(r.score)) " +
+            "FROM Trainees t " +
+            "JOIN t.results r " +
+            "JOIN r.assessmentBatchAllocation aba " +
+            "JOIN aba.assessments a " +
+            "WHERE t.id = :traineeId " +
+            "GROUP BY t.id")
+    Optional<TraineeAverageScoreDTO> findAverageScoreByTraineeId(Long traineeId);
 }
