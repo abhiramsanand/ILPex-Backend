@@ -3,6 +3,7 @@ package com.ILPex.repository;
 
 import com.ILPex.DTO.TraineeDTO;
 import com.ILPex.DTO.TraineeDailyReportDTO;
+import com.ILPex.DTO.TraineeDayProgressDTO;
 import com.ILPex.entity.Trainees;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,17 @@ public interface TraineesRepository extends JpaRepository<Trainees, Long> {
     List<TraineeDailyReportDTO> findTraineeReportsByBatchId(@Param("batchId") Long batchId);
 
 
+    //trainee current day
+    @Query(value = "SELECT " +
+            "u.username AS trainee_name, " +
+            "MAX(c.day_number) AS last_day_number " +
+            "FROM public.trainees t " +
+            "JOIN public.users u ON t.user_id = u.id " +
+            "JOIN public.trainee_progress tp ON t.id = tp.trainee_id " +
+            "JOIN public.courses c ON tp.course_name = c.course_name " +
+            "WHERE t.batch_id = :batchId " +
+            "GROUP BY u.username " +
+            "ORDER BY u.username",
+            nativeQuery = true)
+    List<Object[]> findLastDayForTraineesInBatch(@Param("batchId") Long batchId);
 }
