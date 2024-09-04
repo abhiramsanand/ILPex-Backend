@@ -65,7 +65,7 @@ public class PercipioApiServiceImpl implements PercipioApiService {
 
         String body = """
                 {
-                             "start": "2024-09-02T23:25:24Z",
+                             "start": "2024-09-03T14:54:24Z",
                              "end": "2024-09-06T10:20:24Z",
                              "audience": "ALL",
                              "contentType": "Course,Linked Content,Scheduled Content,Assessment",
