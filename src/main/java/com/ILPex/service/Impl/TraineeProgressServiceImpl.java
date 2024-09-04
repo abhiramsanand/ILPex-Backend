@@ -161,4 +161,5 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
     public List<TraineeProgressDTO> getTraineeProgressByCourseDateAndTraineeId(Timestamp courseDate, Long traineeId) {
         return traineeProgressRepository.findTraineeProgressByCourseDateAndTraineeId(courseDate, traineeId);
     }
+
 }

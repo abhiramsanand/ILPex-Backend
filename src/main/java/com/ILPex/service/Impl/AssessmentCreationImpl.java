@@ -63,8 +63,6 @@ public class AssessmentCreationImpl implements AssessmentCreation {
         Optional<Batches> batchOptional = batchRepository.findById(assessmentCreationDTO.getBatchId());
         if (!batchOptional.isPresent()) {
             throw new Exception("Batch not found");
-
-
         }
         Batches batch = batchOptional.get();
 
@@ -88,12 +86,13 @@ public class AssessmentCreationImpl implements AssessmentCreation {
             question.setCorrectAnswer(questionDTO.getCorrectAnswer());
             question.setAssessments(assessment);
             questionRepository.save(question);
-
-
         }
+
+
         // Notify all trainees of the batch
         assessmentNotificationService.notifyAllTraineesOfBatch(batch.getId(), allocation.getId());
     }
+
 
     @Override
     public AssessmentCreationDTO parseExcelFile(MultipartFile file, String title, Long batchId, String startDate, String endDate) throws Exception {
@@ -101,21 +100,19 @@ public class AssessmentCreationImpl implements AssessmentCreation {
 
         try (InputStream is = file.getInputStream(); Workbook workbook = new XSSFWorkbook(is)) {
             Sheet sheet = workbook.getSheetAt(0);
-            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) { // Skip header row
+            int lastRowNum = sheet.getLastRowNum(); // Get the last row number with content
+
+            for (int i = 1; i <= lastRowNum; i++) { // Skip header row
                 Row row = sheet.getRow(i);
-                if (row != null) {
-                    try {
-                        QuestionCreationDTO question = new QuestionCreationDTO();
-                        question.setQuestion(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : "");
-                        question.setOptionA(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : "");
-                        question.setOptionB(row.getCell(2) != null ? row.getCell(2).getStringCellValue() : "");
-                        question.setOptionC(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : "");
-                        question.setOptionD(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : "");
-                        question.setCorrectAnswer(row.getCell(5) != null ? row.getCell(5).getStringCellValue() : "");
-                        questionList.add(question);
-                    } catch (Exception e) {
-                        System.err.println("Error processing row " + i + ": " + e.getMessage());
-                    }
+                if (row != null && isRowNotEmpty(row)) { // Check if the row is not empty
+                    QuestionCreationDTO question = new QuestionCreationDTO();
+                    question.setQuestion(getCellValue(row, 0));
+                    question.setOptionA(getCellValue(row, 1));
+                    question.setOptionB(getCellValue(row, 2));
+                    question.setOptionC(getCellValue(row, 3));
+                    question.setOptionD(getCellValue(row, 4));
+                    question.setCorrectAnswer(getCellValue(row, 5));
+                    questionList.add(question);
                 }
             }
         }
@@ -129,5 +126,25 @@ public class AssessmentCreationImpl implements AssessmentCreation {
 
         return assessmentCreationDTO;
     }
+
+    // Helper method to get cell value safely
+    private String getCellValue(Row row, int cellIndex) {
+        if (row.getCell(cellIndex) != null) {
+            return row.getCell(cellIndex).getStringCellValue().trim(); // Trim to remove extra spaces
+        } else {
+            return ""; // or null, depending on how you want to handle missing values
+        }
+    }
+
+    // Helper method to check if the row is empty
+    private boolean isRowNotEmpty(Row row) {
+        for (int cellIndex = 0; cellIndex < row.getLastCellNum(); cellIndex++) {
+            if (row.getCell(cellIndex) != null && !row.getCell(cellIndex).getStringCellValue().trim().isEmpty()) {
+                return true; // The row has some content
+            }
+        }
+        return false; // The row is empty
+    }
+
 
 }
