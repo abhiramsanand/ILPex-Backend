@@ -454,4 +454,9 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
+    @Override
+    public List<CourseTraineeProgressDTO> getCoursesWithProgress(Long traineeId, Long batchId, Timestamp courseDate) {
+        return coursesRepository.findCoursesWithProgress(traineeId, batchId, courseDate);
+    }
+
 }

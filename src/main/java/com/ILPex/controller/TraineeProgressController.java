@@ -1,12 +1,9 @@
 package com.ILPex.controller;
 
 import com.ILPex.DTO.*;
-import com.ILPex.constants.Message;
-import com.ILPex.response.ResponseHandler;
 import com.ILPex.service.TraineeProgressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,13 +54,4 @@ public class TraineeProgressController {
     public TraineeCurrentDayDTO getMaxDayNumber(@PathVariable Long traineeId) {
         return traineeProgressService.getMaxDayNumber(traineeId);
     }
-    
-    @GetMapping("/actualVsEstimateDuration")
-    public List<TraineeProgressDTO> getTraineeProgress(@RequestParam  @DateTimeFormat(pattern = "yyyy-MM-dd") Date courseDate, @RequestParam Long traineeId) {
-        Timestamp courseDateTimestamp = new Timestamp(courseDate.getTime());
-        return traineeProgressService.getTraineeProgressByCourseDateAndTraineeId(courseDateTimestamp, traineeId);
-    }
-
-
-
 }

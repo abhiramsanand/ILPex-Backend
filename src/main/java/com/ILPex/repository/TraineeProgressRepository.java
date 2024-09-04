@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public interface TraineeProgressRepository extends JpaRepository<TraineeProgress, Long> {
@@ -73,10 +72,4 @@ public interface TraineeProgressRepository extends JpaRepository<TraineeProgress
             "WHERE tp.trainee_id = :traineeId",
             nativeQuery = true)
     Integer findMaxDayNumberByTraineeId(@Param("traineeId") Long traineeId);
-    
-    @Query("SELECT new com.ILPex.DTO.TraineeProgressDTO(c.dayNumber, tp.courseName, tp.duration, tp.estimatedDuration) " +
-            "FROM TraineeProgress tp JOIN Courses c ON tp.courseName = c.courseName " +
-            "WHERE c.courseDate = :courseDate AND tp.trainees.id = :traineeId")
-    List<TraineeProgressDTO> findTraineeProgressByCourseDateAndTraineeId(@Param("courseDate") Timestamp courseDate,
-                                                                         @Param("traineeId") Long traineeId);
 }
