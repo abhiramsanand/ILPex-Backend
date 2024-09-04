@@ -45,4 +45,15 @@ public class PercipioAssessmentServiceImpl implements PercipioAssessmentService 
         return averageScores;
     }
 
+    @Override
+    public Double getAverageScoreForTrainee(Long traineeId) {
+        List<PercipioAssessment> assessments = percipioAssessmentRepository.findByTraineesId(traineeId);
+
+        return assessments.stream()
+                .filter(assessment -> assessment.getScore() > 0)
+                .mapToDouble(PercipioAssessment::getScore)
+                .average()
+                .orElse(0.0);
+    }
+
 }

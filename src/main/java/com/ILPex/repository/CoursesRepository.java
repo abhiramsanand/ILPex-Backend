@@ -66,6 +66,6 @@ public interface CoursesRepository extends JpaRepository<Courses,Long> {
     List<Courses> findPendingSubmissions(Long batchId, Long traineeId);
     List<Courses> findAllByOrderByDayNumberAscCourseDateAsc();
     List<Courses> findByCourseDate(Timestamp courseDate);
-
+    List<Courses> findByBatch_Id(Long batchId);
 }
 

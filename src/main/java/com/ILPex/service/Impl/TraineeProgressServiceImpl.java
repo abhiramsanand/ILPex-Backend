@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -86,9 +87,19 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
                 .map(result -> {
                     String courseName = (String) result[0];
                     Integer dayNumber = (Integer) result[1];
-                    Integer estimatedDuration = (Integer) result[2];
-                    Integer duration = (Integer) result[3];
-                    Integer percentageCompleted = calculatePercentageCompleted(duration, estimatedDuration);
+                    String completionStatus = (String) result[2];  // New: Fetch completion status from result
+                    Integer estimatedDuration = (Integer) result[3];
+                    Integer duration = (Integer) result[4];
+                    Integer percentageCompleted;
+
+                    // Determine percentage based on completion status
+                    if ("completed".equalsIgnoreCase(completionStatus)) {
+                        percentageCompleted = 100;
+                    } else if ("started".equalsIgnoreCase(completionStatus)) {
+                        percentageCompleted = calculatePercentageCompleted(duration, estimatedDuration);
+                    } else {
+                        percentageCompleted = 0; // Default to 0% for any other status
+                    }
 
                     return new CourseProgressDTO(
                             courseName,
@@ -134,7 +145,21 @@ public class TraineeProgressServiceImpl implements TraineeProgressService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<TraineeActualVsEstimatedDurationDTO> getTotalDurationAndEstimatedDurationByTraineeIdAndBatch(Long batchId) {
         return traineeProgressRepository.findTotalDurationAndEstimatedDurationByBatchId(batchId);
     }
+
+    @Override
+    public TraineeCurrentDayDTO getMaxDayNumber(Long traineeId) {
+        Integer maxDayNumber = traineeProgressRepository.findMaxDayNumberByTraineeId(traineeId);
+        // Return the DTO with the max day number or default to 0 if null
+        return new TraineeCurrentDayDTO(maxDayNumber != null ? maxDayNumber : 0);
+    }
+    
+    @Override
+    public List<TraineeProgressDTO> getTraineeProgressByCourseDateAndTraineeId(Timestamp courseDate, Long traineeId) {
+        return traineeProgressRepository.findTraineeProgressByCourseDateAndTraineeId(courseDate, traineeId);
+    }
+
 }
