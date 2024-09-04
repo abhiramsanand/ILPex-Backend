@@ -1,6 +1,7 @@
 package com.ILPex.repository;
 
 import com.ILPex.DTO.CourseDayBatchDTO;
+import com.ILPex.DTO.CourseTraineeProgressDTO;
 import com.ILPex.entity.Courses;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -67,5 +68,16 @@ public interface CoursesRepository extends JpaRepository<Courses,Long> {
     List<Courses> findAllByOrderByDayNumberAscCourseDateAsc();
     List<Courses> findByCourseDate(Timestamp courseDate);
     List<Courses> findByBatch_Id(Long batchId);
+
+    @Query("SELECT new com.ILPex.DTO.CourseTraineeProgressDTO(c.dayNumber, c.courseName, c.courseDuration, " +
+            "COALESCE(tp.duration, 0)) " +
+            "FROM Courses c LEFT JOIN TraineeProgress tp ON c.courseName = tp.courseName " +
+            "AND tp.trainees.id = :traineeId " +
+            "WHERE c.batch.id = :batchId AND c.courseDate = :courseDate")
+    List<CourseTraineeProgressDTO> findCoursesWithProgress(
+            @Param("traineeId") Long traineeId,
+            @Param("batchId") Long batchId,
+            @Param("courseDate") Timestamp courseDate
+    );
 }
 

@@ -7,9 +7,10 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TraineeProgressDTO {
+public class CourseTraineeProgressDTO {
     private int dayNumber;
     private String courseName;
+    private String courseDuration;
     private int duration;
-    private int estimatedDuration;
+
 }

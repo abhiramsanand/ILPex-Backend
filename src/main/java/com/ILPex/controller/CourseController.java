@@ -6,14 +6,17 @@ import com.ILPex.entity.Courses;
 import com.ILPex.service.BatchService;
 import com.ILPex.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -111,6 +114,13 @@ public class CourseController {
 
         return "Holiday marked and course dates updated successfully.";
     }
-
+    @GetMapping("/coursesWithProgress")
+    public List<CourseTraineeProgressDTO> getCoursesWithProgress(
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date courseDate,
+            @RequestParam Long traineeId,
+            @RequestParam Long batchId) {
+        Timestamp courseDateTimestamp = new Timestamp(courseDate.getTime());
+        return courseService.getCoursesWithProgress(traineeId, batchId, courseDateTimestamp);
+    }
 }
 
