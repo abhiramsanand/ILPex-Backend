@@ -1,9 +1,7 @@
 package com.ILPex.service;
 
-import com.ILPex.DTO.AssessmentNotificationDTO;
 import com.ILPex.entity.AssessmentBatchAllocation;
 import com.ILPex.entity.AssessmentNotification;
-import com.ILPex.entity.Assessments;
 import com.ILPex.entity.Trainees;
 import com.ILPex.repository.AssessmentBatchAllocationRepository;
 import com.ILPex.repository.AssessmentNotificationRepository;
@@ -14,7 +12,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
