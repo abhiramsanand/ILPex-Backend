@@ -1,4 +1,5 @@
 package com.ILPex.service;
+
 import com.ILPex.DTO.UserDTO;
 import com.ILPex.DTO.UserPostDTO;
 import com.ILPex.entity.Users;
@@ -25,7 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceTest{
+public class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -44,88 +45,91 @@ public class UserServiceTest{
         MockitoAnnotations.openMocks(this);
     }
 
-//    @Test
-//    public void givenValidRoleId_whenGetUsers_thenReturnUserDtoList() {
-//        // Given
-//        Users user1 = new Users();
-//        user1.setId(1L);
-//        user1.setUserName("John Doe");
-//
-//        Users user2 = new Users();
-//        user2.setId(2L);
-//        user2.setUserName("Jane Smith");
-//
-//        List<Users> userList = Arrays.asList(user1, user2);
-//        UserDTO userDTO1 = new UserDTO(1L, "John Doe", "john.doe@example.com", "password", null, null, null);
-//        UserDTO userDTO2 = new UserDTO(2L, "Jane Smith", "jane.smith@example.com", "password", null, null, null);
-//
-//        when(userRepository.findByRoles_Id(1L)).thenReturn(userList);
-//        when(modelMapper.map(user1, UserDTO.class)).thenReturn(userDTO1);
-//        when(modelMapper.map(user2, UserDTO.class)).thenReturn(userDTO2);
-//
-//        // When
-//        List<UserDTO> result = userService.getUsers();
-//
-//        // Debugging
-//        System.out.println(result);
-//
-//        // Then
-//        assertNotNull(result);
-//        assertEquals(2, result.size());
-//        assertEquals("John Doe", result.get(0).getUserName());
-//        assertEquals("Jane Smith", result.get(1).getUserName());
-//    }
-//
-//
-//    @Test
-//    public void givenValidUserPostDto_whenCreateUser_thenReturnUserPostDto() {
-//        // Given
-//        UserPostDTO userPostDTO = new UserPostDTO(1L, "John Doe", "john.doe@example.com","password","1");
-//        Users users = new Users();
-//        users.setId(1L);
-//        users.setUserName("John Doe");
-//
-//        when(modelMapper.map(userPostDTO, Users.class)).thenReturn(users);
-//        when(userRepository.save(any(Users.class))).thenReturn(users);
-//        when(modelMapper.map(users, UserPostDTO.class)).thenReturn(userPostDTO);
-//
-//        // When
-//        UserPostDTO result = userService.createUser(userPostDTO);
-//
-//        // Then
-//        assertNotNull(result);
-//        assertEquals(userPostDTO.getUserName(), result.getUserName());
-//        assertEquals(userPostDTO.getEmail(), result.getEmail());
-//    }
-//
-//    @Test
-//    public void givenValidUserId_whenDeleteUser_thenSuccess() {
-//        // Given
-//        Long userId = 1L;
-//
-//        when(userRepository.existsById(userId)).thenReturn(true);
-//        doNothing().when(userRepository).deleteById(userId);
-//
-//        // When & Then
-//        assertDoesNotThrow(() -> userService.deleteUser(userId));
-//
-//        // Then
-//        verify(userRepository, times(1)).deleteById(userId);
-//    }
-//
-//    @Test
-//    public void givenInvalidUserId_whenDeleteUser_thenThrowException() {
-//        // Given
-//        Long userId = 1L;
-//
-//        when(userRepository.existsById(userId)).thenReturn(false);
-//
-//        // When & Then
-//        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
-//            userService.deleteUser(userId);
-//        });
-//
-//        assertEquals("User not found with id: " + userId, thrown.getMessage());
-//    }
+    @Test
+    public void givenValidRoleIdAndActiveUsers_whenGetUsers_thenReturnUserDtoList() {
+        // Given
+        Users user1 = new Users();
+        user1.setId(1L);
+        user1.setUserName("John Doe");
+        user1.setIsActive(true);
 
+        Users user2 = new Users();
+        user2.setId(2L);
+        user2.setUserName("Jane Smith");
+        user2.setIsActive(true);
+
+        List<Users> userList = Arrays.asList(user1, user2);
+        UserDTO userDTO1 = new UserDTO(1L, "John Doe", "john.doe@example.com", "password", null, null, null, null);
+        UserDTO userDTO2 = new UserDTO(2L, "Jane Smith", "jane.smith@example.com", "password", null, null, null, null);
+
+        when(userRepository.findByRoles_IdAndIsActiveTrue(1L)).thenReturn(userList);
+        when(modelMapper.map(user1, UserDTO.class)).thenReturn(userDTO1);
+        when(modelMapper.map(user2, UserDTO.class)).thenReturn(userDTO2);
+
+        // When
+        List<UserDTO> result = userService.getUsers();
+
+        // Then
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals("John Doe", result.get(0).getUserName());
+        assertEquals("Jane Smith", result.get(1).getUserName());
+    }
+
+    @Test
+    public void givenValidUserPostDto_whenCreateUser_thenReturnUserPostDto() {
+        // Given
+        UserPostDTO userPostDTO = new UserPostDTO(1L, "John Doe", "john.doe@example.com", "password", "1");
+        Users users = new Users();
+        users.setId(1L);
+        users.setUserName("John Doe");
+        users.setIsActive(true);
+
+        when(modelMapper.map(userPostDTO, Users.class)).thenReturn(users);
+        when(userRepository.save(any(Users.class))).thenReturn(users);
+        when(modelMapper.map(users, UserPostDTO.class)).thenReturn(userPostDTO);
+
+        // When
+        UserPostDTO result = userService.createUser(userPostDTO);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(userPostDTO.getUserName(), result.getUserName());
+        assertEquals(userPostDTO.getEmail(), result.getEmail());
+    }
+
+    @Test
+    public void givenValidUserId_whenDeleteUser_thenSuccess() {
+        // Given
+        Long userId = 1L;
+        Users user = new Users();
+        user.setId(userId);
+        user.setIsActive(true);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+
+        // When & Then
+        assertDoesNotThrow(() -> userService.deleteUser(userId));
+
+        // Then
+        verify(userRepository, times(1)).findById(userId);
+        verify(userRepository, times(1)).save(user);
+        assertFalse(user.getIsActive());
+    }
+
+    @Test
+    public void givenInvalidUserId_whenDeleteUser_thenThrowException() {
+        // Given
+        Long userId = 1L;
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // When & Then
+        RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+            userService.deleteUser(userId);
+        });
+
+        assertEquals("User not found with id: " + userId, thrown.getMessage());
+    }
 }
