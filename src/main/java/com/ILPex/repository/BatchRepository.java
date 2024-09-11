@@ -27,4 +27,7 @@ public interface BatchRepository extends JpaRepository<Batches, Long> {
 
     @Query("SELECT b.dayNumber FROM Batches b WHERE b.id = :batchId")
     Integer findDayNumberById(@Param("batchId") Long batchId);
+
+    @Query("SELECT b FROM Batches b WHERE b.isActive = true")
+    Optional<Batches> findByIsActiveTrue();
 }

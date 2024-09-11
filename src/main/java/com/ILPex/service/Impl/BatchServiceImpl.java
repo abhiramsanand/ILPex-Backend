@@ -78,18 +78,25 @@ public class BatchServiceImpl implements BatchService {
             throw new IllegalArgumentException("Program not found: " + batchCreationDTO.getProgramName());
         }
 
-        // Create a new Batch entity
-        Batches batch = new Batches();
-        batch.setBatchName(batchCreationDTO.getBatchName());
-        batch.setStartDate(batchCreationDTO.getStartDate());
-        batch.setEndDate(batchCreationDTO.getEndDate());
-        batch.setIsActive(batchCreationDTO.getIsActive());
-        batch.setTrainees(new HashSet<>()); // Initialize an empty HashSet for trainees
-        batch.setPrograms(program); // Set the program entity
+        // Find the current active batch and set its isActive field to false
+        Optional<Batches> activeBatchOptional = batchRepository.findByIsActiveTrue();
+        if (activeBatchOptional.isPresent()) {
+            Batches activeBatch = activeBatchOptional.get();
+            activeBatch.setIsActive(false);
+            batchRepository.save(activeBatch); // Save the previous batch with isActive = false
+        }
 
-        // Save the batch to the repository
+        // Create the new batch
+        Batches newBatch = new Batches();
+        newBatch.setBatchName(batchCreationDTO.getBatchName());
+        newBatch.setStartDate(batchCreationDTO.getStartDate());
+        newBatch.setEndDate(batchCreationDTO.getEndDate());
+        newBatch.setIsActive(true); // Set the new batch as active
+        newBatch.setTrainees(new HashSet<>()); // Initialize an empty HashSet for trainees
+        newBatch.setPrograms(program); // Set the program entity
 
-        return batchRepository.save(batch);
+        // Save the new batch to the repository
+        return batchRepository.save(newBatch);
     }
 
     @Override
@@ -422,7 +429,6 @@ public class BatchServiceImpl implements BatchService {
             }
         }
     }
-
 
     private long calculateWorkingDays(LocalDate start, LocalDate end) {
         long count = 0;
