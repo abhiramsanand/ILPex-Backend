@@ -7,11 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TraineeCompletedAssessmentDTO {
-    private String assessmentName;
+public class AssessmentResultDTO {
     private int score;
     private int correctAnswers;
     private int incorrectAnswers;
-    private int traineeId;
-
 }

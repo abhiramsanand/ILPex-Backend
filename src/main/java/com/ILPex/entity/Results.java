@@ -24,6 +24,12 @@ public class Results extends BaseEntity {
     @Column(name = "score", nullable = false)
     private int score;
 
+    @Column(name = "correct_answers",nullable = false)
+    private int correctAnswers;
+
+    @Column(name = "incorrect_answers",nullable = false)
+    private int incorrectAnswers;
+
     @Column(name = "assessment_attempts", nullable = false)
     private int assessmentAttempts;
 

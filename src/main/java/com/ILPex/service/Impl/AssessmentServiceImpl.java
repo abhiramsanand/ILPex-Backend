@@ -90,15 +90,12 @@ public class AssessmentServiceImpl implements AssessmentService{
 
 
     @Override
-    public int calculateAssessmentScore(AssessmentResponseDTO responseDTO) {
-        // Initialize counters
+    public AssessmentResultDTO calculateAssessmentScore(AssessmentResponseDTO responseDTO) {
         int totalQuestions = 0;
         int correctAnswers = 0;
 
         // Get the question responses from the DTO
         Map<Long, String> questionResponses = responseDTO.getQuestionResponses();
-
-        // Check if the map is null or empty
         if (questionResponses == null || questionResponses.isEmpty()) {
             throw new IllegalArgumentException("Question responses cannot be null or empty");
         }
@@ -118,12 +115,14 @@ public class AssessmentServiceImpl implements AssessmentService{
             Questions question = questionsRepository.findById(questionId).orElse(null);
             if (question != null) {
                 totalQuestions++;
-                // Compare the given answer with the correct answer
                 if (question.getCorrectAnswer().equalsIgnoreCase(givenAnswer)) {
                     correctAnswers++;
                 }
             }
         }
+
+        // Calculate the number of incorrect answers
+        int incorrectAnswers = totalQuestions - correctAnswers;
 
         // Calculate the score as a percentage
         int score = totalQuestions > 0 ? (int) ((double) correctAnswers / totalQuestions * 100) : 0;
@@ -131,6 +130,8 @@ public class AssessmentServiceImpl implements AssessmentService{
         // Save the result to the database
         Results result = new Results();
         result.setScore(score);
+        result.setCorrectAnswers(correctAnswers);  // Save correct answers
+        result.setIncorrectAnswers(incorrectAnswers);
         result.setAssessmentAttempts(1); // Adjust if multiple attempts are tracked
 
         // Find and set the assessment batch allocation
@@ -148,8 +149,10 @@ public class AssessmentServiceImpl implements AssessmentService{
             throw new IllegalArgumentException("Invalid trainee ID");
         }
 
-        return score;
+        // Return the result as AssessmentResultDTO
+        return new AssessmentResultDTO(score, correctAnswers, incorrectAnswers);
     }
+
 
     private QuestionsDTO convertToQuestionDTO(Questions question) {
         return new QuestionsDTO(

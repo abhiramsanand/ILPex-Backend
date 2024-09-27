@@ -10,5 +10,5 @@ public interface AssessmentService {
     List<TraineeCompletedAssessmentDTO> getCompletedAssessmentsByTraineeId(int traineeId);
     List<TraineePendingAssessmentDTO> getPendingAssessmentsByTraineeId(int traineeId);
     TraineeAssessmentDisplayDTO getAssessmentByName(String assessmentName);
-    int calculateAssessmentScore(AssessmentResponseDTO responseDTO);
+     AssessmentResultDTO calculateAssessmentScore(AssessmentResponseDTO responseDTO);
 }
