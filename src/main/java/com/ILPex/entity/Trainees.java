@@ -39,8 +39,6 @@ public class Trainees  extends BaseEntity{
     @JoinColumn(name = "batch_id", referencedColumnName = "id", nullable = false)
     Batches batches;
 
-
-
     @OneToMany(mappedBy = "trainees", cascade = CascadeType.ALL,targetEntity = PercipioAssessment.class)
     private Set<PercipioAssessment> percipioAssessments = new HashSet<>();
 
@@ -55,9 +53,6 @@ public class Trainees  extends BaseEntity{
 
     @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, targetEntity = AssessmentNotification.class)
     private Set<AssessmentNotification> assessmentNotifications = new HashSet<>();
-
-
-
 
 }
 

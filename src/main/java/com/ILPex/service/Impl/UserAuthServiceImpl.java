@@ -27,7 +27,7 @@ public class UserAuthServiceImpl implements UserAuthService {
         }
 
         Long roleId = user.getRoles().getId();
-        if (roleId == 2) { // Trainee role
+        if (roleId == 3) { // Trainee role
             Long traineeId = user.getTrainees().stream().findFirst().orElseThrow(
                     () -> new RuntimeException("No trainee record found for the user")
             ).getId();
