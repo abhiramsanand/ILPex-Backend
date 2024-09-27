@@ -46,8 +46,8 @@ public class TraineeAssessmentController {
     }
 
     @PostMapping("/submit")
-    public ResponseEntity<Integer> submitAssessment(@RequestBody AssessmentResponseDTO responseDTO) {
-        int score = assessmentService.calculateAssessmentScore(responseDTO);
-        return ResponseEntity.ok(score);
+    public ResponseEntity<AssessmentResultDTO> submitAssessment(@RequestBody AssessmentResponseDTO responseDTO) {
+        AssessmentResultDTO result = assessmentService.calculateAssessmentScore(responseDTO);
+        return ResponseEntity.ok(result);
     }
 }

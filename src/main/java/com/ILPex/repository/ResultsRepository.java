@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface ResultsRepository extends JpaRepository<Results,Integer> {
 
 
-    @Query("SELECT new com.ILPex.DTO.TraineeCompletedAssessmentDTO(a.assessmentName, r.score, r.traineeId) " +
+    @Query("SELECT new com.ILPex.DTO.TraineeCompletedAssessmentDTO(a.assessmentName, r.score,r.correctAnswers,r.incorrectAnswers, r.traineeId) " +
             "FROM Assessments a " +
             "JOIN a.assessmentBatchAllocations aba ON a.id = aba.assessments.id " +
             "JOIN aba.results r ON aba.id = r.assessmentBatchAllocation.id " +
