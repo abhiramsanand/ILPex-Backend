@@ -186,7 +186,7 @@ public class PercipioApiServiceImpl implements PercipioApiService {
 
     private void saveUserContentAccessData(List<UserContentAccessDTO> dtoList) {
         // Get the current time minus 5 minutes
-        Instant fiveMinutesAgo = Instant.now().minus(100, ChronoUnit.DAYS);
+        Instant fiveMinutesAgo = Instant.now().minus(5, ChronoUnit.MINUTES);
 
         for (UserContentAccessDTO dto : dtoList) {
             // Check if LastAccess is within the last 5 minutes
