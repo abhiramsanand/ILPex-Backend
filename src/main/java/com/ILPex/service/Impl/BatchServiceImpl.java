@@ -78,11 +78,18 @@ public class BatchServiceImpl implements BatchService {
             throw new IllegalArgumentException("Program not found: " + batchCreationDTO.getProgramName());
         }
 
-        // Find the current active batch and set its isActive field to false
+        // Find the current active batch and deactivate its trainees
         Optional<Batches> activeBatchOptional = batchRepository.findByIsActiveTrue();
         if (activeBatchOptional.isPresent()) {
             Batches activeBatch = activeBatchOptional.get();
             activeBatch.setIsActive(false);
+
+            // Set all trainees in the previous active batch as inactive
+            activeBatch.getTrainees().forEach(trainee -> {
+                trainee.setIsActive(false);
+                traineesRepository.save(trainee);
+            });
+
             batchRepository.save(activeBatch); // Save the previous batch with isActive = false
         }
 
@@ -137,7 +144,7 @@ public class BatchServiceImpl implements BatchService {
         // Map the TraineeDTO to the Trainees entity
         Trainees trainee = new Trainees();
         trainee.setPercipioEmail(traineeCreationDTO.getPercipioEmail());
-        trainee.setIsActive(batch.getIsActive());
+        trainee.setIsActive(true); // Ensure trainees in the new batch are active
         trainee.setUsers(user);
         trainee.setBatches(batch);
         user.setTrainees(new HashSet<>(List.of(trainee)));

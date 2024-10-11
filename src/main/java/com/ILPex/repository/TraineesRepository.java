@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface TraineesRepository extends JpaRepository<Trainees, Long> {
     List<Trainees> findByBatchesId(Long batchId);
-    Trainees findByPercipioEmail(String percipioEmail);
+    Trainees findByPercipioEmailAndIsActive(String percipioEmail, boolean isActive);
 
     @Query("SELECT new com.ILPex.DTO.TraineeDTO(t.id, u.userName) " +
             "FROM Trainees t JOIN t.users u WHERE t.batches.id = :batchId")

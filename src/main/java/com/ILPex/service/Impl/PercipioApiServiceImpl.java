@@ -7,7 +7,6 @@ import com.ILPex.entity.Trainees;
 import com.ILPex.repository.PercipioAssessmentRepository;
 import com.ILPex.repository.TraineeProgressRepository;
 import com.ILPex.repository.TraineesRepository;
-import com.ILPex.repository.UserContentAccessRepository;
 import com.ILPex.service.PercipioApiService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +30,6 @@ public class PercipioApiServiceImpl implements PercipioApiService {
     private final String apiUrl2;
     private final String organizationUuid;
     private final String jwtToken;
-    private final UserContentAccessRepository userContentAccessRepository;
     private final TraineesRepository traineesRepository;
     private final TraineeProgressRepository traineeProgressRepository;
     private final PercipioAssessmentRepository percipioAssessmentRepository;
@@ -40,7 +39,6 @@ public class PercipioApiServiceImpl implements PercipioApiService {
                                   @Value("${percipio.api.url2}") String apiUrl2,
                                   @Value("${percipio.organization.uuid}") String organizationUuid,
                                   @Value("${percipio.api.jwt}") String jwtToken,
-                                  UserContentAccessRepository userContentAccessRepository,
                                   TraineesRepository traineesRepository,
                                   TraineeProgressRepository traineeProgressRepository,
                                   PercipioAssessmentRepository percipioAssessmentRepository) {
@@ -49,7 +47,6 @@ public class PercipioApiServiceImpl implements PercipioApiService {
         this.apiUrl2 = apiUrl2;
         this.organizationUuid = organizationUuid;
         this.jwtToken = jwtToken;
-        this.userContentAccessRepository = userContentAccessRepository;
         this.traineesRepository = traineesRepository;
         this.traineeProgressRepository = traineeProgressRepository;
         this.percipioAssessmentRepository = percipioAssessmentRepository;
@@ -65,23 +62,22 @@ public class PercipioApiServiceImpl implements PercipioApiService {
 
         String body = """
                 {
-                             "start": "2024-08-01T23:39:48Z",
-                             "end": "2024-09-10T10:20:24Z",
-                             "audience": "ALL",
-                             "contentType": "Course,Linked Content,Scheduled Content,Assessment",
-                             "csvPreferences": {
-                                 "header": true,
-                                 "rowDelimiter": "\\n",
-                                 "columnDelimiter": ",",
-                                 "headerForNoRecords": false
-                             },
-                             "sort": {
-                                 "field": "lastAccessDate",
-                                 "order": "asc"
-                             },
-                             "isFileRequiredInSftp": false,
-                             "formatType": "JSON"
-                         }
+                     "start": "2024-08-01T23:39:48Z",
+                     "audience": "ALL",
+                     "contentType": "Course,Linked Content,Scheduled Content,Assessment",
+                     "csvPreferences": {
+                         "header": true,
+                         "rowDelimiter": "\\n",
+                         "columnDelimiter": ",",
+                         "headerForNoRecords": false
+                     },
+                     "sort": {
+                         "field": "lastAccessDate",
+                         "order": "asc"
+                     },
+                     "isFileRequiredInSftp": false,
+                     "formatType": "JSON"
+                 }
         """;
 
         HttpEntity<String> entity = new HttpEntity<>(body, headers);
@@ -112,10 +108,46 @@ public class PercipioApiServiceImpl implements PercipioApiService {
             JsonNode rootNode = objectMapper.readTree(jsonData);
 
             for (JsonNode node : rootNode) {
-                String highScoreValue = node.path("highScore").asText();
-                int highScore = (highScoreValue != null && !highScoreValue.isEmpty())
-                        ? Integer.parseInt(highScoreValue)
-                        : 0;
+                int highScore = 0;
+                try {
+                    String highScoreValue = node.path("highScore").asText();
+                    if (highScoreValue != null && !highScoreValue.isEmpty()) {
+                        highScore = Integer.parseInt(highScoreValue);
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid highScore value: " + e.getMessage());
+                }
+
+                // Add checks for integer fields with similar logic as above
+                String durationStr = node.path("duration").asText();
+                int duration = 0;
+                if (durationStr != null && !durationStr.isEmpty()) {
+                    try {
+                        duration = Integer.parseInt(durationStr);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid duration value: " + e.getMessage());
+                    }
+                }
+
+                String estimatedDurationStr = node.path("estimatedDuration").asText();
+                int estimatedDuration = 0;
+                if (estimatedDurationStr != null && !estimatedDurationStr.isEmpty()) {
+                    try {
+                        estimatedDuration = Integer.parseInt(estimatedDurationStr);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid estimatedDuration value: " + e.getMessage());
+                    }
+                }
+
+                String totalAccessesStr = node.path("totalAccesses").asText();
+                int totalAccesses = 0;
+                if (totalAccessesStr != null && !totalAccessesStr.isEmpty()) {
+                    try {
+                        totalAccesses = Integer.parseInt(totalAccessesStr);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid totalAccesses value: " + e.getMessage());
+                    }
+                }
 
                 UserContentAccessDTO dto = new UserContentAccessDTO(
                         null,
@@ -131,11 +163,11 @@ public class PercipioApiServiceImpl implements PercipioApiService {
                         node.path("source").asText(),
                         node.path("status").asText(),
                         convertToTimestamp(node.path("completedDate").asText()),
-                        Integer.parseInt(node.path("duration").asText()),
-                        Integer.parseInt(node.path("estimatedDuration").asText()),
+                        duration,
+                        estimatedDuration,
                         convertToTimestamp(node.path("firstAccess").asText()),
                         convertToTimestamp(node.path("lastAccess").asText()),
-                        Integer.parseInt(node.path("totalAccesses").asText()),
+                        totalAccesses,
                         node.path("emailAddress").asText(),
                         node.path("durationHms").asText(),
                         node.path("estimatedDurationHms").asText(),
@@ -153,19 +185,37 @@ public class PercipioApiServiceImpl implements PercipioApiService {
     }
 
     private void saveUserContentAccessData(List<UserContentAccessDTO> dtoList) {
+        // Get the current time minus 5 minutes
+        Instant fiveMinutesAgo = Instant.now().minus(100, ChronoUnit.DAYS);
+
         for (UserContentAccessDTO dto : dtoList) {
-            Trainees trainees = mapDTOToTrainees(dto);
+            // Check if LastAccess is within the last 5 minutes
+            if (dto.getLastAccess() != null && dto.getLastAccess().toInstant().isAfter(fiveMinutesAgo)) {
+                Trainees trainees = mapDTOToTrainees(dto);
 
-            if (trainees != null) {
-                TraineeProgress traineeProgress = mapDTOToTraineeProgress(dto, trainees);
-                if (traineeProgress != null) {
-                    traineeProgressRepository.save(traineeProgress);
+                if (trainees != null) {
+                    // Save TraineeProgress only if it does not exist
+                    boolean traineeProgressExists = traineeProgressRepository.existsByTraineesAndCourseNameAndCompletionStatus(
+                            trainees, dto.getContentTitle(), dto.getStatus());
+
+                    if (!traineeProgressExists) {
+                        TraineeProgress traineeProgress = mapDTOToTraineeProgress(dto, trainees);
+                        if (traineeProgress != null) {
+                            traineeProgressRepository.save(traineeProgress);
+                        }
+                    }
+
+                    // Save PercipioAssessment only if it does not exist
+                    boolean assessmentExists = percipioAssessmentRepository.existsByTraineesAndCourseName(
+                            trainees, dto.getContentTitle());
+
+                    if (!assessmentExists) {
+                        PercipioAssessment percipioAssessment = mapDTOToPercipioAssessment(dto, trainees);
+                        if (percipioAssessment != null) {
+                            percipioAssessmentRepository.save(percipioAssessment);
+                        }
+                    }
                 }
-            }
-
-            PercipioAssessment percipioAssessment = mapDTOToPercipioAssessment(dto, trainees);
-            if (percipioAssessment != null && percipioAssessment.getTrainees() != null) {
-                percipioAssessmentRepository.save(percipioAssessment);
             }
         }
     }
@@ -190,11 +240,14 @@ public class PercipioApiServiceImpl implements PercipioApiService {
     }
 
     private Trainees mapDTOToTrainees(UserContentAccessDTO dto) {
-        Trainees existingTrainee = traineesRepository.findByPercipioEmail(dto.getUserId());
+        // Retrieve the trainee by percipio email and check if they are active
+        Trainees existingTrainee = traineesRepository.findByPercipioEmailAndIsActive(dto.getUserId(), true);
 
         if (existingTrainee != null) {
+            // Update the trainee's UUID if necessary
             existingTrainee.setUserUuid(UUID.fromString(dto.getUserUuid()));
         } else {
+            // If no active trainee found, return null to avoid updating old records
             return null;
         }
 
@@ -202,13 +255,6 @@ public class PercipioApiServiceImpl implements PercipioApiService {
     }
 
     private TraineeProgress mapDTOToTraineeProgress(UserContentAccessDTO dto, Trainees trainees) {
-        boolean exists = traineeProgressRepository.existsByTraineesAndCourseNameAndCompletionStatus(
-                trainees, dto.getContentTitle(), "complete");
-
-        if (exists) {
-            return null;
-        }
-
         TraineeProgress entity = new TraineeProgress();
         entity.setTrainees(trainees);
         entity.setDuration(dto.getDuration());
@@ -233,7 +279,6 @@ public class PercipioApiServiceImpl implements PercipioApiService {
         if (isoDate == null || isoDate.trim().isEmpty()) {
             return null;
         }
-        Instant instant = Instant.parse(isoDate);
-        return Timestamp.from(instant);
+        return Timestamp.from(Instant.parse(isoDate));
     }
 }
