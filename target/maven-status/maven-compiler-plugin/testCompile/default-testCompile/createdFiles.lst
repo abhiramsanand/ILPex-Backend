@@ -1,11 +1,1 @@
-com\ILPex\service\BatchServiceTest.class
-com\ILPex\controller\PercipioAssessmentControllerTest.class
-com\ILPex\controller\TraineeProgressControllerTest.class
-com\ILPex\service\AssessmentNotificationServiceTest.class
-com\ILPex\controller\BatchControllerTest.class
 com\ILPex\IlPexApplicationTests.class
-com\ILPex\controller\UserControllerTest.class
-com\ILPex\service\DailyReportServiceTest.class
-com\ILPex\service\TraineeDurationServiceTest.class
-com\ILPex\service\TraineeAssessmentServiceTest.class
-com\ILPex\service\UserServiceTest.class
