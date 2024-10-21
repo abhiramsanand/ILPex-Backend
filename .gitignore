@@ -1,10 +1,12 @@
+# Ignore general IDE-specific files
 HELP.md
-target/
+# Ignore all target directories except specific ones in src
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Remove the target exclusion to include all target directories
+# !**/src/main/**/target/
+# !**/src/test/**/target/
 
-### STS ###
+### STS (Spring Tool Suite) ###
 .apt_generated
 .classpath
 .factorypath
@@ -25,9 +27,12 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
+
+# Optional: To still ignore IDE-generated build files, keep these lines
 build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+# You can remove this if you want all builds to be tracked in GitHub
+# !**/src/main/**/build/
+# !**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
