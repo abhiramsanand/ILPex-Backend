@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-
+@Repository
 public interface TraineesRepository extends JpaRepository<Trainees, Long> {
     List<Trainees> findByBatchesId(Long batchId);
     Trainees findByPercipioEmailAndIsActive(String percipioEmail, boolean isActive);
