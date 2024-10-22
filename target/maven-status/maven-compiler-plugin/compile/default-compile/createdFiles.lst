@@ -1,4 +1,3 @@
-com\ILPex\service\ProfileService.class
 com\ILPex\entity\Results.class
 com\ILPex\DTO\CourseDailyReportDTO.class
 com\ILPex\DTO\UserDTO.class
@@ -141,7 +140,6 @@ com\ILPex\DTO\TraineeUpdateDTO.class
 com\ILPex\service\Impl\DailyReportServiceImpl.class
 com\ILPex\DTO\QuestionCreationDTO.class
 com\ILPex\DTO\TraineeReportStatusDTO.class
-com\ILPex\service\Impl\ProfileServiceImpl.class
 com\ILPex\DTO\TraineeCompletedAssessmentDTO.class
 com\ILPex\service\Impl\BatchServiceImpl.class
 com\ILPex\DTO\DailyReportDetailsDTO.class
