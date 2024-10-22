@@ -140,13 +140,13 @@ com\ILPex\DTO\TraineeUpdateDTO.class
 com\ILPex\service\Impl\DailyReportServiceImpl.class
 com\ILPex\DTO\QuestionCreationDTO.class
 com\ILPex\DTO\TraineeReportStatusDTO.class
+com\ILPex\DTO\TraineeProfileDTO.class
 com\ILPex\DTO\TraineeCompletedAssessmentDTO.class
 com\ILPex\service\Impl\BatchServiceImpl.class
 com\ILPex\DTO\DailyReportDetailsDTO.class
 com\ILPex\DTO\TraineeActualVsEstimatedDurationDTO.class
 com\ILPex\service\Impl\CourseServiceImpl$1.class
 com\ILPex\controller\TraineeAssessmentController.class
-com\ILPex\DTO\ProfileDTO.class
 com\ILPex\service\Impl\PercipioAssessmentServiceImpl.class
 com\ILPex\DTO\TraineeLaggingPercentageDTO.class
 com\ILPex\service\Impl\TraineeDurationServiceImpl.class

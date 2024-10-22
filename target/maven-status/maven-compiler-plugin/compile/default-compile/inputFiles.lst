@@ -33,7 +33,6 @@ D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\controller\UserController.j
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\ProgramService.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\AssessmentNotificationDTO.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\controller\BatchController.java
-D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\ProfileDTO.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\controller\PercipioController.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\ProfileService.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\RolesService.java
@@ -63,6 +62,7 @@ D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\config\ApiConfig.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\controller\AssessmentController2.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\entity\BaseEntity.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\entity\Holiday.java
+D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\TraineeProfileDTO.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\entity\DailyReports.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\TraineeDurationService.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\BatchUpdateDTO.java
