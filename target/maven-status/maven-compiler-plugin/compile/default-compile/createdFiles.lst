@@ -144,7 +144,6 @@ com\ILPex\DTO\TraineeReportStatusDTO.class
 com\ILPex\service\Impl\ProfileServiceImpl.class
 com\ILPex\DTO\TraineeCompletedAssessmentDTO.class
 com\ILPex\service\Impl\BatchServiceImpl.class
-com\ILPex\controller\ProfileController.class
 com\ILPex\DTO\DailyReportDetailsDTO.class
 com\ILPex\DTO\TraineeActualVsEstimatedDurationDTO.class
 com\ILPex\service\Impl\CourseServiceImpl$1.class
