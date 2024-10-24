@@ -10,7 +10,6 @@ D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\entity\PercipioAssessment.j
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\CourseDailyReportDTO.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\UserDTO.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\UserPostDTO.java
-D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\Impl\ProfileServiceImpl.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\entity\Users.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\QuestionsDTO.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\CourseDurationDTO.java
@@ -34,7 +33,6 @@ D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\ProgramService.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\AssessmentNotificationDTO.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\controller\BatchController.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\controller\PercipioController.java
-D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\ProfileService.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\RolesService.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\entity\NotificationsProgress.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\Impl\DailyReportServiceImpl.java
@@ -147,7 +145,6 @@ D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\TraineeAssessmentSe
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\BatchCreationDTO.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\repository\RoleRepository.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\DTO\BatchDTO.java
-D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\controller\ProfileController.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\UserAuthService.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\service\TraineeAverageScoreService.java
 D:\SpringBootWorkspace\ILPex\src\main\java\com\ILPex\config\SecurityConfig.java
