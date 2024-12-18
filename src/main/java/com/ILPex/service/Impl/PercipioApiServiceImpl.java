@@ -1,6 +1,7 @@
 package com.ILPex.service.Impl;
 
 import com.ILPex.DTO.UserContentAccessDTO;
+import com.ILPex.entity.Batches;
 import com.ILPex.entity.PercipioAssessment;
 import com.ILPex.entity.TraineeProgress;
 import com.ILPex.entity.Trainees;
@@ -185,34 +186,41 @@ public class PercipioApiServiceImpl implements PercipioApiService {
     }
 
     private void saveUserContentAccessData(List<UserContentAccessDTO> dtoList) {
-        Instant fiveMinutesAgo = Instant.now().minus(100, ChronoUnit.DAYS);
+        Instant twoDaysAgo = Instant.now().minus(2, ChronoUnit.DAYS);
 
         for (UserContentAccessDTO dto : dtoList) {
-            // Check if LastAccess is within the last 5 minutes
-            if (dto.getLastAccess() != null && dto.getLastAccess().toInstant().isAfter(fiveMinutesAgo)) {
-                Trainees trainees = mapDTOToTrainees(dto);
+            Trainees trainees = mapDTOToTrainees(dto);
 
-                if (trainees != null) {
-                    // Save TraineeProgress only if it does not exist
-                    boolean traineeProgressExists = traineeProgressRepository.existsByTraineesAndCourseNameAndCompletionStatus(
-                            trainees, dto.getContentTitle(), dto.getStatus());
-
-                    if (!traineeProgressExists) {
-                        TraineeProgress traineeProgress = mapDTOToTraineeProgress(dto, trainees);
-                        if (traineeProgress != null) {
-                            traineeProgressRepository.save(traineeProgress);
-                        }
+            if (trainees != null) {
+                // Fetch the batch's end date from the related batch entity
+                Batches batch = trainees.getBatches();
+                if (batch != null) {
+                    Timestamp batchEndDate = batch.getEndDate();
+                    if (batchEndDate != null && batchEndDate.toInstant().isBefore(twoDaysAgo)) {
+                        System.out.println("Skipping data insertion as batch end date is more than 2 days old.");
+                        continue;
                     }
+                }
 
-                    // Save PercipioAssessment only if it does not exist
-                    boolean assessmentExists = percipioAssessmentRepository.existsByTraineesAndCourseName(
-                            trainees, dto.getContentTitle());
+                // Save TraineeProgress only if it does not exist
+                boolean traineeProgressExists = traineeProgressRepository.existsByTraineesAndCourseNameAndCompletionStatus(
+                        trainees, dto.getContentTitle(), dto.getStatus());
 
-                    if (!assessmentExists) {
-                        PercipioAssessment percipioAssessment = mapDTOToPercipioAssessment(dto, trainees);
-                        if (percipioAssessment != null) {
-                            percipioAssessmentRepository.save(percipioAssessment);
-                        }
+                if (!traineeProgressExists) {
+                    TraineeProgress traineeProgress = mapDTOToTraineeProgress(dto, trainees);
+                    if (traineeProgress != null) {
+                        traineeProgressRepository.save(traineeProgress);
+                    }
+                }
+
+                // Save PercipioAssessment only if it does not exist
+                boolean assessmentExists = percipioAssessmentRepository.existsByTraineesAndCourseName(
+                        trainees, dto.getContentTitle());
+
+                if (!assessmentExists) {
+                    PercipioAssessment percipioAssessment = mapDTOToPercipioAssessment(dto, trainees);
+                    if (percipioAssessment != null) {
+                        percipioAssessmentRepository.save(percipioAssessment);
                     }
                 }
             }
