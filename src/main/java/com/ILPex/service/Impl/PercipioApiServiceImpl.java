@@ -11,6 +11,7 @@ import com.ILPex.repository.TraineesRepository;
 import com.ILPex.service.PercipioApiService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class PercipioApiServiceImpl implements PercipioApiService {
 
     private final RestTemplate restTemplate;
@@ -63,7 +65,7 @@ public class PercipioApiServiceImpl implements PercipioApiService {
 
         String body = """
                 {
-                     "start": "2024-08-01T23:39:48Z",
+                     "start": "2025-01-19T23:39:48Z",
                      "audience": "ALL",
                      "contentType": "Course,Linked Content,Scheduled Content,Assessment",
                      "csvPreferences": {

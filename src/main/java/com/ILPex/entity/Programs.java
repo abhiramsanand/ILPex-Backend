@@ -16,13 +16,13 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "programs")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "batches"})
+@JsonIgnoreProperties({"hibernateEAGERInitializer", "handler", "batches"})
 public class Programs extends BaseEntity {
 
     @Column(name = "program_name")
     private String programName;
 
-    @OneToMany(mappedBy = "programs", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "programs", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnoreProperties("programs") // Ignore 'programs' property in Batches to break the cycle
     private Set<Batches> batches = new HashSet<>();
 }
