@@ -3,7 +3,6 @@ package com.ILPex.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +18,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
-@Transactional
 @Table(name = "batches")
 public class Batches extends BaseEntity {
 
@@ -38,15 +36,15 @@ public class Batches extends BaseEntity {
     @Column(name = "day_number")
     private Long dayNumber;
 
-    @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL, targetEntity = Trainees.class, fetch =  FetchType.EAGER)
+    @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL, targetEntity = Trainees.class)
     @JsonIgnore // Prevent serialization
     private Set<Trainees> trainees = new HashSet<>();
 
-    @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL, targetEntity = AssessmentBatchAllocation.class,fetch =  FetchType.EAGER)
+    @OneToMany(mappedBy = "batches", cascade = CascadeType.ALL, targetEntity = AssessmentBatchAllocation.class)
     @JsonIgnore // Prevent serialization
     private Set<AssessmentBatchAllocation> assessmentBatchAllocations = new HashSet<>();
 
-    @ManyToOne(fetch =  FetchType.EAGER)
+    @ManyToOne(fetch =  FetchType.LAZY)
     @JsonIgnoreProperties("programs")
     @JoinColumn(name = "program_id", referencedColumnName = "id", nullable = false)
     private Programs programs;
