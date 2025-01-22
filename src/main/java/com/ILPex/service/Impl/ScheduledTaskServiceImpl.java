@@ -28,10 +28,11 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
     private BatchRepository batchRepository;
 
     @Override
-    @Scheduled(fixedRate = 300000) // 5 minutes in milliseconds
+    @Scheduled(fixedRate = 120000) // 2 minutes in milliseconds
     public void fetchAndSaveData() {
         // Step 1: Generate request ID
         String requestId = percipioApiService.generateRequestId();
+        System.out.println("Request ID generated");
         if (requestId == null || requestId.isEmpty()) {
             System.out.println("Failed to generate request ID");
             return;
@@ -39,6 +40,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
 
         // Step 2: Fetch data using the request ID
         String jsonData = percipioApiService.fetchData(requestId);
+        System.out.println("Data fetched");
         if (jsonData == null || jsonData.isEmpty()) {
             System.out.println("Failed to fetch data");
             return;
@@ -46,9 +48,11 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
 
         // Step 3: Parse JSON and convert to DTO
         List<UserContentAccessDTO> userContentAccessList = parseJsonToDTO(jsonData);
+        System.out.println("JSON parsed");
 
         // Step 4: Save data to database
         userContentAccessList.forEach(userContentAccessService::saveUserContentAccess);
+        System.out.println("Data saved");
     }
 
     private List<UserContentAccessDTO> parseJsonToDTO(String jsonData) {

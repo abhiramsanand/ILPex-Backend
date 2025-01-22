@@ -44,7 +44,7 @@ public class Batches extends BaseEntity {
     @JsonIgnore // Prevent serialization
     private Set<AssessmentBatchAllocation> assessmentBatchAllocations = new HashSet<>();
 
-    @ManyToOne(fetch =  FetchType.LAZY)
+    @ManyToOne(fetch =  FetchType.EAGER)
     @JsonIgnoreProperties("programs")
     @JoinColumn(name = "program_id", referencedColumnName = "id", nullable = false)
     private Programs programs;
