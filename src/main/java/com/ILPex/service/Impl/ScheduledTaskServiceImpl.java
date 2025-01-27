@@ -28,7 +28,7 @@ public class ScheduledTaskServiceImpl implements ScheduledTaskService {
     private BatchRepository batchRepository;
 
     @Override
-    @Scheduled(fixedRate = 120000) // 2 minutes in milliseconds
+    @Scheduled(fixedRate = 180000) // 3 minutes in milliseconds
     public void fetchAndSaveData() {
         // Step 1: Generate request ID
         String requestId = percipioApiService.generateRequestId();
